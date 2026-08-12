@@ -14,6 +14,7 @@ on:
       - sw.js
       - vercel.json
       - tests/mobile-smoke.mjs
+      - tests/battle-smoke.mjs
       - .github/workflows/verify-mobile.yml
 
 permissions:
@@ -22,7 +23,7 @@ permissions:
 jobs:
   mobile-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Check out main
@@ -37,6 +38,8 @@ jobs:
         run: |
           set -euo pipefail
           node --check app.js
+          node --check tests/mobile-smoke.mjs
+          node --check tests/battle-smoke.mjs
           node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf8'))"
           test -s index.html
@@ -65,6 +68,8 @@ jobs:
           curl --fail --silent http://127.0.0.1:4173/ > /dev/null
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/mobile-smoke.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/mobile-smoke.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium-battle node tests/battle-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit-battle node tests/battle-smoke.mjs
 
       - name: Run Vercel smartphone browser tests
         env:
@@ -73,6 +78,8 @@ jobs:
           set -euo pipefail
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/vercel-chromium node tests/mobile-smoke.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit node tests/mobile-smoke.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/vercel-chromium-battle node tests/battle-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit-battle node tests/battle-smoke.mjs
 
       - name: Upload smartphone verification evidence
         if: always()
