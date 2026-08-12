@@ -119,13 +119,10 @@ if (await page.locator('#coach > *').count()) {
   await page.locator('#coach').evaluate((node) => node.replaceChildren());
 }
 
-const lobby = page.locator('.floor[data-no="1"]');
-await lobby.scrollIntoViewIfNeeded();
-await lobby.tap();
-await page.locator('.sheet').waitFor({ state: 'visible', timeout: 7000 });
-const startBattle = page.locator('.sheet [data-a="battle"]');
-assert.equal(await startBattle.isEnabled(), true, 'Battle start button is disabled');
-await startBattle.tap();
+const battleBubble = page.locator('.floor[data-no="1"] [data-a="battle"]');
+await battleBubble.scrollIntoViewIfNeeded();
+assert.equal(await battleBubble.isVisible(), true, 'Lobby defense control is not visible');
+await battleBubble.tap();
 
 await page.locator('#battleNav:not(.hidden)').waitFor({ state: 'visible', timeout: 7000 });
 const battleCoachClose = page.locator('[data-a="coach-close"]');
