@@ -1,0 +1,52 @@
+name: Apply Cat's tower V0.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/apply-v02.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-cats-v02
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply reviewed V0.2 payload
+        run: python3 scripts/apply_v02_payload.py
+
+      - name: Validate updated static game
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check sw.js
+          node --check tests/mobile-smoke.mjs
+          node --check tests/battle-smoke.mjs
+          node --check tests/recovery-smoke.mjs
+          node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf8'))"
+          grep -q "AID_CAP=120" app.js
+          grep -q "id=\"battleCall\"" index.html
+
+      - name: Commit V0.2 to main and remove payload files
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md app.js styles.css index.html manifest.webmanifest sw.js tests/mobile-smoke.mjs tests/battle-smoke.mjs tests/recovery-smoke.mjs
+          git rm -r scripts/v02_payload_parts scripts/apply_v02_payload.py
+          git commit -m "implement recovery economy, visible first defense, and visual overhaul"
+          git push origin HEAD:main
