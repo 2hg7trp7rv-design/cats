@@ -1,0 +1,20 @@
+{
+  "name": "Cat's tower",
+  "short_name": "Cat's tower",
+  "description": "ぬいぐるみのような猫たちが暮らし、働き、タワーを守るスマートフォン向け経営・防衛ゲーム。",
+  "lang": "ja",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111826",
+  "theme_color": "#111826",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
