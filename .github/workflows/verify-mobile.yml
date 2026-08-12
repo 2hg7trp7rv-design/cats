@@ -73,3 +73,19 @@ jobs:
           path: test-results
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Upload verified deployable site
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-site-main
+          path: |
+            index.html
+            styles.css
+            app.js
+            icon.svg
+            manifest.webmanifest
+            sw.js
+            vercel.json
+          if-no-files-found: error
+          retention-days: 14
