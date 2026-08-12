@@ -1,4 +1,4 @@
-name: Apply Cat's tower V0.2
+name: Finalize Cat's tower V0.2 verification
 
 on:
   push:
@@ -11,11 +11,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: apply-cats-v02
+  group: finalize-cats-v02
   cancel-in-progress: false
 
 jobs:
-  apply:
+  finalize:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -25,28 +25,44 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Apply reviewed V0.2 payload
-        run: python3 scripts/apply_v02_payload.py
+      - name: Make the public defense interaction test follow the moving enemy
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
 
-      - name: Validate updated static game
+          path = Path('tests/recovery-smoke.mjs')
+          text = path.read_text()
+          old = '''await defense.page.locator('[data-tool="static"]').tap();
+          await defense.page.locator('.floor[data-no="1"]').tap();
+          await defense.page.waitForTimeout(250);'''
+          new = '''await defense.page.locator('[data-tool="static"]').tap();
+          const toolTargetFloor = await defense.page.locator('.enemy').evaluate(
+            (enemy) => enemy.closest('.floor')?.dataset.no,
+          );
+          assert(toolTargetFloor, 'Tool target floor was not found');
+          await defense.page.locator(`.floor[data-no="${toolTargetFloor}"]`).tap();
+          await defense.page.waitForTimeout(250);'''
+          if old not in text:
+              raise SystemExit('Expected recovery test block was not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Validate final V0.2 sources
         run: |
           set -euo pipefail
           node --check app.js
-          node --check sw.js
           node --check tests/mobile-smoke.mjs
           node --check tests/battle-smoke.mjs
           node --check tests/recovery-smoke.mjs
-          node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8'))"
-          node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf8'))"
           grep -q "AID_CAP=120" app.js
           grep -q "id=\"battleCall\"" index.html
 
-      - name: Commit V0.2 to main and remove payload files
+      - name: Commit the verification fix and remove this one-time workflow
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md app.js styles.css index.html manifest.webmanifest sw.js tests/mobile-smoke.mjs tests/battle-smoke.mjs tests/recovery-smoke.mjs
-          git rm -r scripts/v02_payload_parts scripts/apply_v02_payload.py
-          git commit -m "implement recovery economy, visible first defense, and visual overhaul"
+          git add tests/recovery-smoke.mjs
+          git rm .github/workflows/apply-v02.yml
+          git commit -m "stabilize public first-defense mobile verification"
           git push origin HEAD:main
