@@ -60,7 +60,9 @@ function seedState({ coins = 0, stock = 0, aidAt = Date.now() } = {}) {
 }
 
 await page.addInitScript(
-  ({ key, state }) => localStorage.setItem(key, JSON.stringify(state)),
+  ({ key, state }) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify(state));
+  },
   { key: storageKey, state: seedState() },
 );
 
