@@ -40,6 +40,8 @@ await page.screenshot({ path: `${out}/02-tower.png`, fullPage: true });
 
 const intro = page.locator('[data-a="intro"]');
 if (await intro.count()) await intro.tap();
+const coachClose = page.locator('[data-a="coach-close"]');
+if (await coachClose.count()) await coachClose.tap();
 const collect = page.locator('[data-a="collect"]').first();
 if (await collect.count()) await collect.tap();
 
