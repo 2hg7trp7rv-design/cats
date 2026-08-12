@@ -28,109 +28,59 @@ page.on('console', (message) => {
   if (message.type() === 'error') errors.push(message.text());
 });
 
+const now = Date.now();
+const seededState = {
+  coins: 3000,
+  parts: 0,
+  floors: [
+    { id: 'lobby-1', number: 1, type: 'lobby', cats: [], stock: 0 },
+    { id: 'home-2', number: 2, type: 'home', cats: [], stock: 0 },
+    { id: 'food-3', number: 3, type: 'food', cats: ['mugi'], stock: 60, pending: 0 },
+    { id: 'play-4', number: 4, type: 'play', cats: ['luna'], stock: 60, pending: 0 },
+  ],
+  cats: [
+    { id: 'mugi', level: 1, xp: 0, mood: 86, floorId: 'food-3', lastPet: 0, unlocked: now },
+    { id: 'luna', level: 1, xp: 0, mood: 82, floorId: 'play-4', lastPet: 0, unlocked: now },
+  ],
+  bellAt: now + 600000,
+  settings: { sound: false },
+  tutorial: true,
+  coach: { battle: true },
+  sales: 0,
+  built: 4,
+  clears: 0,
+  lastBattle: 0,
+  lastSeen: now,
+  created: now,
+  battle: null,
+};
+
+await page.addInitScript(
+  ({ key, state }) => localStorage.setItem(key, JSON.stringify(state)),
+  { key: 'cats-tower-v01', state: seededState },
+);
+
 const response = await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 45000 });
 assert(response?.ok(), `HTTP ${response?.status()} at ${targetUrl}`);
 await page.locator('#startBtn').waitFor({ state: 'visible', timeout: 15000 });
-
-await page.evaluate(() => {
-  const state = window.__CATS_TEST_API__.getState();
-  const now = Date.now();
-  state.tutorial = true;
-  state.coins = 3000;
-  state.parts = 0;
-  state.lastSeen = now;
-  state.battle = null;
-
-  const food = state.floors.find((floor) => floor.type === 'food');
-  food.cats = ['mugi'];
-  food.stock = 60;
-  food.pending = 0;
-  food.orderState = 'idle';
-  food.buildStart = 0;
-  food.buildEnd = 0;
-  food.nextSale = now + 600000;
-
-  let play = state.floors.find((floor) => floor.type === 'play');
-  if (!play) {
-    play = {
-      id: 'play-4',
-      number: 4,
-      type: 'play',
-      level: 1,
-      buildStart: 0,
-      buildEnd: 0,
-      cats: ['luna'],
-      stock: 60,
-      pending: 0,
-      orderState: 'idle',
-      orderStart: 0,
-      orderEnd: 0,
-      nextSale: now + 600000,
-    };
-    state.floors.push(play);
-  } else {
-    play.cats = ['luna'];
-    play.stock = 60;
-    play.buildStart = 0;
-    play.buildEnd = 0;
-    play.orderState = 'idle';
-    play.nextSale = now + 600000;
-  }
-
-  const mugi = state.cats.find((cat) => cat.id === 'mugi');
-  mugi.floorId = food.id;
-  let luna = state.cats.find((cat) => cat.id === 'luna');
-  if (!luna) {
-    luna = {
-      id: 'luna',
-      level: 1,
-      xp: 0,
-      mood: 82,
-      floorId: play.id,
-      lastPet: 0,
-      unlocked: now,
-    };
-    state.cats.push(luna);
-  } else {
-    luna.floorId = play.id;
-  }
-
-  state.floors.sort((a, b) => a.number - b.number);
-  localStorage.setItem('cats-tower-v01', JSON.stringify(state));
-});
-
-await page.reload({ waitUntil: 'networkidle', timeout: 45000 });
-await page.locator('#startBtn').waitFor({ state: 'visible', timeout: 15000 });
 await page.locator('#startBtn').tap();
 await page.locator('#game:not(.hidden)').waitFor({ state: 'visible', timeout: 10000 });
-await page.waitForTimeout(950);
+await page.waitForTimeout(700);
 
-const introButton = page.locator('[data-a="intro"]');
-if (await introButton.count()) {
-  await introButton.tap();
-  await page.waitForTimeout(200);
-}
-const startupCoachClose = page.locator('[data-a="coach-close"]');
-if (await startupCoachClose.count()) {
-  await startupCoachClose.tap();
-  await page.waitForTimeout(200);
-}
-if (await page.locator('#coach > *').count()) {
-  await page.locator('#coach').evaluate((node) => node.replaceChildren());
-}
+assert.equal(await page.locator('.floor').count(), 4, 'Prepared four-floor tower was not loaded');
+const preparedState = await page.evaluate(() => window.__CATS_TEST_API__.getState());
+assert.equal(preparedState.floors.filter((floor) => floor.cats.length && floor.stock > 0).length, 2);
 
 const battleControlStarted = await page.evaluate(() => {
   const button = document.querySelector('.floor[data-no="1"] [data-a="battle"]');
-  if (!button) return false;
+  if (!button || button.textContent.includes('準備中')) return false;
   button.scrollIntoView({ block: 'center' });
   button.click();
   return true;
 });
-assert.equal(battleControlStarted, true, 'Lobby defense control is not available');
+assert.equal(battleControlStarted, true, 'Lobby defense control is not ready');
 
 await page.locator('#battleNav:not(.hidden)').waitFor({ state: 'visible', timeout: 7000 });
-const battleCoachClose = page.locator('[data-a="coach-close"]');
-if (await battleCoachClose.count()) await battleCoachClose.tap();
 await page.locator('.enemy').waitFor({ state: 'visible', timeout: 7000 });
 await page.screenshot({ path: `${out}/01-battle-start.png`, fullPage: true });
 
