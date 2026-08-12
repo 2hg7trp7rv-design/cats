@@ -86,9 +86,11 @@ jobs:
         run: |
           set -euo pipefail
           for attempt in {1..60}; do
-            if curl --fail --silent --show-error "https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/app.js?check=${attempt}" | grep -q "AID_CAP=120"; then
-              echo "GitHub main is serving Cat's tower V0.2 recovery build"
-              exit 0
+            if curl --fail --silent --show-error --output /tmp/cats-public-app.js "https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/app.js?check=${attempt}"; then
+              if grep -q "AID_CAP=120" /tmp/cats-public-app.js; then
+                echo "GitHub main is serving Cat's tower V0.2 recovery build"
+                exit 0
+              fi
             fi
             sleep 3
           done
