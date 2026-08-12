@@ -48,8 +48,6 @@ const intro = page.locator('[data-a="intro"]');
 if (await intro.count()) await intro.tap();
 const coachClose = page.locator('[data-a="coach-close"]');
 if (await coachClose.count()) await coachClose.tap();
-const collect = page.locator('[data-a="collect"]').first();
-if (await collect.count()) await collect.tap();
 
 await page.locator('[data-nav="build"]').tap();
 await page.locator('.sheet').waitFor({ state: 'visible', timeout: 7000 });
