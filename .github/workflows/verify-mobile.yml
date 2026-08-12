@@ -22,7 +22,7 @@ permissions:
 jobs:
   mobile-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Check out main
@@ -45,12 +45,12 @@ jobs:
           test -s icon.svg
           test ! -e 1
 
-      - name: Install browser test runtime
+      - name: Install mobile browser test runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
 
-      - name: Run smartphone browser smoke test
+      - name: Run local smartphone browser tests
         run: |
           set -euo pipefail
           python3 -m http.server 4173 > /tmp/cats-http.log 2>&1 &
@@ -63,7 +63,16 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:4173/ > /dev/null
-          node tests/mobile-smoke.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/mobile-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/mobile-smoke.mjs
+
+      - name: Run Vercel smartphone browser tests
+        env:
+          CATS_TEST_URL: https://cats-tau-dusky.vercel.app
+        run: |
+          set -euo pipefail
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/vercel-chromium node tests/mobile-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit node tests/mobile-smoke.mjs
 
       - name: Upload smartphone verification evidence
         if: always()
