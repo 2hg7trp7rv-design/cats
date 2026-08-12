@@ -77,7 +77,7 @@ await page.evaluate(() => {
     play.nextSale = now + 600000;
   }
 
-  let mugi = state.cats.find((cat) => cat.id === 'mugi');
+  const mugi = state.cats.find((cat) => cat.id === 'mugi');
   mugi.floorId = food.id;
   let luna = state.cats.find((cat) => cat.id === 'luna');
   if (!luna) {
@@ -104,6 +104,20 @@ await page.locator('#startBtn').waitFor({ state: 'visible', timeout: 15000 });
 await page.locator('#startBtn').tap();
 await page.locator('#game:not(.hidden)').waitFor({ state: 'visible', timeout: 10000 });
 await page.waitForTimeout(950);
+
+const introButton = page.locator('[data-a="intro"]');
+if (await introButton.count()) {
+  await introButton.tap();
+  await page.waitForTimeout(200);
+}
+const startupCoachClose = page.locator('[data-a="coach-close"]');
+if (await startupCoachClose.count()) {
+  await startupCoachClose.tap();
+  await page.waitForTimeout(200);
+}
+if (await page.locator('#coach > *').count()) {
+  await page.locator('#coach').evaluate((node) => node.replaceChildren());
+}
 
 const lobby = page.locator('.floor[data-no="1"]');
 await lobby.scrollIntoViewIfNeeded();
