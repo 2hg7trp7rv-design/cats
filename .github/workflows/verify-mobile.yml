@@ -1,5 +1,6 @@
 name: Verify Cat's tower mobile V0.2
 
+# Final verification after the moving-enemy interaction test was corrected.
 on:
   workflow_dispatch:
   push:
