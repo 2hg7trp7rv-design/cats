@@ -142,7 +142,11 @@ assert.equal(enemyFloor, '1', `First enemy did not appear on 1F: ${enemyFloor}`)
 await defense.page.screenshot({ path: `${out}/05-enemy-visible.png`, fullPage: true });
 
 await defense.page.locator('[data-tool="static"]').tap();
-await defense.page.locator('.floor[data-no="1"]').tap();
+const toolTargetFloor = await defense.page.locator('.enemy').evaluate(
+  (enemy) => enemy.closest('.floor')?.dataset.no,
+);
+assert(toolTargetFloor, 'Tool target floor was not found');
+await defense.page.locator(`.floor[data-no="${toolTargetFloor}"]`).tap();
 await defense.page.waitForTimeout(250);
 const energyAfterTool = Number(await defense.page.locator('#energy').textContent());
 assert(energyAfterTool < 100, `Defense tool did not consume energy: ${energyAfterTool}`);
