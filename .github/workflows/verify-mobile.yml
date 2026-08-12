@@ -1,4 +1,4 @@
-name: Verify Cat's tower mobile V0.1
+name: Verify Cat's tower mobile V0.2
 
 on:
   workflow_dispatch:
@@ -15,10 +15,15 @@ on:
       - vercel.json
       - tests/mobile-smoke.mjs
       - tests/battle-smoke.mjs
+      - tests/recovery-smoke.mjs
       - .github/workflows/verify-mobile.yml
 
 permissions:
   contents: read
+
+concurrency:
+  group: cats-mobile-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   mobile-smoke:
@@ -40,6 +45,7 @@ jobs:
           node --check app.js
           node --check tests/mobile-smoke.mjs
           node --check tests/battle-smoke.mjs
+          node --check tests/recovery-smoke.mjs
           node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf8'))"
           test -s index.html
@@ -47,6 +53,9 @@ jobs:
           test -s app.js
           test -s icon.svg
           test ! -e 1
+          test ! -e app.js.bak
+          test ! -e styles.css.bak
+          test ! -e index.html.bak
 
       - name: Install mobile browser test runtime
         run: |
@@ -70,6 +79,21 @@ jobs:
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/mobile-smoke.mjs
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium-battle node tests/battle-smoke.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit-battle node tests/battle-smoke.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium-recovery node tests/recovery-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit-recovery node tests/recovery-smoke.mjs
+
+      - name: Wait for Vercel V0.2 deployment
+        run: |
+          set -euo pipefail
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error https://cats-tau-dusky.vercel.app/app.js | grep -q "AID_CAP=120"; then
+              echo "Vercel is serving Cat's tower V0.2 recovery build"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Vercel did not publish the V0.2 recovery build within 180 seconds" >&2
+          exit 1
 
       - name: Run Vercel smartphone browser tests
         env:
@@ -80,6 +104,8 @@ jobs:
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit node tests/mobile-smoke.mjs
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/vercel-chromium-battle node tests/battle-smoke.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit-battle node tests/battle-smoke.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/vercel-chromium-recovery node tests/recovery-smoke.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/vercel-webkit-recovery node tests/recovery-smoke.mjs
 
       - name: Upload smartphone verification evidence
         if: always()
