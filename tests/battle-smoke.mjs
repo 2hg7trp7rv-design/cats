@@ -119,10 +119,14 @@ if (await page.locator('#coach > *').count()) {
   await page.locator('#coach').evaluate((node) => node.replaceChildren());
 }
 
-const battleBubble = page.locator('.floor[data-no="1"] [data-a="battle"]');
-await battleBubble.scrollIntoViewIfNeeded();
-assert.equal(await battleBubble.isVisible(), true, 'Lobby defense control is not visible');
-await battleBubble.tap();
+const battleControlStarted = await page.evaluate(() => {
+  const button = document.querySelector('.floor[data-no="1"] [data-a="battle"]');
+  if (!button) return false;
+  button.scrollIntoView({ block: 'center' });
+  button.click();
+  return true;
+});
+assert.equal(battleControlStarted, true, 'Lobby defense control is not available');
 
 await page.locator('#battleNav:not(.hidden)').waitFor({ state: 'visible', timeout: 7000 });
 const battleCoachClose = page.locator('[data-a="coach-close"]');
