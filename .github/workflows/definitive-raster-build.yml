@@ -84,7 +84,7 @@ jobs:
 
       - name: Verify public smartphone rendering in Chromium and WebKit
         run: |
-          cat > /tmp/check.mjs <<'JS'
+          cat > check-raster.mjs <<'JS'
           import { chromium, webkit } from 'playwright';
           import assert from 'node:assert/strict';
           const url='https://cats-tau-dusky.vercel.app';
@@ -108,7 +108,8 @@ jobs:
             assert.deepEqual(errors,[],`${name}: ${errors.join(' | ')}`); await browser.close();
           }
           JS
-          node /tmp/check.mjs
+          node check-raster.mjs
+          rm -f check-raster.mjs
 
       - name: Record success and remove all temporary implementation files
         run: |
