@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const V='0.3.0',KEY='cats-tower-v01',MAX=6,OFF=8*3600e3,AID_RATE=1,AID_CAP=120,SHOPS=['food','play','care','craft'];
+const V='0.4.0',KEY='cats-tower-v01',MAX=6,OFF=8*3600e3,AID_RATE=1,AID_CAP=120,SHOPS=['food','play','care','craft'];
 const CAT_ART={"mugi":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-mugi.webp","luna":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-luna.webp","toto":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-toto.webp","mimi":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-mimi.webp"},ENEMY_ART={"dust":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-shadow.webp","cleaner":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-robot.webp","boss":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-burglar.webp"};
 const F={
  lobby:{name:'ロビー',short:'入口',icon:'⌂',color:'#31d7d0',desc:'猫を迎え、夜間防衛を始める玄関。'},
