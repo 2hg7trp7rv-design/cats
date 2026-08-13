@@ -31,6 +31,7 @@ jobs:
           node --check app.js
           grep -Fq "const V='0.4.0'" app.js
           grep -Fq 'V04_MOBILE_VISUAL_FIX_START' styles.css
+          grep -Fq 'title-hero.webp' styles.css
           grep -Fq 'room-food.webp' styles.css
           grep -Fq '.catSprite' styles.css
 
@@ -41,6 +42,8 @@ jobs:
           for attempt in {1..90}; do
             if curl -fsSL "${raw}styles.css?v=${attempt}" -o /tmp/styles.css \
               && curl -fsSL "${raw}app.js?v=${attempt}" -o /tmp/app.js \
+              && curl -fsSL "${raw}assets/illustrations/title-hero.webp?v=${attempt}" -o /tmp/title-hero.webp \
+              && test -s /tmp/title-hero.webp \
               && grep -Fq 'V04_MOBILE_VISUAL_FIX_START' /tmp/styles.css \
               && grep -Fq "const V='0.4.0'" /tmp/app.js; then
               exit 0
@@ -69,9 +72,7 @@ jobs:
             const response=await page.goto(url,{waitUntil:'networkidle',timeout:60000});
             assert(response?.ok(),`${name} HTTP ${response?.status()}`);
             await page.locator('#startBtn').waitFor({state:'visible',timeout:30000});
-            const splashImg=page.locator('#splashCat img.catSprite');
-            await splashImg.waitFor({state:'visible',timeout:30000});
-            await page.waitForFunction(()=>document.querySelector('#splashCat img')?.naturalWidth>0,null,{timeout:30000});
+            assert.match(await page.locator('#splash').evaluate(n=>getComputedStyle(n).backgroundImage),/title-hero\.webp/);
             await page.locator('#startBtn').tap();
             await page.locator('#game:not(.hidden)').waitFor({state:'visible',timeout:15000});
             const intro=page.locator('[data-a="intro"]'); if(await intro.count()) await intro.tap();
@@ -80,8 +81,9 @@ jobs:
             assert.match(await page.locator('.floor.food').evaluate(n=>getComputedStyle(n).backgroundImage),/room-food\.webp/);
             const cat=page.locator('.cat img.catSprite').first();
             await cat.waitFor({state:'visible',timeout:15000});
-            await page.waitForFunction(()=>[...document.querySelectorAll('.cat img.catSprite')].every(i=>i.complete&&i.naturalWidth>0),null,{timeout:30000});
+            await page.waitForFunction(()=>[...document.querySelectorAll('.cat img.catSprite')].filter(i=>i.offsetParent!==null).every(i=>i.complete&&i.naturalWidth>0),null,{timeout:30000});
             assert.equal(await page.locator('.unsupported').evaluate(n=>getComputedStyle(n).display),'none');
+            const floors=await page.locator('.floor').count(); assert(floors>=3,`${name}: floors ${floors}`);
             assert.deepEqual(errors,[],`${name}: ${errors.join(' | ')}`);
             await browser.close();
           }
@@ -102,8 +104,9 @@ jobs:
           - Public URL: https://cats-tau-dusky.vercel.app/?v=4
           - Main branch only
           - v0.4 visual layer merged into styles.css used by the Vercel wrapper
-          - Raster cat visibility verified
-          - Raster room visibility verified
+          - Title hero artwork verified
+          - Visible raster cat sprites verified
+          - Raster room artwork verified
           - Chromium mobile rendering passed
           - WebKit mobile rendering passed
           - Verified at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
