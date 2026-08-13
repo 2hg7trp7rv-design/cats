@@ -1,0 +1,44 @@
+/* Cat's tower v0.4 — real-device visual correction layer */
+:root{--ct-safe-top:env(safe-area-inset-top,0px);--ct-safe-bottom:env(safe-area-inset-bottom,0px)}
+html,body{background:#050b14!important}
+.app{height:100dvh!important;min-height:100svh!important;max-width:520px!important;background:#07111f!important}
+.unsupported{display:none!important}.app{visibility:visible!important}
+
+/* Title: keep the illustration readable on short browser viewports. */
+.splash{background-position:center 18%!important;background-size:cover!important}
+.splash:after{background:linear-gradient(180deg,rgba(3,8,17,0) 0 42%,rgba(3,8,17,.12) 55%,rgba(3,8,17,.76) 74%,#030811 93%)!important}
+.splashCopy{left:24px!important;right:24px!important;bottom:calc(24px + var(--ct-safe-bottom))!important}
+.splashCopy>small{font-size:8px!important;letter-spacing:.22em!important;text-shadow:0 2px 10px #000!important}
+.splashCopy h1{margin-top:9px!important;font-size:clamp(49px,14.2vw,68px)!important;line-height:.76!important;text-shadow:0 7px 0 #020711aa,0 15px 24px #000d!important}
+.splashCopy p{margin:18px 0 17px!important;font-size:13px!important;line-height:1.65!important;text-shadow:0 2px 12px #000!important}
+.bigBtn{width:min(100%,286px)!important;min-height:58px!important;border-radius:20px!important;box-shadow:0 8px 0 #68872d,0 18px 38px #0009!important}
+.splashCopy em{margin-top:18px!important;font-size:7px!important;letter-spacing:.18em!important}
+.splashCat,.splashCat .catSprite{display:block!important;visibility:visible!important;opacity:1!important}
+
+/* Main tower: more world, less chrome. */
+.game{grid-template-rows:calc(70px + var(--ct-safe-top)) 46px minmax(0,1fr) calc(78px + var(--ct-safe-bottom))!important}
+.topbar{padding:calc(9px + var(--ct-safe-top)) 12px 8px!important}.brand{font-size:15px!important}.brand i{width:31px!important;height:31px!important}.resources button{min-height:42px!important;min-width:74px!important}.resources i{width:29px!important;height:29px!important}.resources b{font-size:12px!important}
+.guideBar{min-height:38px!important;margin:4px 9px!important;border-radius:14px!important}
+.tower{width:calc(100% - 20px)!important;margin:54px auto 24px!important;padding:52px 2px 14px!important}.tower:before{inset:40px 0 0!important;border-width:3px!important}
+.roof{height:58px!important;margin:0 7px 7px!important}
+.floor{flex-basis:168px!important;height:168px!important;margin:0 7px 8px!important;border-radius:18px!important;border-width:2px 2px 4px!important;background-position:center!important;background-size:cover!important;box-shadow:inset 0 1px #fff6,0 10px 20px #0004!important}
+.floor:after{background:linear-gradient(90deg,#fff1,transparent 22% 78%,#0001)!important}.floor .base{height:18px!important}.lane{bottom:18px!important;height:25px!important}.num{top:9px!important;left:9px!important;height:31px!important;min-width:37px!important}.sign{top:8px!important;min-height:34px!important;max-width:56%!important;padding:5px 9px!important;font-size:10px!important}.sign i{width:21px!important;height:21px!important}.level{top:11px!important;right:9px!important}
+.stock{top:49px!important;left:9px!important}.status{left:9px!important;bottom:24px!important;max-width:155px!important}.bubble{min-width:50px!important;min-height:50px!important}.bubble.battle,.bubble.coinBubble{right:9px!important;top:51px!important}.bubble.delivery,.bubble.bell{right:9px!important;bottom:24px!important}
+
+/* Raster characters: prioritize the art over labels. */
+.cats{left:15%!important;right:22%!important;bottom:17px!important;height:103px!important;z-index:5!important}.cat{width:100px!important;height:108px!important;margin:0 -12px!important;overflow:visible!important}.catSprite{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;filter:drop-shadow(0 9px 7px #0008)!important;will-change:transform}.cat .mood{top:1px!important}.cat .name{bottom:-1px!important;z-index:4!important;background:#fff7eedd!important;color:#1d2027!important;box-shadow:0 4px 10px #0003!important}
+.catVisual .cat{width:100%!important;height:100%!important}.catVisual .catSprite{filter:drop-shadow(0 12px 10px #0008)!important}
+.enemyVisual img{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:100%!important;object-fit:contain!important}
+
+/* Make raster rooms read as illustrated rooms instead of cards. */
+.floor.lobby,.floor.home,.floor.food,.floor.play,.floor.care,.floor.craft{background-blend-mode:soft-light,normal!important}
+.floor.lobby{background-image:linear-gradient(180deg,#08111f05,#08111f24),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-lobby.webp")!important}.floor.home{background-image:linear-gradient(180deg,#fff2,#1b17221c),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-home.webp")!important}.floor.food{background-image:linear-gradient(180deg,#fff2,#2b160f16),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-food.webp")!important}.floor.play{background-image:linear-gradient(180deg,#fff2,#0e231719),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-play.webp")!important}.floor.care{background-image:linear-gradient(180deg,#fff2,#18122418),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-care.webp")!important}.floor.craft{background-image:linear-gradient(180deg,#fff2,#24170e18),url("https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/room-craft.webp")!important}
+
+/* Sheets: the current real-device capture loses too much context behind the modal. */
+.shade{background:#02081280!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}.sheet{max-height:min(82dvh,760px)!important;border-radius:25px 25px 0 0!important;background:linear-gradient(180deg,#173655f7,#091728fc)!important;box-shadow:0 -18px 55px #0009!important}.sheetBody{max-height:calc(min(82dvh,760px) - 82px - var(--ct-safe-bottom))!important;padding-bottom:calc(24px + var(--ct-safe-bottom))!important}.sheet header{min-height:78px!important}.sheet header button{width:44px!important;height:44px!important;border-radius:15px!important}
+
+/* Bottom nav stays compact even with browser chrome visible. */
+.nav,.battleNav{min-height:78px!important;padding:7px 5px calc(7px + var(--ct-safe-bottom))!important}.nav button,.battleNav button{min-height:61px!important}.nav .build i{width:48px!important;height:48px!important;margin-top:-18px!important}.topBtn{right:8px!important;bottom:10px!important;width:51px!important;height:51px!important}
+
+@media(max-height:740px){.splash{background-position:center 10%!important}.splashCopy{bottom:calc(16px + var(--ct-safe-bottom))!important}.splashCopy p{margin:13px 0!important}.splashCopy em{margin-top:12px!important}.game{grid-template-rows:calc(64px + var(--ct-safe-top)) 41px minmax(0,1fr) calc(72px + var(--ct-safe-bottom))!important}.tower{margin-top:42px!important}.floor{flex-basis:154px!important;height:154px!important}.cats{height:94px!important}.cat{width:91px!important;height:99px!important}.sheet{max-height:86dvh!important}.sheetBody{max-height:calc(86dvh - 78px - var(--ct-safe-bottom))!important}}
+@media(max-width:370px){.brand>span small{display:none!important}.resources button{min-width:69px!important}.floor{margin-left:5px!important;margin-right:5px!important}.sign{max-width:60%!important}}
