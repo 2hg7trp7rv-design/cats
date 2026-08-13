@@ -1,4 +1,4 @@
-const CACHE='cats-tower-v0.2.0';
+const CACHE='cats-tower-v0.3.0';
 const CORE=['/','/index.html','/styles.css','/app.js','/manifest.webmanifest','/icon.svg'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
