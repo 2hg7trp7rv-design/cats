@@ -1,0 +1,136 @@
+name: Apply Cat's tower v0.4 mobile fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - visual-fix-v04.css
+      - .github/workflows/apply-v04-mobile-fix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cats-v04-mobile-fix
+  cancel-in-progress: false
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge v0.4 visual layer into styles.css
+        run: |
+          set -euo pipefail
+          if ! grep -Fq 'Cat\x27s tower v0.4 — real-device visual correction layer' styles.css; then
+            printf '\n\n/* V04_MOBILE_VISUAL_FIX_START */\n' >> styles.css
+            cat visual-fix-v04.css >> styles.css
+            printf '\n/* V04_MOBILE_VISUAL_FIX_END */\n' >> styles.css
+          fi
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('app.js')
+          s=p.read_text()
+          s=s.replace("const V='0.3.0'", "const V='0.4.0'", 1)
+          p.write_text(s)
+          PY
+          node --check app.js
+          grep -Fq "const V='0.4.0'" app.js
+          grep -Fq 'V04_MOBILE_VISUAL_FIX_START' styles.css
+
+      - name: Commit public source
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add styles.css app.js index.html visual-fix-v04.css
+          if ! git diff --cached --quiet; then
+            git commit -m 'integrate v0.4 real-device visual fixes'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Wait for GitHub public source
+        run: |
+          set -euo pipefail
+          raw='https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/'
+          for attempt in {1..90}; do
+            if curl -fsSL "${raw}styles.css?v=${attempt}" -o /tmp/styles.css \
+              && curl -fsSL "${raw}app.js?v=${attempt}" -o /tmp/app.js \
+              && grep -Fq 'V04_MOBILE_VISUAL_FIX_START' /tmp/styles.css \
+              && grep -Fq "const V='0.4.0'" /tmp/app.js; then
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Install browser runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.60.0
+          npx playwright install chromium webkit
+
+      - name: Verify public mobile rendering
+        run: |
+          cat > /tmp/check.mjs <<'JS'
+          import { chromium, webkit } from 'playwright';
+          import assert from 'node:assert/strict';
+          const url='https://cats-tau-dusky.vercel.app/?v=4';
+          for (const [name,type] of Object.entries({chromium,webkit})) {
+            const browser=await type.launch({headless:true});
+            const context=await browser.newContext({viewport:{width:390,height:844},screen:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,locale:'ja-JP'});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            const response=await page.goto(url,{waitUntil:'networkidle',timeout:60000});
+            assert(response?.ok(),`${name} HTTP ${response?.status()}`);
+            await page.locator('#startBtn').waitFor({state:'visible',timeout:30000});
+            const splashImg=page.locator('#splashCat img.catSprite');
+            await splashImg.waitFor({state:'visible',timeout:30000});
+            await page.waitForFunction(()=>document.querySelector('#splashCat img')?.naturalWidth>0,null,{timeout:30000});
+            await page.locator('#startBtn').tap();
+            await page.locator('#game:not(.hidden)').waitFor({state:'visible',timeout:15000});
+            const intro=page.locator('[data-a="intro"]'); if(await intro.count()) await intro.tap();
+            const close=page.locator('[data-a="coach-close"]'); if(await close.count()) await close.tap();
+            await page.locator('.floor.food').waitFor({state:'visible',timeout:15000});
+            assert.match(await page.locator('.floor.food').evaluate(n=>getComputedStyle(n).backgroundImage),/room-food\.webp/);
+            const cat=page.locator('.cat img.catSprite').first();
+            await cat.waitFor({state:'visible',timeout:15000});
+            await page.waitForFunction(()=>[...document.querySelectorAll('.cat img.catSprite')].every(i=>i.complete&&i.naturalWidth>0),null,{timeout:30000});
+            assert.equal(await page.locator('.unsupported').evaluate(n=>getComputedStyle(n).display),'none');
+            assert.deepEqual(errors,[],`${name}: ${errors.join(' | ')}`);
+            await browser.close();
+          }
+          JS
+          node /tmp/check.mjs
+
+      - name: Record verified state and clean temporary workflow
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git reset --hard origin/main
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          cat > MOBILE_V04_VERIFIED.md <<EOF
+          # Cat's tower v0.4 mobile verification
+
+          - Public URL: https://cats-tau-dusky.vercel.app/?v=4
+          - Main branch only
+          - v0.4 visual layer merged into styles.css used by the Vercel wrapper
+          - Raster cat visibility verified
+          - Raster room visibility verified
+          - Chromium mobile rendering passed
+          - WebKit mobile rendering passed
+          - Verified at: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EOF
+          git add MOBILE_V04_VERIFIED.md
+          git rm --ignore-unmatch .github/workflows/apply-v04-mobile-fix.yml
+          git commit -m 'verify Cat tower v0.4 public mobile rendering'
+          git pull --rebase origin main
+          git push origin HEAD:main
