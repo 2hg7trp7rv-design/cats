@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const V='0.4.0',KEY='cats-tower-v01',MAX=6,OFF=8*3600e3,AID_RATE=1,AID_CAP=120,SHOPS=['food','play','care','craft'];
+const V='0.5.0',KEY='cats-tower-v01',MAX=6,OFF=8*3600e3,AID_RATE=1,AID_CAP=120,SHOPS=['food','play','care','craft'];
 const CAT_ART={"mugi":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-mugi.webp","luna":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-luna.webp","toto":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-toto.webp","mimi":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-mimi.webp"},ENEMY_ART={"dust":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-shadow.webp","cleaner":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-robot.webp","boss":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-burglar.webp"};
 const F={
  lobby:{name:'ロビー',short:'入口',icon:'⌂',color:'#31d7d0',desc:'猫を迎え、夜間防衛を始める玄関。'},
@@ -17,9 +17,9 @@ const P={
 };
 const C={
  mugi:{name:'ムギ',fur:'#e6aa73',dark:'#b86f4d',light:'#f5d1aa',eye:'#344157',pat:'tiger',face:'round',acc:'scarf',accC:'#31d7d0',s:{food:8,play:4,care:3,craft:5},dream:'food',trait:'foodie',traitN:'食いしん坊',traitT:'ごはん店が得意。時々、売り物を味見する。',quote:'箱より先に、魚を見つける。'},
- luna:{name:'ルナ',fur:'#363d50',dark:'#1e2535',light:'#f0eadf',eye:'#e7bf63',pat:'tuxedo',face:'sleepy',acc:'ribbon',accC:'#a991ff',s:{food:3,play:8,care:5,craft:4},dream:'play',trait:'sleepy',traitN:'眠り好き',traitT:'休憩が得意。仕事中に座り込むことがある。',quote:'急がない。毛糸は逃げない。'},
- toto:{name:'トト',fur:'#d8d0c3',dark:'#7e8792',light:'#f7f1e7',eye:'#4c806f',pat:'gray',face:'soft',acc:'apron',accC:'#ff8251',s:{food:4,play:3,care:8,craft:5},dream:'care',trait:'caretaker',traitN:'世話焼き',traitT:'同じ店で働く猫のごきげんを支える。',quote:'乱れた毛は、放っておけない。'},
- mimi:{name:'ミミ',fur:'#f0d7b6',dark:'#9f6e52',light:'#fff1dc',eye:'#6b4a72',pat:'calico',face:'curious',acc:'cap',accC:'#d8ef72',s:{food:5,play:5,care:3,craft:9},dream:'craft',trait:'boxLover',traitN:'箱好き',traitT:'ものづくりが得意。届いた箱に入ることがある。',quote:'完成した箱は、まず自分で試す。'}
+ luna:{name:'ルナ',fur:'#9b928c',dark:'#696662',light:'#f4eee6',eye:'#2b1e1b',pat:'silver',face:'sleepy',acc:'ribbon',accC:'#a88be8',s:{food:3,play:8,care:5,craft:4},dream:'play',trait:'sleepy',traitN:'眠り好き',traitT:'休憩が得意。仕事中に座り込むことがある。',quote:'急がない。毛糸は逃げない。'},
+ toto:{name:'トト',fur:'#171719',dark:'#09090b',light:'#f6eee4',eye:'#251d18',pat:'tuxedo',face:'serious',acc:'scarf',accC:'#d84c3f',s:{food:4,play:3,care:8,craft:5},dream:'care',trait:'caretaker',traitN:'しっかり者',traitT:'仲間をよく見ていて、同じ店の猫のごきげんを支える。',quote:'見回りは任せて。'},
+ mimi:{name:'ミミ',fur:'#e8a25d',dark:'#9f6e43',light:'#fff2dc',eye:'#2a211c',pat:'orangeWhite',face:'curious',acc:'goggles',accC:'#b47a28',s:{food:5,play:5,care:3,craft:9},dream:'craft',trait:'boxLover',traitN:'冒険好き',traitT:'ものづくりが得意。新しい道具や箱を見るとすぐ試したくなる。',quote:'次はどこを見に行く？'}
 };
 const ORDER=['mugi','luna','toto','mimi'];
 const E={dust:{name:'ホコリ玉',hp:42,speed:.24,armor:0,reward:1,css:'dust'},cleaner:{name:'小型掃除ロボ',hp:74,speed:.2,armor:.12,reward:2,css:'cleaner'},boss:{name:'主任清掃機',hp:168,speed:.125,armor:.24,reward:6,css:'boss'}};

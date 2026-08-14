@@ -119,3 +119,33 @@ html,body{background:#050b14!important}
 @media(max-width:370px){.brand>span small{display:none!important}.resources button{min-width:69px!important}.floor{margin-left:5px!important;margin-right:5px!important}.sign{max-width:60%!important}}
 
 /* V04_MOBILE_VISUAL_FIX_END */
+
+/* V05_CHARACTER_ART_START */
+.catSprite{
+  object-fit:contain;
+  object-position:center bottom;
+  image-rendering:auto;
+  filter:drop-shadow(0 7px 9px #120a0738);
+}
+.cat .catSprite{
+  width:100%;
+  height:100%;
+  transform-origin:50% 88%;
+}
+.floor .cat{
+  width:82px;
+  height:98px;
+}
+.floor .cat .catSprite{
+  width:78px;
+  height:92px;
+}
+.cat.idle .catSprite{animation:catPlushBreath 2.8s ease-in-out infinite}
+@keyframes catPlushBreath{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-2px) scale(1.012)}
+}
+.cat[data-cat="luna"] .catSprite{filter:drop-shadow(0 7px 9px #120a0738) saturate(.97)}
+.cat[data-cat="toto"] .catSprite{filter:drop-shadow(0 7px 9px #120a0738) contrast(1.03)}
+.cat[data-cat="mimi"] .catSprite{filter:drop-shadow(0 7px 9px #120a0738) saturate(1.04)}
+/* V05_CHARACTER_ART_END */
