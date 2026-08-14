@@ -35,7 +35,7 @@ jobs:
 
       - name: Verify public Vercel build on mobile engines
         run: |
-          cat > /tmp/verify-cats.mjs <<'JS'
+          cat > verify-cats.mjs <<'JS'
           import { chromium, webkit } from 'playwright';
           import assert from 'node:assert/strict';
           const url='https://cats-tau-dusky.vercel.app/?v=5&check=character';
@@ -54,21 +54,28 @@ jobs:
             const loaded=await page.evaluate(async names=>{
               const base='https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/';
               return await Promise.all(names.map(name=>new Promise(resolve=>{
-                const img=new Image(); img.onload=()=>resolve({name,w:img.naturalWidth,h:img.naturalHeight}); img.onerror=()=>resolve({name,w:0,h:0}); img.src=`${base}cat-${name}.webp?verify=5`;
+                const img=new Image();
+                img.onload=()=>resolve({name,w:img.naturalWidth,h:img.naturalHeight});
+                img.onerror=()=>resolve({name,w:0,h:0});
+                img.src=`${base}cat-${name}.webp?verify=5`;
               })));
             },names);
             for(const item of loaded) assert(item.w>0 && item.h>0,`${engine}: ${item.name} failed to load`);
             await page.locator('#startBtn').tap();
             await page.locator('#game:not(.hidden)').waitFor({state:'visible',timeout:15000});
+            const intro=page.locator('[data-a="intro"]'); if(await intro.count()) await intro.tap();
+            const close=page.locator('[data-a="coach-close"]'); if(await close.count()) await close.tap();
             const mugi=page.locator('.cat img.catSprite').first();
             await mugi.waitFor({state:'visible',timeout:15000});
             assert((await mugi.getAttribute('src'))?.includes('cat-mugi.webp'),`${engine}: gameplay Mugi source not updated`);
             await page.waitForFunction(()=>document.querySelector('.cat img.catSprite')?.naturalWidth>0,null,{timeout:15000});
             assert.deepEqual(errors,[],`${engine}: ${errors.join(' | ')}`);
+            await context.close();
             await browser.close();
           }
           JS
-          node /tmp/verify-cats.mjs
+          node verify-cats.mjs
+          rm -f verify-cats.mjs
 
       - name: Record verification and remove temporary workflow
         run: |
