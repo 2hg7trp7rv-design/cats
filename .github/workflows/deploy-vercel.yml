@@ -1,0 +1,105 @@
+name: Deploy Cat's tower main directly to Vercel
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - styles.css
+      - app.js
+      - assets/**
+      - tests/character-visual-v07.mjs
+      - vercel.json
+      - .github/workflows/deploy-vercel.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cats-production-main
+  cancel-in-progress: true
+
+jobs:
+  verify-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Static contract checks
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check tests/character-visual-v07.mjs
+          grep -q "const V='0.7.0'" app.js
+          ! grep -q "raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-" app.js
+          ! grep -q "RASTER_ART_V03_START" styles.css
+          ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
+          ! grep -q "V05_CHARACTER_ART_START" styles.css
+          grep -q "CHARACTER_VISUAL_V07_START" styles.css
+          test ! -e visual-fix-v04.css
+          test ! -e character-assets-v06.js
+          for f in assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp; do test -s "$f"; done
+
+      - name: Install visual QA runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.60.0
+          npx playwright install --with-deps chromium webkit
+
+      - name: Local Chromium and WebKit visual QA
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/cats-http.log 2>&1 &
+          PID=$!
+          trap 'kill $PID' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/character-visual-v07.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/character-visual-v07.mjs
+
+      - name: Require Vercel deployment credential
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Repository secret VERCEL_TOKEN is not configured. Direct repository deployment cannot continue."
+            exit 1
+          fi
+
+      - name: Deploy checked-out main directly to existing Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          mkdir -p .vercel
+          printf '%s\n' '{"orgId":"team_6odZCZQ1QxjzhPdC9sgEtoCM","projectId":"prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB"}' > .vercel/project.json
+          npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
+
+      - name: Wait for production V0.7
+        run: |
+          set -euo pipefail
+          for i in {1..60}; do
+            if curl -fsS "https://cats-tau-dusky.vercel.app/app.js?qa=$i" | grep -q "const V='0.7.0'"; then exit 0; fi
+            sleep 3
+          done
+          echo "::error::Production domain did not serve V0.7 within 180 seconds."
+          exit 1
+
+      - name: Production Chromium and WebKit visual QA
+        env:
+          CATS_TEST_URL: https://cats-tau-dusky.vercel.app/
+        run: |
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/prod-chromium node tests/character-visual-v07.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/prod-webkit node tests/character-visual-v07.mjs
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-v07-visual-evidence
+          path: test-results
+          if-no-files-found: warn
+          retention-days: 14
