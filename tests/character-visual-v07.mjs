@@ -65,7 +65,7 @@ const profileHeights={};
 for(const id of ['mugi','luna','toto','mimi']){
   await page.locator('[data-nav="cats"]').tap();
   await page.locator('.sheet').waitFor({state:'visible',timeout:5000});
-  await page.locator(`.catCard [data-a="cat"][data-cat="${id}"]`).tap();
+  await page.locator(`.catCard .btn[data-a="cat"][data-cat="${id}"]`).tap();
   const img=page.locator('.hero .catSprite');
   await img.waitFor({state:'visible',timeout:5000});
   const metrics=await img.evaluate(i=>({w:i.naturalWidth,h:i.naturalHeight,rw:i.getBoundingClientRect().width,rh:i.getBoundingClientRect().height,src:i.currentSrc}));
