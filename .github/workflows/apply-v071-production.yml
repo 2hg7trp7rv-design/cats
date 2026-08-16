@@ -1,0 +1,65 @@
+name: Apply Cat's tower V0.7.1 verified character rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-v071-production.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cats-v071-production
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install image runtime
+        run: python3 -m pip install --quiet pillow
+
+      - name: Rebuild all four character assets
+        run: python3 scripts/apply_v07.py
+
+      - name: Validate exact written assets
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          ids=['mugi','luna','toto','mimi']
+          for cat_id in ids:
+              p=Path(f'assets/illustrations/cat-{cat_id}.v070.webp')
+              with Image.open(p) as im:
+                  im.load()
+                  assert im.format == 'WEBP', (cat_id, im.format)
+                  assert im.size == (512,512), (cat_id, im.size)
+              head=p.read_bytes()[:12]
+              assert head[:4] == b'RIFF' and head[8:12] == b'WEBP', (cat_id, head)
+              print(cat_id, 'PASS', p.stat().st_size)
+          PY
+          node --check app.js
+          node --check tests/character-visual-v07.mjs
+          grep -q "const V='0.7.1'" app.js
+          ! grep -q "RASTER_ART_V03_START" styles.css
+          ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
+          ! grep -q "V05_CHARACTER_ART_START" styles.css
+          test "$(grep -c 'CHARACTER_VISUAL_V07_START' styles.css)" -eq 1
+
+      - name: Commit verified rebuild and remove one-time workflow
+        run: |
+          set -euo pipefail
+          git config user.name "2hg7trp7rv-design"
+          git config user.email "2hg7trp7rv@privaterelay.appleid.com"
+          git add app.js index.html styles.css assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp scripts/apply_v07.py
+          git rm .github/workflows/apply-v071-production.yml
+          git commit -m "rebuild all four verified character assets for V0.7.1"
+          git push origin HEAD:main
