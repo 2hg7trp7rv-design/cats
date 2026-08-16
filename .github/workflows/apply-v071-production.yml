@@ -26,22 +26,42 @@ jobs:
       - name: Install image runtime
         run: python3 -m pip install --quiet pillow
 
-      - name: Restore approved four-cat masters from Git history
+      - name: Recover one decodable historical master per cat
         run: |
           set -euo pipefail
-          APPROVED=599aa1c0f0891ac2484dc9705bea5c047acda34b
-          mkdir -p /tmp/cat-masters
-          for id in mugi luna toto mimi; do
-            git show "$APPROVED:assets/illustrations/cat-$id.webp" > "/tmp/cat-masters/cat-$id.webp"
-          done
           python3 - <<'PY'
           from PIL import Image
           from pathlib import Path
-          for p in sorted(Path('/tmp/cat-masters').glob('cat-*.webp')):
-              with Image.open(p) as im:
-                  im.load()
-                  print(p.name, im.format, im.size, im.mode)
-                  assert im.format == 'WEBP'
+          import io, subprocess
+
+          candidates={
+            'mugi':['599aa1c0f0891ac2484dc9705bea5c047acda34b','20726a7b585aff46daf1e2be1ae26f8f84079c40'],
+            'luna':['599aa1c0f0891ac2484dc9705bea5c047acda34b','20726a7b585aff46daf1e2be1ae26f8f84079c40'],
+            'toto':['c3001a4dd7ef9033044b5e1c215397c1dddae670','599aa1c0f0891ac2484dc9705bea5c047acda34b','20726a7b585aff46daf1e2be1ae26f8f84079c40'],
+            'mimi':['c3001a4dd7ef9033044b5e1c215397c1dddae670','599aa1c0f0891ac2484dc9705bea5c047acda34b','20726a7b585aff46daf1e2be1ae26f8f84079c40'],
+          }
+          outdir=Path('/tmp/cat-masters'); outdir.mkdir(parents=True,exist_ok=True)
+          failures=[]
+          for cat_id, refs in candidates.items():
+              chosen=None
+              for ref in refs:
+                  spec=f'{ref}:assets/illustrations/cat-{cat_id}.webp'
+                  try:
+                      data=subprocess.check_output(['git','show',spec])
+                      with Image.open(io.BytesIO(data)) as im:
+                          im.load()
+                          if im.format!='WEBP':
+                              raise ValueError(im.format)
+                          print(cat_id, ref[:8], 'PASS', im.size, im.mode, len(data))
+                      (outdir/f'cat-{cat_id}.webp').write_bytes(data)
+                      chosen=ref
+                      break
+                  except Exception as e:
+                      print(cat_id, ref[:8], 'FAIL', type(e).__name__, str(e))
+              if not chosen:
+                  failures.append(cat_id)
+          if failures:
+              raise SystemExit('No decodable historical master for: '+','.join(failures))
           PY
           cp /tmp/cat-masters/cat-*.webp assets/illustrations/
 
@@ -80,5 +100,5 @@ jobs:
           git config user.email "2hg7trp7rv@privaterelay.appleid.com"
           git add app.js index.html styles.css assets/illustrations/cat-mugi.webp assets/illustrations/cat-luna.webp assets/illustrations/cat-toto.webp assets/illustrations/cat-mimi.webp assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp scripts/apply_v07.py
           git rm .github/workflows/apply-v071-production.yml
-          git commit -m "rebuild four verified character assets from approved masters"
+          git commit -m "rebuild four verified character assets from decodable masters"
           git push origin HEAD:main
