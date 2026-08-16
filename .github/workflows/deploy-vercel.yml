@@ -9,6 +9,7 @@ on:
       - app.js
       - assets/**
       - tests/character-visual-v07.mjs
+      - tests/tower-visual-v071.mjs
       - vercel.json
       - .github/workflows/deploy-vercel.yml
   workflow_dispatch:
@@ -36,6 +37,7 @@ jobs:
           set -euo pipefail
           node --check app.js
           node --check tests/character-visual-v07.mjs
+          node --check tests/tower-visual-v071.mjs
           grep -q "const V='0.7.1'" app.js
           ! grep -q "raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-" app.js
           ! grep -q "RASTER_ART_V03_START" styles.css
@@ -60,6 +62,8 @@ jobs:
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/character-visual-v07.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/character-visual-v07.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/tower-chromium node tests/tower-visual-v071.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/tower-webkit node tests/tower-visual-v071.mjs
 
       - name: Require Vercel deployment credential
         env:
@@ -94,6 +98,8 @@ jobs:
         run: |
           CATS_BROWSER=chromium CATS_TEST_OUT=test-results/prod-chromium node tests/character-visual-v07.mjs
           CATS_BROWSER=webkit CATS_TEST_OUT=test-results/prod-webkit node tests/character-visual-v07.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/prod-tower-chromium node tests/tower-visual-v071.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/prod-tower-webkit node tests/tower-visual-v071.mjs
 
       - name: Upload visual evidence
         if: always()
