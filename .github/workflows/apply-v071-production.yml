@@ -26,6 +26,25 @@ jobs:
       - name: Install image runtime
         run: python3 -m pip install --quiet pillow
 
+      - name: Restore approved four-cat masters from Git history
+        run: |
+          set -euo pipefail
+          APPROVED=599aa1c0f0891ac2484dc9705bea5c047acda34b
+          mkdir -p /tmp/cat-masters
+          for id in mugi luna toto mimi; do
+            git show "$APPROVED:assets/illustrations/cat-$id.webp" > "/tmp/cat-masters/cat-$id.webp"
+          done
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          for p in sorted(Path('/tmp/cat-masters').glob('cat-*.webp')):
+              with Image.open(p) as im:
+                  im.load()
+                  print(p.name, im.format, im.size, im.mode)
+                  assert im.format == 'WEBP'
+          PY
+          cp /tmp/cat-masters/cat-*.webp assets/illustrations/
+
       - name: Rebuild all four character assets
         run: python3 scripts/apply_v07.py
 
@@ -59,7 +78,7 @@ jobs:
           set -euo pipefail
           git config user.name "2hg7trp7rv-design"
           git config user.email "2hg7trp7rv@privaterelay.appleid.com"
-          git add app.js index.html styles.css assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp scripts/apply_v07.py
+          git add app.js index.html styles.css assets/illustrations/cat-mugi.webp assets/illustrations/cat-luna.webp assets/illustrations/cat-toto.webp assets/illustrations/cat-mimi.webp assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp scripts/apply_v07.py
           git rm .github/workflows/apply-v071-production.yml
-          git commit -m "rebuild all four verified character assets for V0.7.1"
+          git commit -m "rebuild four verified character assets from approved masters"
           git push origin HEAD:main
