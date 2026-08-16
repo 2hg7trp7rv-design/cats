@@ -1,0 +1,70 @@
+name: Verify Cat's tower main
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - styles.css
+      - app.js
+      - assets/**
+      - tests/character-visual-v07.mjs
+      - tests/tower-visual-v071.mjs
+      - vercel.json
+      - .github/workflows/verify-main.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cats-main-qa
+  cancel-in-progress: true
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static contract checks
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check tests/character-visual-v07.mjs
+          node --check tests/tower-visual-v071.mjs
+          grep -q "const V='0.7.1'" app.js
+          ! grep -q "raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-" app.js
+          ! grep -q "RASTER_ART_V03_START" styles.css
+          ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
+          ! grep -q "V05_CHARACTER_ART_START" styles.css
+          test "$(grep -c 'CHARACTER_VISUAL_V07_START' styles.css)" -eq 1
+          test ! -e visual-fix-v04.css
+          test ! -e character-assets-v06.js
+          for f in assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp; do test -s "$f"; done
+      - name: Install browser QA runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.60.0
+          npx playwright install --with-deps chromium webkit
+      - name: Chromium and WebKit visual QA
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/cats-http.log 2>&1 &
+          PID=$!
+          trap 'kill $PID' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/character-visual-v07.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/character-visual-v07.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/tower-chromium node tests/tower-visual-v071.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/tower-webkit node tests/tower-visual-v071.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-main-visual-evidence
+          path: test-results
+          if-no-files-found: error
+          retention-days: 14
