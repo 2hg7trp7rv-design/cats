@@ -36,12 +36,12 @@ jobs:
           set -euo pipefail
           node --check app.js
           node --check tests/character-visual-v07.mjs
-          grep -q "const V='0.7.0'" app.js
+          grep -q "const V='0.7.1'" app.js
           ! grep -q "raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-" app.js
           ! grep -q "RASTER_ART_V03_START" styles.css
           ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
           ! grep -q "V05_CHARACTER_ART_START" styles.css
-          grep -q "CHARACTER_VISUAL_V07_START" styles.css
+          test "$(grep -c 'CHARACTER_VISUAL_V07_START' styles.css)" -eq 1
           test ! -e visual-fix-v04.css
           test ! -e character-assets-v06.js
           for f in assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp; do test -s "$f"; done
@@ -78,14 +78,14 @@ jobs:
           printf '%s\n' '{"orgId":"team_6odZCZQ1QxjzhPdC9sgEtoCM","projectId":"prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB"}' > .vercel/project.json
           npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
 
-      - name: Wait for production V0.7
+      - name: Wait for production V0.7.1
         run: |
           set -euo pipefail
           for i in {1..60}; do
-            if curl -fsS "https://cats-tau-dusky.vercel.app/app.js?qa=$i" | grep -q "const V='0.7.0'"; then exit 0; fi
+            if curl -fsS "https://cats-tau-dusky.vercel.app/app.js?qa=$i" | grep -q "const V='0.7.1'"; then exit 0; fi
             sleep 3
           done
-          echo "::error::Production domain did not serve V0.7 within 180 seconds."
+          echo "::error::Production domain did not serve V0.7.1 within 180 seconds."
           exit 1
 
       - name: Production Chromium and WebKit visual QA
@@ -99,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-v07-visual-evidence
+          name: cats-v071-visual-evidence
           path: test-results
           if-no-files-found: warn
           retention-days: 14
