@@ -1,6 +1,6 @@
-const CACHE='cats-tower-living-v09';
+const CACHE='cats-tower-living-v091';
 const CORE=[
-  '/','/index.html','/styles.css?v=090','/app.js?v=090','/manifest.webmanifest?v=090',
+  '/','/index.html','/styles.css?v=091','/app.js?v=091','/manifest.webmanifest?v=091',
   '/assets/living/title-living-v09.webp','/assets/living/roof-v09.webp',
   '/assets/living/room-lobby-v09.webp','/assets/living/room-home-v09.webp','/assets/living/room-food-v09.webp',
   '/assets/living/room-play-v09.webp','/assets/living/room-care-v09.webp','/assets/living/room-craft-v09.webp',

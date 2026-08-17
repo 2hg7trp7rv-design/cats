@@ -1,6 +1,6 @@
 (()=>{'use strict';
 
-const V='0.9.0';
+const V='0.9.1';
 const KEY='cats-tower-living-v09';
 const OLD_KEY='cats-tower-v01';
 const MAX_FLOORS=6;
@@ -81,7 +81,7 @@ let activeFocus=null;
 
 function floor(type,number){
   const cfg=SHOP[type];
-  return{id:`${type}-${number}`,number,type,level:1,catId:type==='food'?'mugi':null,stock:cfg?cfg.batch:0,nextSale:Date.now()+3500,specialization:null,prepared:0};
+  return{id:`${type}-${number}`,number,type,level:1,catId:type==='food'?'mugi':null,stock:type==='food'?0:(cfg?cfg.batch:0),nextSale:Date.now()+3500,specialization:null,prepared:0};
 }
 
 function fresh(){

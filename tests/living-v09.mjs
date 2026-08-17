@@ -68,8 +68,9 @@ await page.locator('#modal [data-close="1"]').first().tap();
 await page.evaluate(()=>window.__CATS_TEST_API__.specialize('street'));
 await page.locator('.floor.food').scrollIntoViewIfNeeded();
 await page.locator('.floor.food .roomAction').tap();
-await page.locator('#modal [data-action="prep"]').tap();
-await page.locator('#prepTrack').waitFor({state:'visible',timeout:5000});
+const prepTrack=page.locator('#prepTrack');
+if(!(await prepTrack.isVisible().catch(()=>false))){await page.locator('#modal [data-action="prep"]').tap()}
+await prepTrack.waitFor({state:'visible',timeout:5000});
 await page.locator('#prepAssist').tap();
 await page.waitForTimeout(750);
 const stateAfterPrep=await page.evaluate(()=>window.__CATS_TEST_API__.getState());
