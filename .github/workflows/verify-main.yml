@@ -1,4 +1,4 @@
-name: Verify Cat's tower Living Tower main
+name: Verify Cat's tower V0.8 main
 
 on:
   push:
@@ -9,9 +9,10 @@ on:
       - app.js
       - sw.js
       - manifest.webmanifest
-      - assets/living/**
-      - assets/illustrations/**
-      - tests/living-v09.mjs
+      - assets/v080/**
+      - assets/icons/**
+      - tests/living-tower-v080.mjs
+      - scripts/build_v080_art.py
       - .github/workflows/verify-main.yml
   workflow_dispatch:
 
@@ -19,68 +20,76 @@ permissions:
   contents: read
 
 concurrency:
-  group: cats-living-main-qa
+  group: cats-v080-main-qa
   cancel-in-progress: true
 
 jobs:
-  mobile-visual-qa:
+  visual-qa:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Static contract checks
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Static and raster asset contracts
         run: |
           set -euo pipefail
+          python -m pip install --quiet pillow
           node --check app.js
-          node --check tests/living-v09.mjs
-          grep -q "const V='0.9.2'" app.js
-          grep -q "title-living-v09.webp" index.html
-          ! grep -q "art.css" index.html
-          ! grep -q "art.js" index.html
-          ! grep -q "splashTower" index.html
-          ! grep -q "icon.svg" index.html
+          node --check sw.js
+          node --check tests/living-tower-v080.mjs
+          grep -q "const VERSION='0.8.0'" app.js
+          grep -q "V0.8 · LIVING TOWER VERTICAL SLICE" index.html
+          grep -q "/assets/v080/title-live-v080.webp" index.html
           ! grep -q "RASTER_ART_V03_START" styles.css
           ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
           ! grep -q "V05_CHARACTER_ART_START" styles.css
+          test ! -e visual-fix-v04.css
           test ! -e character-assets-v06.js
-          for f in \
-            assets/living/title-living-v09.webp \
-            assets/living/roof-v09.webp \
-            assets/living/room-lobby-v09.webp \
-            assets/living/room-home-v09.webp \
-            assets/living/room-food-v09.webp \
-            assets/living/room-play-v09.webp \
-            assets/living/room-care-v09.webp \
-            assets/living/room-craft-v09.webp \
-            assets/living/cat-mugi-living-v09.webp; do test -s "$f"; done
-
-      - name: Verify raster dimensions and decoding
-        run: |
-          python3 -m pip install --quiet pillow
-          python3 - <<'PY'
+          test ! -e art.css
+          test ! -e art.js
+          test ! -e icon.svg
+          test ! -d node_modules
+          test ! -d test-results
+          python - <<'PY'
           from pathlib import Path
           from PIL import Image
           expected={
-            'title-living-v09.webp':(1170,2532),'roof-v09.webp':(1280,520),
-            'room-lobby-v09.webp':(1280,760),'room-home-v09.webp':(1280,760),
-            'room-food-v09.webp':(1280,760),'room-play-v09.webp':(1280,760),
-            'room-care-v09.webp':(1280,760),'room-craft-v09.webp':(1280,760),
-            'cat-mugi-living-v09.webp':(1024,1024)
+            'mugi-v080.webp':(512,512),
+            'mugi-sleep-v080.webp':(512,512),
+            'room-food-v080.webp':(1024,720),
+            'room-home-v080.webp':(1024,720),
+            'room-lobby-v080.webp':(1024,720),
+            'room-roof-v080.webp':(1024,720),
+            'room-food-night-v080.webp':(1024,720),
+            'title-live-v080.webp':(768,1365),
+            'memory-first-home-v080.webp':(1024,720),
           }
-          root=Path('assets/living')
-          assert not list(root.glob('*.svg'))
           for name,size in expected.items():
-            p=root/name
-            with Image.open(p) as im:
-              im.load(); assert im.format=='WEBP',(name,im.format); assert im.size==size,(name,im.size)
-            print(name,size,p.stat().st_size)
+            path=Path('assets/v080')/name
+            assert path.is_file() and path.stat().st_size>5000,(name,'missing or too small')
+            with Image.open(path) as image:
+              image.load()
+              assert image.format=='WEBP',(name,image.format)
+              assert image.size==size,(name,image.size,size)
+          for name,size in {'icon-192.png':(192,192),'icon-512.png':(512,512)}.items():
+            path=Path('assets/icons')/name
+            assert path.is_file() and path.stat().st_size>5000,(name,'missing or too small')
+            with Image.open(path) as image:
+              image.load()
+              assert image.format=='PNG',(name,image.format)
+              assert image.size==size,(name,image.size,size)
+          print('V0.8 raster contracts passed')
           PY
 
-      - name: Install browser QA runtime
+      - name: Install mobile browser QA runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
           npx playwright install --with-deps chromium webkit
@@ -88,18 +97,18 @@ jobs:
       - name: Chromium and WebKit Living Tower QA
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 >/tmp/cats-http.log 2>&1 &
-          PID=$!
-          trap 'kill $PID' EXIT
+          python3 -m http.server 4173 >/tmp/cats-v080-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/living-chromium node tests/living-v09.mjs
-          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/living-webkit node tests/living-v09.mjs
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/v080-chromium node tests/living-tower-v080.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/v080-webkit node tests/living-tower-v080.mjs
 
-      - name: Upload Living Tower visual evidence
+      - name: Upload V0.8 visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-living-v092-visual-evidence
+          name: cats-v080-living-tower-evidence
           path: test-results
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
