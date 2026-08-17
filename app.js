@@ -1,123 +1,523 @@
 (()=>{'use strict';
-const V='0.7.1',KEY='cats-tower-v01',MAX=6,OFF=8*3600e3,AID_RATE=1,AID_CAP=120,SHOPS=['food','play','care','craft'];
-const CAT_ART={"mugi":"/assets/illustrations/cat-mugi.v070.webp","luna":"/assets/illustrations/cat-luna.v070.webp","toto":"/assets/illustrations/cat-toto.v070.webp","mimi":"/assets/illustrations/cat-mimi.v070.webp"},ENEMY_ART={"dust":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-shadow.webp","cleaner":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-robot.webp","boss":"https://raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/enemy-burglar.webp"};
-const F={
- lobby:{name:'ロビー',short:'入口',icon:'⌂',color:'#31d7d0',desc:'猫を迎え、夜間防衛を始める玄関。'},
- home:{name:'猫の共同部屋',short:'住居',icon:'⌂',color:'#ef9c8f',desc:'猫たちが休む部屋。',cap:4},
- food:{name:'さかな食堂',short:'ごはん',icon:'≈',color:'#ef7953',desc:'高速攻撃と安定収益。',product:'fish'},
- play:{name:'毛糸クラブ',short:'あそび',icon:'◎',color:'#5dbe9c',desc:'敵を毛糸で減速。',product:'yarn'},
- care:{name:'肉球サロン',short:'ケア',icon:'✦',color:'#9581d7',desc:'泡で敵の装甲を弱める。',product:'bubble'},
- craft:{name:'段ボール工房',short:'ものづくり',icon:'□',color:'#d0904f',desc:'重い箱で高威力攻撃。',product:'box'}
+
+const V='0.9.0';
+const KEY='cats-tower-living-v09';
+const OLD_KEY='cats-tower-v01';
+const MAX_FLOORS=6;
+const OFFLINE_CAP=8*60*60*1000;
+const RESCUE_CAP=120;
+const RESCUE_RATE=1;
+
+const ART={
+  title:'/assets/living/title-living-v09.webp',
+  roof:'/assets/living/roof-v09.webp',
+  rooms:{
+    lobby:'/assets/living/room-lobby-v09.webp',
+    home:'/assets/living/room-home-v09.webp',
+    food:'/assets/living/room-food-v09.webp',
+    craft:'/assets/living/room-craft-v09.webp',
+    play:'/assets/living/room-play-v09.webp',
+    care:'/assets/living/room-care-v09.webp'
+  },
+  cats:{
+    mugi:'/assets/living/cat-mugi-living-v09.webp',
+    luna:'/assets/illustrations/cat-luna.v070.webp',
+    toto:'/assets/illustrations/cat-toto.v070.webp',
+    mimi:'/assets/illustrations/cat-mimi.v070.webp'
+  },
+  enemy:'/assets/illustrations/enemy-robot.webp'
 };
-const P={
- fish:{name:'焼きさかな',icon:'≈',cost:42,order:1e4,batch:8,price:24,sale:5400,atk:8,atkMs:1250,text:'高速単体攻撃',color:'#ef7953',shot:'fish'},
- yarn:{name:'ふわふわ毛糸',icon:'◎',cost:58,order:12e3,batch:8,price:32,sale:6200,atk:4,atkMs:1650,slow:900,text:'小ダメージ＋減速',color:'#8b6fda',shot:'yarn'},
- bubble:{name:'肉球シャボン',icon:'○',cost:74,order:14e3,batch:7,price:44,sale:6900,atk:5,atkMs:1900,break:1600,text:'装甲弱体化',color:'#8cd6e0',shot:'bubbleP'},
- box:{name:'強化段ボール',icon:'□',cost:96,order:16e3,batch:6,price:58,sale:7700,atk:14,atkMs:2450,text:'高威力・装甲破壊',color:'#c08a54',shot:'boxP'}
+
+const FLOOR={
+  lobby:{name:'ロビー',short:'入口',icon:'⌂',accent:'#48d5ca',story:'荷物と招きベルが集まる、猫たちの玄関。'},
+  home:{name:'猫の共同部屋',short:'住居',icon:'⌂',accent:'#ef9f9a',story:'仕事を終えた猫が眠り、遊び、関係を深める部屋。'},
+  food:{name:'さかな食堂',short:'ごはん',icon:'≈',accent:'#ef7953',story:'昼は魚料理。夜は素早い魚攻撃でタワーを守る。'},
+  play:{name:'毛糸クラブ',short:'あそび',icon:'◎',accent:'#63bc98',story:'訪問猫が集まり、夜番では敵の動きを遅くする。'},
+  care:{name:'肉球サロン',short:'ケア',icon:'✦',accent:'#a08ae1',story:'猫の疲れを癒やし、夜番では敵の装甲を弱める。'},
+  craft:{name:'段ボール工房',short:'ものづくり',icon:'□',accent:'#d0924d',story:'家具を作り、夜番では重い箱で高ダメージを与える。'}
 };
-const C={
- mugi:{name:'ムギ',fur:'#e6aa73',dark:'#b86f4d',light:'#f5d1aa',eye:'#344157',pat:'tiger',face:'round',acc:'scarf',accC:'#31d7d0',s:{food:8,play:4,care:3,craft:5},dream:'food',trait:'foodie',traitN:'食いしん坊',traitT:'ごはん店が得意。時々、売り物を味見する。',quote:'箱より先に、魚を見つける。'},
- luna:{name:'ルナ',fur:'#9b928c',dark:'#696662',light:'#f4eee6',eye:'#2b1e1b',pat:'silver',face:'sleepy',acc:'ribbon',accC:'#a88be8',s:{food:3,play:8,care:5,craft:4},dream:'play',trait:'sleepy',traitN:'眠り好き',traitT:'休憩が得意。仕事中に座り込むことがある。',quote:'急がない。毛糸は逃げない。'},
- toto:{name:'トト',fur:'#171719',dark:'#09090b',light:'#f6eee4',eye:'#251d18',pat:'tuxedo',face:'serious',acc:'scarf',accC:'#d84c3f',s:{food:4,play:3,care:8,craft:5},dream:'care',trait:'caretaker',traitN:'しっかり者',traitT:'仲間をよく見ていて、同じ店の猫のごきげんを支える。',quote:'見回りは任せて。'},
- mimi:{name:'ミミ',fur:'#e8a25d',dark:'#9f6e43',light:'#fff2dc',eye:'#2a211c',pat:'orangeWhite',face:'curious',acc:'goggles',accC:'#b47a28',s:{food:5,play:5,care:3,craft:9},dream:'craft',trait:'boxLover',traitN:'冒険好き',traitT:'ものづくりが得意。新しい道具や箱を見るとすぐ試したくなる。',quote:'次はどこを見に行く？'}
+
+const SHOP={
+  food:{price:20,saleMs:5200,batch:6,prepCost:18,attack:11,attackMs:820},
+  play:{price:16,saleMs:6200,batch:6,prepCost:22,attack:5,attackMs:1250,slow:1700},
+  care:{price:23,saleMs:6900,batch:5,prepCost:26,attack:7,attackMs:1450,break:2200},
+  craft:{price:32,saleMs:7800,batch:5,prepCost:31,attack:20,attackMs:1750}
 };
-const ORDER=['mugi','luna','toto','mimi'];
-const E={dust:{name:'ホコリ玉',hp:42,speed:.24,armor:0,reward:1,css:'dust'},cleaner:{name:'小型掃除ロボ',hp:74,speed:.2,armor:.12,reward:2,css:'cleaner'},boss:{name:'主任清掃機',hp:168,speed:.125,armor:.24,reward:6,css:'boss'}};
-const T={yarn:{name:'毛糸網',cost:25},static:{name:'静電毛玉',cost:35},box:{name:'巨大段ボール',cost:40},magnet:{name:'磁石おもちゃ',cost:30}};
-const $=s=>document.querySelector(s), el={splash:$('#splash'),splashCat:$('#splashCat'),start:$('#startBtn'),game:$('#game'),coins:$('#coins'),parts:$('#parts'),incomeRate:$('#incomeRate'),coinsBtn:$('#coinsBtn'),partsBtn:$('#partsBtn'),guide:$('#guideBar'),guideIcon:$('#guideIcon'),guideText:$('#guideText'),scroll:$('#towerScroll'),tower:$('#tower'),top:$('#topBtn'),topFloor:$('#topFloor'),toasts:$('#toasts'),nav:$('#nav'),battleNav:$('#battleNav'),battleCall:$('#battleCall'),battleCallText:$('#battleCallText'),energy:$('#energy'),badge:$('#taskBadge'),pause:$('#pauseBtn'),modal:$('#modal'),coach:$('#coach'),tpl:$('#sheetTpl')};
-let svgSeq=0, state=load(), offline=null, audio=null, tickId=0, raf=0, lastFrame=0, visible=false;
-function floor(type,n,now=Date.now()){return{id:`${type}-${n}`,number:n,type,level:1,buildStart:0,buildEnd:0,cats:[],stock:0,pending:0,orderState:'idle',orderStart:0,orderEnd:0,nextSale:now+5e3}}
-function cat(id){return{id,level:1,xp:0,mood:id==='mugi'?86:78,floorId:null,lastPet:0,unlocked:Date.now()}}
-function fresh(){const now=Date.now(),m={...cat('mugi'),floorId:'food-3'};return{version:V,coins:1120,parts:0,floors:[floor('lobby',1,now),floor('home',2,now),{...floor('food',3,now),cats:['mugi'],stock:7,pending:96,nextSale:now+4e3}],cats:[m],bellAt:now,settings:{sound:true},tutorial:false,coach:{},sales:0,built:3,clears:0,lastBattle:0,lastSeen:now,aidAt:now,aidTotal:0,created:now,battle:null}}
-function load(){try{const raw=localStorage.getItem(KEY);return raw?normal(JSON.parse(raw)):fresh()}catch(e){console.warn(e);return fresh()}}
-function normal(x){const b=fresh(),s={...b,...x,settings:{...b.settings,...(x.settings||{})},coach:{...(x.coach||{})},battle:null};s.aidAt=Number.isFinite(+s.aidAt)?+s.aidAt:Date.now();s.aidTotal=Math.max(0,+s.aidTotal||0);s.floors=(Array.isArray(x.floors)?x.floors:b.floors).filter(v=>v&&F[v.type]).map(v=>({...floor(v.type,+v.number||1),...v,cats:Array.isArray(v.cats)?v.cats:[]})).sort((a,b)=>a.number-b.number).slice(0,MAX);s.cats=(Array.isArray(x.cats)?x.cats:b.cats).filter(v=>v&&C[v.id]).map(v=>({...cat(v.id),...v}));if(!s.cats.some(v=>v.id==='mugi'))s.cats.unshift(cat('mugi'));for(const c of s.cats){const f=s.floors.find(v=>v.id===c.floorId);if(!f||!SHOPS.includes(f.type))c.floorId=null}for(const f of s.floors)for(const id of f.cats){const c=s.cats.find(v=>v.id===id);if(c)c.floorId=f.id}s.version=V;return s}
-let saveTimer=0;function save(now=false){clearTimeout(saveTimer);const run=()=>{try{localStorage.setItem(KEY,JSON.stringify({...state,battle:null,lastSeen:Date.now()}))}catch(e){toast('保存に失敗しました。','warn')}};now?run():saveTimer=setTimeout(run,180)}
-function offlineCalc(){const now=Date.now(),ms=Math.min(Math.max(0,now-state.lastSeen),OFF),aid=aidIncome(now),out={ms,coins:0,aid,done:0,sold:0,events:0};if(ms<2e4){state.lastSeen=now;return null}for(const f of state.floors){if(f.buildEnd&&f.buildEnd<=now){f.buildEnd=0;f.buildStart=0;out.done++}if(f.orderState==='ordering'&&f.orderEnd<=now){f.orderState='delivery';out.done++}if(!SHOPS.includes(f.type)||f.buildEnd||!f.cats.length||!f.stock)continue;const n=Math.min(f.stock,Math.floor(ms/saleMs(f)));if(n>0){const p=prod(f);f.stock-=n;f.pending+=n*p.price;f.nextSale=now+saleMs(f);state.sales+=n;out.coins+=n*p.price;if(!f.stock)out.sold++}}for(const c of state.cats)c.mood=clamp(c.mood+(c.floorId?2:7),0,100);out.events=Math.min(3,Math.max(1,Math.floor(ms/27e5)));state.lastSeen=now;return out}
-const clamp=(v,a,b)=>Math.min(b,Math.max(a,v)), fmt=n=>{n=Math.max(0,Math.floor(+n||0));return n<1e4?n.toLocaleString('ja-JP'):n<1e6?`${(n/1e4).toFixed(n>=1e5?0:1)}万`:`${(n/1e6).toFixed(n>=1e7?0:1)}M`}, dur=ms=>{const s=Math.max(0,Math.ceil(ms/1e3));return s<60?`${s}秒`:`${Math.floor(s/60)}分${s%60?`${s%60}秒`:''}`}, esc=v=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-const getFloor=id=>state.floors.find(f=>f.id===id), floorNo=n=>state.floors.find(f=>f.number===n), getCat=id=>state.cats.find(c=>c.id===id), prod=f=>P[F[f.type]?.product], assigned=f=>f.cats.length?getCat(f.cats[0]):null;
-function efficiency(f){const c=assigned(f);if(!c)return 0;const d=C[c.id];let m=.72+d.s[f.type]*.055+c.level*.015;if(d.dream===f.type)m+=.12;if(d.trait==='foodie'&&f.type==='food')m+=.1;if(d.trait==='boxLover'&&f.type==='craft')m+=.12;if(d.trait==='caretaker')m+=.04;m*=.72+c.mood*.004;return clamp(m,.55,1.75)}
-function saleMs(f){return Math.max(2600,Math.round(prod(f).sale/Math.max(.65,efficiency(f))))}function orderMs(f){const c=assigned(f),skill=c?C[c.id].s[f.type]:0;return Math.round(prod(f).order*(1-clamp(skill*.018+f.level*.025,0,.28)))}function orderCost(f){const c=assigned(f),skill=c?C[c.id].s[f.type]:0;return Math.max(1,Math.round(prod(f).cost*(1-clamp(skill*.012,0,.12))))}function maxStock(f){return prod(f).batch*(1+Math.max(0,f.level-1))}function buildCost(){return 260+Math.max(0,state.floors.length-3)*190}function capacity(){return state.floors.filter(f=>f.type==='home'&&!f.buildEnd).reduce((n,f)=>n+F.home.cap+Math.max(0,f.level-1),0)}function readyShops(){return state.floors.filter(f=>SHOPS.includes(f.type)&&!f.buildEnd&&f.cats.length&&f.stock>0)}
-function aidIncome(now=Date.now()){const at=Number.isFinite(+state.aidAt)?+state.aidAt:now,seconds=Math.floor(Math.max(0,now-at)/1e3);if(state.coins>=AID_CAP){state.aidAt=now;return 0}if(seconds<1){if(!state.aidAt)state.aidAt=now;return 0}const gain=Math.min(seconds*AID_RATE,Math.max(0,AID_CAP-state.coins));state.coins+=gain;state.aidTotal=(+state.aidTotal||0)+gain;state.aidAt=state.coins>=AID_CAP?now:at+seconds*1e3;return gain}
-function defenseNeed(){return state.clears>0?2:1}function defenseReady(){return readyShops().length>=defenseNeed()}
-offline=offlineCalc();
-document.addEventListener('error',e=>{const img=e.target;if(img&&img.matches&&img.matches('.catSprite')){img.hidden=true;img.closest('.cat')?.classList.add('artError')}},true);
-function catSvg(id,large=false){const d=C[id],src=CAT_ART[id]||CAT_ART.mugi;return`<img class="catSprite${large?' large':''}" src="${src}" alt="${esc(d.name)}" draggable="false" decoding="async">`}
-function catHtml(c,mode='',labels=true){return`<button class="cat ${mode}" data-a="cat" data-cat="${c.id}" aria-label="${esc(C[c.id].name)}">${labels?`<span class="mood"><i style="width:${clamp(c.mood,0,100)}%"></i></span>`:''}${catSvg(c.id)}${labels?`<span class="name">${esc(C[c.id].name)}</span>`:''}</button>`}
-function updateTop(){el.coins.textContent=fmt(state.coins);el.parts.textContent=fmt(state.parts);if(el.incomeRate){el.incomeRate.textContent=state.coins<AID_CAP?`+${AID_RATE} / 秒`:`${AID_CAP}で停止`;el.incomeRate.classList.toggle('paused',state.coins>=AID_CAP)}el.topFloor.textContent=`${Math.max(...state.floors.map(f=>f.number))}F`}
-function render(preserve=true){updateTop();renderTower(preserve);guide();badge();navMode();battleCallUpdate()}
-function renderTower(preserve=true){if(state.battle?.active)return;const pos=preserve?el.scroll.scrollTop:0;el.tower.innerHTML=`<div class="roof"></div>${[...state.floors].sort((a,b)=>b.number-a.number).map(f=>floorHtml(f)).join('')}`;if(preserve)el.scroll.scrollTop=pos}
-function frame(f,body,extra=''){const d=F[f.type];return`<article class="floor ${f.type} ${extra}" data-floor="${f.id}" data-no="${f.number}" aria-label="${f.number}階 ${esc(d.name)}"><div class="wall"></div><span class="num">${f.number}F</span><div class="sign" style="--type:${d.color}"><i>${d.icon}</i>${esc(d.name)}</div><span class="level">LV.${f.level}</span>${body}<div class="lane"></div><div class="base"></div></article>`}
-function floorHtml(f){if(f.buildEnd>Date.now())return constructionHtml(f);if(f.type==='lobby')return lobbyHtml(f);if(f.type==='home')return homeHtml(f);return shopHtml(f)}
-function lobbyHtml(f){const remain=ORDER.filter(id=>!state.cats.some(c=>c.id===id)),bell=Date.now()>=state.bellAt,cap=state.cats.length<capacity(),count=readyShops().length,need=defenseNeed(),ready=count>=need,first=state.clears===0;return frame(f,`<div class="furn"><div class="lobbyDoor"></div><div class="desk"></div><div class="elevator"></div></div>${remain.length?`<button class="bubble bell" data-a="bell"><strong>♢</strong><small>${bell&&cap?'猫を呼ぶ':!cap?'満室':dur(state.bellAt-Date.now())}</small></button>`:''}<button class="bubble battle ${ready?'ready':''}" data-a="battle"><strong>!</strong><small>${ready?(first?'初回防衛':'夜間防衛'):`準備 ${count}/${need}`}</small></button><div class="status"><i style="--dot:${ready?'#ff8155':'#31d7d0'}"></i>${ready?(first?'初回防衛を開始できます':'防衛開始可能'):`戦える店舗 ${count}/${need}`}</div>`)}
-function homeHtml(f){const rest=state.cats.filter(c=>!c.floorId).slice(0,3),cats=rest.length?rest.map(c=>catHtml(c,'sleep')).join(''):`<span class="emptyCat">みんな仕事中。寝床はあたたかい。</span>`;return frame(f,`<div class="furn"><div class="window"></div><div class="homeBed"></div><div class="homeBox"></div></div><div class="cats">${cats}</div><div class="status"><i style="--dot:#ef9c8f"></i>入居 ${state.cats.length}/${capacity()}匹</div>`)}
-function shopHtml(f){const d=F[f.type],p=prod(f),cats=f.cats.map(getCat).filter(Boolean),catsH=cats.length?cats.map(c=>catHtml(c,'work')).join(''):`<span class="emptyCat">タップして猫を配属</span>`;let st='発注できます',dot=d.color;if(!cats.length){st='働く猫がいません';dot='#ff8155'}else if(f.orderState==='ordering'){st=`仕入れ中 · <span class="timer" data-at="${f.orderEnd}">${dur(f.orderEnd-Date.now())}</span>`;dot='#a790ef'}else if(f.orderState==='delivery'){st='商品が届いています';dot='#d9ef76'}else if(!f.stock){st='在庫切れ';dot='#ff8155'}else st=`${p.name}を販売中`;return frame(f,`<div class="furn"><div class="window"></div><div class="shelf"></div><div class="counter"></div></div><div class="stock">${p.icon} 在庫 <b data-stock="${f.id}">${f.stock}/${maxStock(f)}</b></div><div class="cats">${catsH}</div>${f.pending?`<button class="bubble coinBubble" data-a="collect" data-floor="${f.id}"><strong>${fmt(f.pending)}</strong><small>回収</small></button>`:''}${f.orderState==='delivery'?`<button class="bubble delivery" data-a="deliver" data-floor="${f.id}"><strong>□</strong><small>納品</small></button>`:''}<div class="status"><i style="--dot:${dot}"></i>${st}</div>`)}
-function constructionHtml(f){const n=Date.now(),pct=clamp((n-f.buildStart)/(f.buildEnd-f.buildStart)*100,0,100);return frame(f,`<div class="scaffold"></div><div class="buildProgress">${esc(F[f.type].name)}を増築中 · <span class="timer" data-at="${f.buildEnd}">${dur(f.buildEnd-n)}</span><div class="track"><i class="progress" data-start="${f.buildStart}" data-end="${f.buildEnd}" style="width:${pct}%"></i></div></div>`,'construction')}
-function tasks(){const a=[];for(const f of state.floors)if(f.orderState==='delivery')a.push({id:`d-${f.id}`,kind:'delivery',icon:'□',label:`${F[f.type].name}の商品を納品`,floor:f.id,color:'#d9ef76'});for(const f of state.floors)if(f.pending)a.push({id:`c-${f.id}`,kind:'collect',icon:'¢',label:`${F[f.type].name}の売上 ${fmt(f.pending)}`,floor:f.id,color:'#f7c95b'});const uc=state.cats.find(c=>!c.floorId),empty=state.floors.find(f=>SHOPS.includes(f.type)&&!f.buildEnd&&!f.cats.length);if(uc&&empty)a.push({id:`a-${uc.id}`,kind:'assign',icon:'◉',label:`${C[uc.id].name}を店舗へ配属`,cat:uc.id,floor:empty.id,color:'#31d7d0'});if(defenseReady())a.push({id:'battle',kind:'battle',icon:'!',label:state.clears===0?'初回の侵入者を迎撃できます':'夜間防衛を開始できます',floor:'lobby-1',color:'#ff8155'});const building=state.floors.find(f=>f.buildEnd>Date.now());if(building)a.push({id:`b-${building.id}`,kind:'building',icon:'⌁',label:`${F[building.type].name}を増築中`,floor:building.id,color:'#a790ef'});if(state.floors.length<MAX&&!building){const cost=buildCost();a.push(state.coins>=cost?{id:'build',kind:'build',icon:'+',label:`新しいフロアを増築 · ${fmt(cost)}コイン`,color:'#d9ef76'}:state.coins<AID_CAP?{id:'aid',kind:'aid',icon:'¢',label:`管理人支援 +${AID_RATE}コイン/秒 · 支援上限まであと${fmt(AID_CAP-state.coins)}`,color:'#f7c95b'}:{id:'aid',kind:'aid',icon:'¢',label:`増築まであと${fmt(cost-state.coins)} · 店舗売上を作る`,color:'#f7c95b'})}const remain=ORDER.filter(id=>!state.cats.some(c=>c.id===id));if(remain.length&&state.cats.length<capacity())a.push({id:'bell',kind:'bell',icon:'♢',label:Date.now()>=state.bellAt?'招きベルで新しい猫を迎える':`招きベル · あと${dur(state.bellAt-Date.now())}`,floor:'lobby-1',color:'#31d7d0'});return a}
-function guide(){if(state.battle?.active){const e=state.battle.current;el.guide.classList.add('alert');el.guideIcon.textContent='!';el.guideText.textContent=e?`侵入者 ${e.name} · ${e.floor}F · HP ${Math.max(0,Math.ceil(e.hp))}/${e.max}`:'次の侵入者を確認中';return}const t=tasks()[0];el.guide.classList.toggle('alert',t?.kind==='battle');el.guideIcon.textContent=t?.icon||'◎';el.guideText.textContent=t?.label||(state.coins<AID_CAP?`管理人支援 +${AID_RATE}コイン/秒`:'店舗を動かして売上を増やそう') }function badge(){const n=tasks().filter(t=>!['building','aid'].includes(t.kind)).length;el.badge.textContent=n;el.badge.classList.toggle('hidden',!n)}function navMode(){el.nav.classList.toggle('hidden',!!state.battle?.active);el.battleNav.classList.toggle('hidden',!state.battle?.active);battleCallUpdate();if(state.battle?.active)battleControls()}
-function battleCallUpdate(){if(!el.battleCall)return;const count=readyShops().length,need=defenseNeed(),show=!state.battle?.active&&count>=need;el.battleCall.classList.toggle('hidden',!show);if(show){el.battleCallText.textContent=state.clears===0?'初回防衛を今すぐ開始':'夜間防衛を開始';el.battleCall.setAttribute('aria-label',`${el.battleCallText.textContent}。戦える店舗 ${count}/${need}`)}}
-function dyn(){const now=Date.now();document.querySelectorAll('.timer').forEach(x=>x.textContent=dur(+x.dataset.at-now));document.querySelectorAll('.progress').forEach(x=>x.style.width=`${clamp((now-+x.dataset.start)/(+x.dataset.end-+x.dataset.start)*100,0,100)}%`)}
-function economy(){const now=Date.now(),aid=aidIncome(now);let rr=false,ch=aid>0;if(aid){updateTop();el.coinsBtn.classList.remove('incomePulse');void el.coinsBtn.offsetWidth;el.coinsBtn.classList.add('incomePulse');setTimeout(()=>el.coinsBtn.classList.remove('incomePulse'),360)}for(const f of state.floors){if(f.buildEnd&&f.buildEnd<=now){f.buildEnd=f.buildStart=0;f.nextSale=now+2e3;rr=ch=true;toast(`${F[f.type].name}が完成しました。`,'good');sound('build');setTimeout(()=>focusFloor(f.id),400)}if(f.orderState==='ordering'&&f.orderEnd<=now){f.orderState='delivery';f.orderStart=0;rr=ch=true;toast(`${F[f.type].name}に商品が届きました。`,'good');sound('delivery')}}if(!state.battle?.active){for(const f of state.floors){if(!SHOPS.includes(f.type)||f.buildEnd||f.orderState==='ordering'||!f.cats.length||!f.stock||now<f.nextSale)continue;const p=prod(f),c=assigned(f);f.stock--;f.pending+=p.price;f.nextSale=now+saleMs(f);state.sales++;if(c){c.xp++;c.mood=clamp(c.mood-.35,0,100);if(C[c.id].trait==='foodie'&&f.type==='food'&&f.stock&&Math.random()<.055){f.stock--;c.mood=clamp(c.mood+1.5,0,100)}levelCat(c)}rr=ch=true}for(const c of state.cats)if(!c.floorId&&Math.random()<.08){c.mood=clamp(c.mood+.3,0,100);ch=true}}rr?render(true):(dyn(),guide(),badge(),battleCallUpdate());if(ch)save()}
-function levelCat(c){const need=c.level*22;if(c.xp>=need&&c.level<10){c.xp-=need;c.level++;c.mood=clamp(c.mood+8,0,100);toast(`${C[c.id].name}が仕事LV.${c.level}になりました。`,'good');sound('level')}}
-function openSheet(title,html,eyebrow="CAT'S TOWER"){closeSheet();const frag=el.tpl.content.cloneNode(true);frag.querySelector('header small').textContent=eyebrow;frag.querySelector('h2').textContent=title;frag.querySelector('.sheetBody').innerHTML=html;el.modal.appendChild(frag)}function closeSheet(){el.modal.innerHTML=''}function section(title,right,body){return`<section class="section"><h3 class="sectionTitle"><span>${title}</span><span>${right||''}</span></h3>${body}</section>`}function info(s){return`<div class="info">${s}</div>`}
-function openFloor(id){const f=getFloor(id);if(!f)return;if(f.buildEnd>Date.now())return openSheet(F[f.type].name,`<div class="card confirm"><div class="confirmIcon" style="background:#a790ef">⌁</div><h3>ただいま増築中</h3><p>完成まで <span class="timer" data-at="${f.buildEnd}">${dur(f.buildEnd-Date.now())}</span>。<br>ゲームを閉じても建設は進みます。</p></div>`,`${f.number}F · CONSTRUCTION`);if(f.type==='lobby')return lobbySheet();if(f.type==='home')return homeSheet(f);shopSheet(f)}
-function lobbySheet(){const rem=ORDER.filter(id=>!state.cats.some(c=>c.id===id)),ready=readyShops(),need=defenseNeed(),first=state.clears===0,bell=Date.now()>=state.bellAt;openSheet('タワーロビー',`${section('招きベル',`${state.cats.length}/${capacity()}匹`,`<div class="card"><div class="row"><div class="main"><p class="title">♢ 新しい猫を迎える</p><p class="desc">${rem.length?'エレベーターに、まだ見ぬ猫がやってきます。':'V0.2の猫は全員タワーへ来ています。'}</p><p class="meta">${!rem.length?'全4匹を迎えました':state.cats.length>=capacity()?'住居が満室です':bell?'ベルを鳴らせます':`あと${dur(state.bellAt-Date.now())}`}</p></div><button class="btn" data-a="bell" ${!rem.length||state.cats.length>=capacity()||!bell?'disabled':''}>呼ぶ</button></div></div>`)}${section(first?'初回防衛':'夜間防衛',`${ready.length}/${need}店舗`,`<div class="card defenseCard"><div class="row"><div class="main"><p class="title">! C.L.E.A.N.の侵入を止める</p><p class="desc">${first?'最初の防衛は、猫と在庫がある店舗が1つあれば開始できます。':'猫を配属し、商品在庫がある店舗を2つ準備してください。'}</p><p class="meta">${ready.length>=need?'侵入者をすぐ表示します':`あと${need-ready.length}店舗必要`}</p></div><button class="btn warm" data-a="battle" ${ready.length<need?'disabled':''}>防衛開始</button></div></div>`)}`,'1F · LOBBY')}
-function homeSheet(f){openSheet('猫の共同部屋',`${section('住居の状態','',`<div class="stats"><div class="stat"><small>入居中</small><strong>${state.cats.length}匹</strong><p>最大 ${capacity()}匹</p></div><div class="stat"><small>住居LV</small><strong>LV.${f.level}</strong><p>休憩中にごきげん回復</p></div></div>`)}${section('暮らしている猫',`${state.cats.length}匹`,state.cats.map(catCard).join(''))}`,`${f.number}F · HOME`)}
-function shopSheet(f){const d=F[f.type],p=prod(f),c=assigned(f),cost=orderCost(f),can=f.orderState==='idle'&&f.stock<=maxStock(f)-p.batch,up=f.level*5;let label='発注する';if(f.orderState==='ordering')label=dur(f.orderEnd-Date.now());if(f.orderState==='delivery')label='納品待ち';if(!can&&f.orderState==='idle')label='在庫十分';openSheet(d.name,`${section('商品','',`<div class="card product" style="--pc:${p.color}"><div class="productHead"><div class="productIcon">${p.icon}</div><div><h3>${p.name}</h3><p>昼は販売。夜は「${p.text}」。</p></div></div><div class="numbers"><div class="number"><small>在庫</small><strong>${f.stock}/${maxStock(f)}</strong></div><div class="number"><small>販売</small><strong>${p.price}¢</strong></div><div class="number"><small>売上待ち</small><strong>${fmt(f.pending)}¢</strong></div></div><div class="actions"><button class="btn lime" data-a="order" data-floor="${f.id}" ${!can?'disabled':''}>${label} · ${cost}¢</button>${f.orderState==='delivery'?`<button class="btn warm" data-a="deliver" data-floor="${f.id}">納品</button>`:''}${f.pending?`<button class="btn" data-a="collect" data-floor="${f.id}">回収</button>`:''}</div></div>`)}${section('働く猫',c?`効率 ${Math.round(efficiency(f)*100)}%`:'未配属',c?`${catCard(c,true)}<div class="actions"><button class="btn ghost" data-a="assign-open" data-cat="${c.id}">配置を変更</button></div>`:`<div class="empty"><i>◉</i><h3>働く猫がいません</h3><p>配属すると、仕入れ・販売・防衛が動き始めます。</p><div class="actions"><button class="btn" data-a="choose" data-floor="${f.id}">猫を選ぶ</button></div></div>`)}${section('店舗強化',`部品 ${state.parts}`,`<div class="card"><div class="row"><div class="main"><p class="title">LV.${f.level} → LV.${f.level+1}</p><p class="desc">在庫上限・販売効率・夜間攻撃力が上がります。</p><p class="meta">必要部品 ${up}</p></div><button class="btn" data-a="upgrade" data-floor="${f.id}" ${state.parts<up||f.level>=3?'disabled':''}>${f.level>=3?'上限':'強化'}</button></div></div>`)}`,`${f.number}F · ${d.short.toUpperCase()}`)}
-function skillBars(d){const col={food:'#ef7953',play:'#5dbe9c',care:'#9581d7',craft:'#d0904f'};return`<div class="skills">${SHOPS.map(t=>`<div class="skill"><small><span>${t.toUpperCase()}</span><span>${d.s[t]}</span></small><i><b style="width:${d.s[t]*10}%;--sc:${col[t]}"></b></i></div>`).join('')}</div>`}
-function catCard(c,compact=false){const d=C[c.id],f=c.floorId?getFloor(c.floorId):null;return`<div class="card catCard"><div class="catVisual">${catHtml(c,'',false)}</div><div><h3>${d.name}</h3><p class="role">${f?`${f.number}F · ${F[f.type].name}`:'共同部屋で休憩中'}</p><span class="trait">${d.traitN}</span>${compact?'':skillBars(d)}</div><button class="btn ghost" data-a="cat" data-cat="${c.id}">見る</button></div>`}
-function catsSheet(){openSheet(`猫たち · ${state.cats.length}/${capacity()}匹`,`${info('猫には得意な仕事、あこがれの仕事、癖があります。数値だけでなく、性格に合う場所へ配属してください。')}${section('住人一覧',`${state.cats.length}匹`,state.cats.map(catCard).join(''))}`,'CAT RESIDENTS')}
-function catDetail(id){const c=getCat(id),d=C[id];if(!c)return;const f=c.floorId?getFloor(c.floorId):null,pet=Date.now()-c.lastPet>25e3;openSheet(d.name,`<section class="hero"><div class="catVisual">${catHtml(c,'',false)}</div><div><h3>${d.name}</h3><p>「${d.quote}」</p><div class="moodBar"><div><span>ごきげん</span><span>${Math.round(c.mood)}%</span></div><div class="track"><i style="width:${c.mood}%"></i></div></div></div></section>${section('プロフィール','',`<div class="stats"><div class="stat"><small>性格</small><strong>${d.traitN}</strong><p>${d.traitT}</p></div><div class="stat"><small>あこがれ</small><strong>${F[d.dream].short}</strong><p>この仕事ではごきげんが安定</p></div><div class="stat"><small>現在地</small><strong>${f?`${f.number}F`:'住居'}</strong><p>${f?F[f.type].name:'共同部屋で休憩中'}</p></div><div class="stat"><small>仕事経験</small><strong>${c.xp}/${c.level*22}</strong><p>次の仕事レベルまで</p></div></div>`)}${section('仕事適性','最大9',`<div class="card" style="padding:11px">${skillBars(d)}</div>`)}<div class="actions"><button class="btn lime" data-a="pet" data-cat="${id}" ${pet?'':'disabled'}>${pet?'なでる':'満足中'}</button><button class="btn" data-a="assign-open" data-cat="${id}">配置する</button></div>`,`CAT PROFILE · LV.${c.level}`)}
-function assignSheet(id,preferred=''){const c=getCat(id),d=C[id],fs=state.floors.filter(f=>SHOPS.includes(f.type)&&!f.buildEnd);openSheet(`${d.name}の仕事を選ぶ`,`${info('適性、あこがれ、性格を見て配置してください。猫はいつでも別の店へ移動できます。')}${section('店舗一覧','',fs.map(f=>{const o=assigned(f),cur=c.floorId===f.id;return`<div class="card" style="${preferred===f.id?'box-shadow:inset 0 0 0 2px #d9ef7655':''}"><div class="row"><div class="main"><p class="title"><span style="color:${F[f.type].color}">${F[f.type].icon}</span> ${f.number}F · ${F[f.type].name}</p><p class="desc">適性 ${d.s[f.type]}/9 · ${d.dream===f.type?'あこがれの仕事':F[f.type].desc}</p><p class="meta">${o&&o.id!==id?`${C[o.id].name}と交代`:cur?'現在の勤務先':'配属できます'}</p></div><button class="btn ${d.dream===f.type?'lime':''}" data-a="assign" data-cat="${id}" data-floor="${f.id}" ${cur?'disabled':''}>${cur?'配属中':'配属'}</button></div></div>`}).join(''))}${c.floorId?`<div class="actions"><button class="btn ghost" data-a="unassign" data-cat="${id}">共同部屋へ戻す</button></div>`:''}`,'ASSIGNMENT')}
-function chooseSheet(fid){const f=getFloor(fid);openSheet(`${F[f.type].name}で働く猫`,section('猫を選ぶ','',state.cats.map(c=>{const d=C[c.id],old=c.floorId?getFloor(c.floorId):null;return`<div class="card"><div class="row"><div class="catVisual" style="flex:0 0 70px;width:70px;height:82px">${catHtml(c,'',false)}</div><div class="main"><p class="title">${d.name} · 適性${d.s[f.type]}/9</p><p class="desc">${d.traitN} · ${d.dream===f.type?'あこがれの仕事':d.traitT}</p><p class="meta">${old?`${old.number}Fから移動`:'住居で休憩中'}</p></div><button class="btn" data-a="assign" data-cat="${c.id}" data-floor="${f.id}">配属</button></div></div>`}).join('')),'ASSIGNMENT')}
-function buildSheet(){const building=state.floors.find(f=>f.buildEnd>Date.now()),built=new Set(state.floors.map(f=>f.type)),available=SHOPS.filter(t=>!built.has(t)),cost=buildCost();let body=info('昼の店が、夜にはそのまま防衛設備になります。異なる業種を組み合わせるほど、戦略が増えます。');if(building)body+=section('増築中','',`<div class="card confirm"><div class="confirmIcon" style="background:#a790ef">⌁</div><h3>${F[building.type].name}を建設中</h3><p>完成まで <span class="timer" data-at="${building.buildEnd}">${dur(building.buildEnd-Date.now())}</span></p></div>`);else if(state.floors.length>=MAX)body+=`<div class="empty"><i>▥</i><h3>V0.2の最上階へ到達</h3><p>現在は6階が上限です。4種類の店舗で夜間防衛を試してください。</p></div>`;else body+=section('建てられる店舗',`${fmt(cost)}コイン`,`<div class="grid">${available.map(t=>{const d=F[t],p=P[d.product];return`<button class="buildCard" style="--bc:${d.color}" data-a="build" data-type="${t}" ${state.coins<cost?'disabled':''}><i>${d.icon}</i><h3>${d.name}</h3><p>${d.desc}<br>商品：${p.name}</p><span class="cost">¢ ${fmt(cost)}</span></button>`}).join('')}</div>${state.coins<cost?'<p class="desc" style="margin:9px 2px">コインが足りません。管理人支援は120コインまで毎秒1コイン。以降は店舗売上で増やします。</p>':''}`);openSheet('新しいフロアを増築',body,`BUILD · ${state.floors.length}/${MAX} FLOORS`)}
-function taskSheet(){const ts=tasks();openSheet(`タスク · ${ts.length}件`,ts.length?ts.map(t=>`<div class="task"><div class="taskIcon" style="--tc:${t.color}">${t.icon}</div><div><h3>${esc(t.label)}</h3><p>${t.kind==='building'?'時間経過で完成します':'タップすると対象へ移動'}</p></div><button class="go" data-a="task" data-task="${t.id}">›</button></div>`).join(''):`<div class="empty"><i>✓</i><h3>急ぎの仕事はありません</h3><p>猫たちは落ち着いて暮らしています。</p></div>`,'TOWER TASKS')}
-function menuSheet(){openSheet('メニュー',`${section('設定','',`<div class="menu"><button data-a="sound"><span><strong>効果音</strong><small>端末の音量設定にも従います</small></span><i class="toggle ${state.settings.sound?'on':''}"></i></button><button data-a="guide"><span><strong>遊び方</strong><small>経営・猫・夜間防衛の基本</small></span><b>›</b></button><button data-a="save"><span><strong>今すぐ保存</strong><small>通常は操作のたび自動保存</small></span><b>›</b></button></div>`)}${section('試作版情報','',`<div class="stats"><div class="stat"><small>階数</small><strong>${state.floors.length}/${MAX}</strong><p>V0.2上限</p></div><div class="stat"><small>猫</small><strong>${state.cats.length}/4</strong><p>ビジュアル改修中</p></div><div class="stat"><small>販売数</small><strong>${fmt(state.sales)}</strong><p>累計商品数</p></div><div class="stat"><small>防衛成功</small><strong>${state.clears}</strong><p>夜間防衛</p></div></div>`)}<div class="actions"><button class="btn danger" data-a="reset-confirm">セーブデータを初期化</button></div>`,`CAT'S TOWER · V${V}`)}
-function guideSheet(){openSheet("Cat's towerの遊び方",section('基本の流れ','',`<div class="card"><div class="row"><div class="main"><p class="title">1 · 店を動かす</p><p class="desc">猫を配属し、発注。届いた箱を納品すると自動で商品が売れます。</p></div></div></div><div class="card"><div class="row"><div class="main"><p class="title">2 · コインが尽きても止まらない</p><p class="desc">管理人支援として、所持金が120未満の間は毎秒1コインが直接増えます。ゲームを閉じている間も120まで回復します。</p></div></div></div><div class="card"><div class="row"><div class="main"><p class="title">3 · 上へ増築する</p><p class="desc">売上コインで新しい階を建てます。</p></div></div></div><div class="card"><div class="row"><div class="main"><p class="title">4 · 夜のタワーを守る</p><p class="desc">初回は稼働店舗1つで開始可能。以降は2店舗を準備し、固定表示される防衛ボタンから侵入者を迎撃します。</p></div></div></div>`),'HOW TO PLAY')}
-function resource(kind){const coin=kind==='coin';openSheet(coin?'コイン':'部品',`<div class="card confirm resourceCard"><div class="confirmIcon" style="background:${coin?'#f7c95b':'#31d7d0'}">${coin?'¢':'⌁'}</div><h3>${coin?`${fmt(state.coins)}コイン`:`${fmt(state.parts)}個`}</h3><p>${coin?`商品販売に加え、所持金が${AID_CAP}未満なら管理人支援で毎秒${AID_RATE}コイン増加。ゲームを閉じている間も${AID_CAP}まで回復します。累計支援 ${fmt(state.aidTotal)}コイン。`:'夜間防衛で獲得。店舗強化に使います。'}</p>${coin?`<div class="incomePanel"><span>管理人支援</span><b>${state.coins<AID_CAP?`+${AID_RATE} / 秒`:`${AID_CAP}で停止`}</b><small>在庫を再発注できる最低資金を保証</small></div>`:''}</div>`,'TOWER RESOURCE')}
-function intro(){if(state.tutorial)return;el.coach.innerHTML=`<div class="shade"><section class="intro"><small>WELCOME TO CAT'S TOWER</small><h2>ここは、猫たちの新しい居場所。</h2><p>店を動かし、猫を迎え、タワーを上へ伸ばします。夜になったら、普段の商品で侵入ロボを止めてください。</p><div class="points"><div class="point"><b>↕</b><span>上下スワイプ</span></div><div class="point"><b>□</b><span>発注・納品</span></div><div class="point"><b>!</b><span>夜間防衛</span></div></div><button class="bigBtn" data-a="intro">タワーを見る</button></section></div>`}
-function coach(msg,icon='◎',key=''){if(key&&state.coach[key])return;if(key){state.coach[key]=true;save()}el.coach.innerHTML=`<aside class="coachBubble"><i>${icon}</i><p>${esc(msg)}</p><button data-a="coach-close">×</button></aside>`;setTimeout(()=>{if($('.coachBubble'))el.coach.innerHTML=''},6e3)}function toast(msg,tone=''){const x=document.createElement('div');x.className=`toast ${tone}`;x.textContent=msg;el.toasts.append(x);setTimeout(()=>x.remove(),2900)}
-function focusFloor(id,delay=0){setTimeout(()=>{const x=el.tower.querySelector(`[data-floor="${CSS.escape(id)}"]`);if(!x)return;x.scrollIntoView({behavior:'smooth',block:'center'});x.classList.remove('flash');requestAnimationFrame(()=>x.classList.add('flash'));setTimeout(()=>x.classList.remove('flash'),1300)},delay)}
-function collect(id){const f=getFloor(id);if(!f?.pending)return;const n=f.pending;f.pending=0;state.coins+=n;sound('coin');toast(`${fmt(n)}コインを回収しました。`,'good');render(true);save()}
-function orderProduct(id){const f=getFloor(id);if(!f)return;const p=prod(f),cost=orderCost(f);if(!f.cats.length)return toast('先に働く猫を配属してください。','warn');if(f.orderState!=='idle')return;if(f.stock>maxStock(f)-p.batch)return toast('在庫が十分あります。','warn');if(state.coins<cost)return toast('コインが足りません。','warn');state.coins-=cost;f.orderState='ordering';f.orderStart=Date.now();f.orderEnd=Date.now()+orderMs(f);sound('order');closeSheet();render(true);focusFloor(f.id,150);toast(`${p.name}を発注しました。`,'good');save()}
-function deliver(id){const f=getFloor(id);if(!f||f.orderState!=='delivery')return;const p=prod(f);f.stock=Math.min(maxStock(f),f.stock+p.batch);f.orderState='idle';f.orderStart=f.orderEnd=0;f.nextSale=Date.now()+1200;sound('delivery');closeSheet();render(true);focusFloor(f.id,100);toast(`${p.name}を棚へ並べました。`,'good');save()}
-function build(type){if(!SHOPS.includes(type)||state.floors.length>=MAX||state.floors.some(f=>f.type===type)||state.floors.some(f=>f.buildEnd>Date.now()))return;const cost=buildCost();if(state.coins<cost)return toast('コインが足りません。','warn');const now=Date.now(),n=Math.max(...state.floors.map(f=>f.number))+1,x=floor(type,n,now);x.buildStart=now;x.buildEnd=now+5e3;state.coins-=cost;state.floors.push(x);state.built++;sound('buildStart');closeSheet();render(false);focusFloor(x.id,180);toast(`${F[type].name}の増築を始めました。`,'good');coach('建設はゲームを閉じても進みます。完成したら猫を配属し、商品を発注してください。','⌁','build');save()}
-function bell(){const rem=ORDER.filter(id=>!state.cats.some(c=>c.id===id));if(!rem.length)return toast('V0.1の猫は全員タワーへ来ています。','good');if(state.cats.length>=capacity())return toast('住居が満室です。','warn');if(Date.now()<state.bellAt)return toast(`ベルはあと${dur(state.bellAt-Date.now())}で鳴らせます。`,'warn');const id=rem[0];state.cats.push(cat(id));state.bellAt=Date.now()+9e3;closeSheet();render(true);sound('bell');toast(`${C[id].name}がタワーへやってきました。`,'good');setTimeout(()=>catDetail(id),750);save()}
-function assignCat(cid,fid){const c=getCat(cid),f=getFloor(fid);if(!c||!f||!SHOPS.includes(f.type)||f.buildEnd)return;if(c.floorId){const old=getFloor(c.floorId);if(old)old.cats=old.cats.filter(id=>id!==cid)}const displaced=assigned(f);if(displaced&&displaced.id!==cid){displaced.floorId=null;f.cats=[]}c.floorId=f.id;c.mood=clamp(c.mood+(C[cid].dream===f.type?4:1),0,100);f.cats=[cid];f.nextSale=Date.now()+1200;closeSheet();render(true);focusFloor(f.id,100);sound('assign');toast(`${C[cid].name}を${F[f.type].name}へ配属しました。`,'good');save()}
-function unassign(cid){const c=getCat(cid);if(!c?.floorId)return;const f=getFloor(c.floorId);if(f)f.cats=f.cats.filter(id=>id!==cid);c.floorId=null;closeSheet();render(true);toast(`${C[cid].name}は共同部屋へ戻りました。`,'good');save()}
-function pet(cid){const c=getCat(cid);if(!c)return;if(Date.now()-c.lastPet<=25e3)return toast(`${C[cid].name}は満足そうです。`);c.lastPet=Date.now();c.mood=clamp(c.mood+9,0,100);sound('pet');navigator.vibrate?.(18);catDetail(cid);toast(`${C[cid].name}のごきげんが上がりました。`,'good');save()}
-function upgrade(id){const f=getFloor(id);if(!f||!SHOPS.includes(f.type)||f.level>=3)return;const cost=f.level*5;if(state.parts<cost)return toast('部品が足りません。夜間防衛で入手できます。','warn');state.parts-=cost;f.level++;sound('level');shopSheet(f);render(true);toast(`${F[f.type].name}がLV.${f.level}になりました。`,'good');save()}
-function taskRun(id){const t=tasks().find(x=>x.id===id);if(!t)return;closeSheet();if(t.kind==='aid')return resource('coin');if(t.kind==='build')return buildSheet();if(t.kind==='assign')return assignSheet(t.cat,t.floor);if(t.kind==='bell')return Date.now()>=state.bellAt?bell():focusFloor(t.floor);if(t.kind==='battle')return startBattle();if(t.floor){focusFloor(t.floor);if(t.kind==='delivery')setTimeout(()=>deliver(t.floor),450);if(t.kind==='collect')setTimeout(()=>collect(t.floor),450)}}
-function resetConfirm(){openSheet('タワーを最初からやり直す',`<div class="card confirm"><div class="confirmIcon">!</div><h3>すべての進行を消します</h3><p>階、猫、コイン、部品、防衛記録は元に戻せません。</p><div class="actions"><button class="btn ghost" data-a="menu">戻る</button><button class="btn danger" data-a="reset">初期化する</button></div></div>`,'RESET SAVE DATA')}
-function reset(){localStorage.removeItem(KEY);state=fresh();offline=null;closeSheet();el.coach.innerHTML='';render(false);setTimeout(()=>{el.scroll.scrollTop=el.scroll.scrollHeight;intro()},40);toast('タワーを初期状態へ戻しました。','good');save(true)}
-function sound(name){if(!state.settings.sound)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;audio ||= new AC;if(audio.state==='suspended')audio.resume().catch(()=>{});const seq={coin:[[780,0,.055],[1050,.06,.07]],order:[[340,0,.08],[440,.07,.08]],delivery:[[520,0,.07],[780,.08,.1]],buildStart:[[180,0,.1],[240,.11,.1]],build:[[320,0,.08],[520,.08,.08],[760,.16,.12]],bell:[[660,0,.17],[990,.08,.25]],assign:[[420,0,.06],[630,.06,.07]],pet:[[530,0,.08],[620,.08,.1]],level:[[440,0,.08],[660,.08,.08],[880,.16,.12]],hit:[[160,0,.05]],tool:[[260,0,.06],[520,.03,.1]],down:[[240,0,.08],[160,.08,.1]],victory:[[440,0,.1],[660,.1,.1],[880,.2,.22]],alert:[[220,0,.12],[180,.16,.12]]}[name]||[[420,0,.06]];const now=audio.currentTime;seq.forEach(([hz,off,len],i)=>{const o=audio.createOscillator(),g=audio.createGain();o.type=['hit','down'].includes(name)?'square':'sine';o.frequency.setValueAtTime(hz,now+off);g.gain.setValueAtTime(.0001,now+off);g.gain.exponentialRampToValueAtTime(i?0.03:0.04,now+off+.012);g.gain.exponentialRampToValueAtTime(.0001,now+off+len);o.connect(g).connect(audio.destination);o.start(now+off);o.stop(now+off+len+.02)})}
-/* battle */
-function enemy(type,wave){const d=E[type],scale=1+(wave-1)*.13;return{id:`${type}-${Math.random()}`,type,name:d.name,hp:Math.round(d.hp*scale),max:Math.round(d.hp*scale),speed:d.speed*(1+(wave-1)*.035),armor:d.armor,reward:d.reward,css:d.css,floor:1,progress:0,dir:1,slow:0,broken:0,ready:{}}}
-function startBattle(){if(state.battle?.active)return;const need=defenseNeed(),count=readyShops().length;if(count<need)return toast(`猫と在庫がある店舗を${need}つ準備してください。現在 ${count}/${need}。`,'warn');closeSheet();el.coach.innerHTML='';el.game.classList.add('battleMode');const first=state.clears===0,w=1+Math.min(2,state.clears),queue=first?[enemy('dust',1),enemy('cleaner',1)]:[enemy('dust',w),enemy('cleaner',w),enemy('dust',w),enemy('boss',w)];state.battle={active:true,paused:false,tool:null,energy:100,queue,current:null,kills:0,wave:w,reward:0,next:performance.now()};navMode();guide();sound('alert');banner('INTRUDER ALERT',first?'最初の侵入者が1Fに出現':'C.L.E.A.N.の回収ユニットが1Fに侵入');coach('侵入者は1階に大きく表示されます。下の道具を選び、敵がいる階をタップしてください。','!','battle');lastFrame=performance.now();spawn();raf=requestAnimationFrame(battleLoop)}
-function battleLoop(t){const b=state.battle;if(!b?.active)return;const dt=Math.min(.05,Math.max(0,(t-lastFrame)/1e3));lastFrame=t;if(!b.paused){b.energy=clamp(b.energy+10.5*dt,0,100);if(!b.current&&t>=b.next)spawn();if(b.current)moveEnemy(t,dt)}battleControls();guide();raf=requestAnimationFrame(battleLoop)}
-function spawn(){const b=state.battle;if(!b?.active||b.current)return;if(!b.queue.length)return finishBattle(true);b.current=b.queue.shift();attachEnemy();focusFloor('lobby-1',0)}
-function enemyHtml(e){const src=ENEMY_ART[e.type]||ENEMY_ART.cleaner;return`<button class="enemy ${e.css} arrive" data-a="enemy" aria-label="侵入者 ${esc(e.name)}"><span class="enemyTag">INTRUDER</span><span class="enemyStatus"></span><span class="hp"><i style="width:100%"></i></span><span class="enemyVisual"><img src="${src}" alt="" draggable="false" decoding="async"></span><span class="enemyName">${esc(e.name)}</span></button>`}
-function attachEnemy(retry=0){document.querySelectorAll('.enemy').forEach(x=>x.remove());document.querySelectorAll('.underAttack').forEach(x=>x.classList.remove('underAttack'));const e=state.battle?.current,fl=el.tower.querySelector(`[data-no="${e?.floor}"]`),lane=fl?.querySelector('.lane');if(!e)return;if(!lane){if(retry<5)setTimeout(()=>attachEnemy(retry+1),100);else toast('侵入者の表示を再試行しています。','warn');return}lane.insertAdjacentHTML('beforeend',enemyHtml(e));enemyVisual();fl.classList.add('underAttack');fl.scrollIntoView({behavior:'auto',block:'center'});setTimeout(()=>fl.querySelector('.enemy')?.classList.remove('arrive'),700)}
-function moveEnemy(t,dt){const e=state.battle.current;e.progress += e.speed * (t < e.slow ? .34 : 1) * dt;if(e.progress>=1){document.querySelector('.floor.underAttack')?.classList.remove('underAttack');e.progress=0;e.floor++;e.dir*=-1;if(e.floor>Math.max(...state.floors.map(f=>f.number)))return finishBattle(false);attachEnemy()}autoAttack(t);enemyVisual()}
-function autoAttack(t){const e=state.battle.current,f=floorNo(e.floor);if(!f||!SHOPS.includes(f.type)||f.buildEnd||!f.cats.length||!f.stock)return;const p=prod(f),ready=e.ready[f.id]||0,int=Math.max(550,p.atkMs/Math.max(.7,efficiency(f))/(1+(f.level-1)*.12));if(t<ready)return;e.ready[f.id]=t+int;f.stock--;const dmg=p.atk*efficiency(f)*(1+(f.level-1)*.18);if(p.slow)e.slow=Math.max(e.slow,t+p.slow);if(p.break)e.broken=Math.max(e.broken,t+p.break);projectile(f,p.shot);damage(dmg,t);const stock=el.tower.querySelector(`[data-stock="${CSS.escape(f.id)}"]`);if(stock)stock.textContent=`${f.stock}/${maxStock(f)}`}
-function damage(raw,t=performance.now()){const e=state.battle?.current;if(!e)return;const armor=t<e.broken?Math.max(0,e.armor-.22):e.armor,d=Math.max(1,raw*(1-armor));e.hp-=d;damageText(Math.round(d));sound('hit');if(e.hp<=0)kill();else enemyVisual()}
-function kill(){const b=state.battle,e=b?.current;if(!e)return;document.querySelector('.floor.underAttack')?.classList.remove('underAttack');b.kills++;b.reward+=e.reward;sound('down');const x=$('.enemy');if(x){x.animate([{opacity:1},{opacity:0,transform:`${x.style.transform} translateY(-18px) rotate(12deg) scale(.7)`}],{duration:420,fill:'forwards'});setTimeout(()=>x.remove(),430)}b.current=null;b.next=performance.now()+900}
-function enemyVisual(){const e=state.battle?.current,x=$('.enemy');if(!e||!x)return;const fl=x.closest('.floor'),w=Math.max(1,(fl?.clientWidth||320)-118),pos=e.dir>0?e.progress*w:(1-e.progress)*w;x.style.transform=`translateX(${pos}px)`;x.querySelector('.hp i').style.width=`${clamp(e.hp/e.max*100,0,100)}%`;const now=performance.now();x.querySelector('.enemyStatus').textContent=`${now<e.slow?'減速 ':''}${now<e.broken?'装甲↓':''}`.trim()}
-function projectile(f,kind){const fl=el.tower.querySelector(`[data-floor="${CSS.escape(f.id)}"]`),enemy=fl?.querySelector('.enemy');if(!fl||!enemy)return;const x=document.createElement('span');x.className=`projectile ${kind}`;x.style.left='48%';x.style.bottom='58px';fl.append(x);const a=fl.getBoundingClientRect(),b=enemy.getBoundingClientRect(),dx=b.left+b.width/2-(a.left+a.width*.48),dy=b.top+b.height*.55-(a.top+a.height-58);x.animate([{transform:'translate(0,0) rotate(0)'},{transform:`translate(${dx}px,${dy}px) rotate(240deg)`}],{duration:280,easing:'cubic-bezier(.2,.7,.2,1)'}).finished.finally(()=>x.remove())}
-function damageText(n){const e=$('.enemy'),f=e?.closest('.floor');if(!e||!f)return;const x=document.createElement('span'),a=f.getBoundingClientRect(),b=e.getBoundingClientRect();x.className='damage';x.textContent=`-${n}`;x.style.left=`${b.left-a.left+b.width/2-10}px`;x.style.top=`${b.top-a.top+5}px`;f.append(x);setTimeout(()=>x.remove(),720)}
-function selectTool(type){const b=state.battle,c=T[type];if(!b?.active||!c)return;if(b.energy<c.cost)return toast('管理エネルギーが足りません。','warn');b.tool=b.tool===type?null:type;battleControls();target();if(b.tool)toast(`${c.name}を選択。敵がいる階をタップしてください。`)}function target(){document.querySelectorAll('.target').forEach(x=>x.remove());const b=state.battle,e=b?.current;if(!b?.tool||!e)return;el.tower.querySelector(`[data-no="${e.floor}"]`)?.insertAdjacentHTML('beforeend','<div class="target"></div>')}
-function useTool(no){const b=state.battle,e=b?.current,type=b?.tool;if(!b?.active||!e||!type)return;if(no!==e.floor)return toast('敵がいる階をタップしてください。','warn');const c=T[type];if(b.energy<c.cost)return toast('管理エネルギーが足りません。','warn');b.energy-=c.cost;const now=performance.now();if(type==='yarn'){e.slow=Math.max(e.slow,now+4200);damage(5,now)}if(type==='static')damage(31,now);if(type==='box'){damage(11,now);if(state.battle?.current&&e.floor>1){e.floor--;e.progress=.22;e.dir=e.floor%2?1:-1;attachEnemy()}}if(type==='magnet'){e.broken=Math.max(e.broken,now+5800);damage(7,now)}sound('tool');navigator.vibrate?.(22);b.tool=null;battleControls();target()}
-function battleControls(){const b=state.battle;if(!b?.active)return;el.energy.textContent=Math.floor(b.energy);el.battleNav.querySelectorAll('[data-tool]').forEach(x=>{const t=x.dataset.tool;x.classList.toggle('selected',b.tool===t);x.classList.toggle('disabled',b.energy<T[t].cost)})}
-function pause(){const b=state.battle;if(!b?.active)return;b.paused=true;el.coach.innerHTML=`<div class="pause"><div><h2>夜間防衛を停止中</h2><p>猫と侵入ロボの動きは止まっています。</p><div class="actions"><button class="btn lime" data-a="resume">防衛を続ける</button><button class="btn ghost" data-a="retreat">今回は撤退する</button></div></div></div>`}function resume(){if(!state.battle?.active)return;state.battle.paused=false;el.coach.innerHTML='';lastFrame=performance.now()}
-function finishBattle(win,retreat=false){const b=state.battle;if(!b?.active)return;b.active=false;cancelAnimationFrame(raf);document.querySelectorAll('.enemy,.target').forEach(x=>x.remove());document.querySelectorAll('.underAttack').forEach(x=>x.classList.remove('underAttack'));el.game.classList.remove('battleMode');el.coach.innerHTML='';let coins=0,parts=0;if(win){coins=260+b.wave*80;parts=b.reward+4;state.coins+=coins;state.parts+=parts;state.clears++;state.lastBattle=Date.now();for(const c of state.cats)if(c.floorId){c.xp+=4;c.mood=clamp(c.mood+5,0,100);levelCat(c)}sound('victory')}state.battle=null;render(true);save(true);if(retreat)return toast('撤退しました。消費した在庫以外の損失はありません。','warn');openSheet(win?'タワーを守りました':'屋上へ到達されました',`<div class="result"><div class="resultIcon" style="${win?'':'background:linear-gradient(#ffb38a,#e87558);color:#441d16'}">${win?'✓':'!'}</div><h3>${win?'猫たちは無事です':'準備を見直して再挑戦'}</h3><p>${win?'普段の店舗と商品が、そのままタワーを守りました。':'店舗や猫は失われません。在庫、配属、道具の使う階を調整してください。'}</p>${win?`<div class="rewards"><div class="reward"><small>コイン</small><b>+${coins}</b></div><div class="reward"><small>部品</small><b>+${parts}</b></div></div>`:''}</div><div class="actions"><button class="btn lime" data-close="1">タワーへ戻る</button>${win?'':`<button class="btn" data-a="battle">再挑戦</button>`}</div>`,win?'NIGHT SHIFT CLEARED':'DEFENSE REPORT')}
-function banner(t,s){const x=document.createElement('div');x.className='battleBanner';x.innerHTML=`<b>${esc(t)}</b><small>${esc(s)}</small>`;$('#app').append(x);setTimeout(()=>x.remove(),2300)}
-function offlineSheet(){if(!offline)return;const o=offline;offline=null;openSheet('留守のあいだ',`<div class="result"><div class="resultIcon">⌂</div><h3>店はちゃんと動いていました</h3><p>${dur(o.ms)}ぶんの進行を反映。防衛戦は勝手に始まりません。</p><div class="rewards"><div class="reward"><small>売上待ちへ追加</small><b>+${fmt(o.coins)}</b></div><div class="reward"><small>管理人支援</small><b>+${fmt(o.aid||0)}</b></div><div class="reward"><small>完了</small><b>${o.done}件</b></div><div class="reward"><small>売切</small><b>${o.sold}店</b></div></div></div><div class="actions"><button class="btn lime" data-close="1">受け取る</button></div>`,'WELCOME BACK')}
-/* events */
-function towerClick(e){const a=e.target.closest('[data-a]'),fl=e.target.closest('.floor');if(state.battle?.active){if(a?.dataset.a==='enemy'){const x=state.battle.current;if(x)toast(`${x.name} · HP ${Math.max(0,Math.ceil(x.hp))}/${x.max}`);return}if(fl&&state.battle.tool)useTool(+fl.dataset.no);else if(fl)toast('下の道具を選び、敵がいる階をタップしてください。','warn');return}if(a){const k=a.dataset.a;if(k==='collect')return collect(a.dataset.floor);if(k==='deliver')return deliver(a.dataset.floor);if(k==='bell')return bell();if(k==='battle')return startBattle();if(k==='cat')return catDetail(a.dataset.cat)}if(fl)openFloor(fl.dataset.floor)}
-function modalClick(e){const closeButton=e.target.closest('button[data-close]');if(closeButton)return closeSheet();if(e.target.classList.contains('shade')&&e.target.dataset.close)return closeSheet();const x=e.target.closest('[data-a]');if(!x)return;const a=x.dataset.a;if(a==='bell')bell();else if(a==='battle')startBattle();else if(a==='order')orderProduct(x.dataset.floor);else if(a==='deliver')deliver(x.dataset.floor);else if(a==='collect')collect(x.dataset.floor);else if(a==='cat')catDetail(x.dataset.cat);else if(a==='assign-open')assignSheet(x.dataset.cat);else if(a==='choose')chooseSheet(x.dataset.floor);else if(a==='assign')assignCat(x.dataset.cat,x.dataset.floor);else if(a==='unassign')unassign(x.dataset.cat);else if(a==='pet')pet(x.dataset.cat);else if(a==='upgrade')upgrade(x.dataset.floor);else if(a==='build')build(x.dataset.type);else if(a==='task')taskRun(x.dataset.task);else if(a==='sound'){state.settings.sound=!state.settings.sound;if(state.settings.sound)sound('assign');menuSheet();save()}else if(a==='guide')guideSheet();else if(a==='save'){save(true);toast('現在の状態を保存しました。','good')}else if(a==='reset-confirm')resetConfirm();else if(a==='reset')reset();else if(a==='menu')menuSheet()}
-function coachClick(e){const x=e.target.closest('[data-a]');if(!x)return;if(x.dataset.a==='intro'){state.tutorial=true;el.coach.innerHTML='';coach('まずは光っている売上を回収し、増築ボタンから新しい店を建ててください。','¢','first');save()}if(x.dataset.a==='coach-close')el.coach.innerHTML='';if(x.dataset.a==='resume')resume();if(x.dataset.a==='retreat')finishBattle(false,true)}
-function navClick(e){const x=e.target.closest('[data-nav]');if(!x||state.battle?.active)return;el.nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===x));const n=x.dataset.nav;if(n==='tower')closeSheet();if(n==='cats')catsSheet();if(n==='build')buildSheet();if(n==='tasks')taskSheet();if(n==='menu')menuSheet()}
-function battleNavClick(e){const x=e.target.closest('[data-tool]');if(x)return selectTool(x.dataset.tool);if(e.target.closest('#pauseBtn'))pause()}
-function start(){if(visible)return;visible=true;try{audio ||= new (window.AudioContext||window.webkitAudioContext)()}catch{}sound('assign');el.splash.animate([{opacity:1},{opacity:0}],{duration:420,fill:'forwards'}).finished.finally(()=>el.splash.classList.add('hidden'));el.game.classList.remove('hidden');render(false);requestAnimationFrame(()=>el.scroll.scrollTop=el.scroll.scrollHeight);tickId=setInterval(economy,500);if(!state.tutorial)setTimeout(intro,430);else if(offline)setTimeout(offlineSheet,520)}
-function init(){el.splashCat.innerHTML=catSvg('mugi',true);el.start.addEventListener('click',start);el.tower.addEventListener('click',towerClick);el.nav.addEventListener('click',navClick);el.battleNav.addEventListener('click',battleNavClick);el.battleCall?.addEventListener('click',startBattle);el.modal.addEventListener('click',modalClick);el.coach.addEventListener('click',coachClick);el.guide.addEventListener('click',()=>{const t=tasks()[0];if(t)taskRun(t.id)});el.top.addEventListener('click',()=>{const f=[...state.floors].sort((a,b)=>b.number-a.number)[0];if(f)focusFloor(f.id)});el.coinsBtn.addEventListener('click',()=>resource('coin'));el.partsBtn.addEventListener('click',()=>resource('part'));document.addEventListener('visibilitychange',()=>{if(document.hidden){save(true);if(state.battle?.active&&!state.battle.paused)pause()}else{state.aidAt=Date.now();lastFrame=performance.now()}});addEventListener('pagehide',()=>save(true));if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(console.warn));save(true);window.__CATS_TEST_API__={version:V,getState:()=>JSON.parse(JSON.stringify({...state,battle:null})),getLiveState:()=>JSON.parse(JSON.stringify(state)),startBattle,addCoins:n=>{state.coins+=+n||1000;render(true);save(true)},addParts:n=>{state.parts+=+n||20;render(true);save(true)},reset}}
+
+const CAT={
+  mugi:{name:'ムギ',art:ART.cats.mugi,trait:'食いしん坊',dream:'さかな食堂',quote:'箱より先に、魚を見つける。',now:'焼き魚の匂いを確かめながら、皿の位置を直している。',likes:'魚の匂いと、店が忙しくなる瞬間',care:'空腹になると売り物を味見しようとする',behaviours:[['≈','魚箱にすぐ気付く','食堂へ置くと自分から箱を確認します。'],['♡','忙しいほど元気','客が続くと尻尾の動きが大きくなります。'],['…','味見癖','在庫が少ない時ほど、皿の近くを離れません。']]},
+  luna:{name:'ルナ',art:ART.cats.luna,trait:'眠り好き',dream:'毛糸クラブ',quote:'急がない。毛糸は逃げない。',now:'共同部屋のクッションへ沈みながら、片耳だけこちらへ向けている。',likes:'静かな場所と柔らかい毛糸',care:'忙しい店では早めに休ませる',behaviours:[['☾','眠る場所を選ぶ','部屋の中で最も柔らかい場所へ移動します。'],['◎','毛糸の上で安心','毛糸クラブではごきげんが安定します。'],['…','急がない','作業が遅くても失敗しにくい猫です。']]},
+  toto:{name:'トト',art:ART.cats.toto,trait:'しっかり者',dream:'肉球サロン',quote:'見回りは任せて。',now:'玄関の音を気にしながら、他の猫が休めているか確認している。',likes:'整った部屋と仲間の世話',care:'自分の休憩を後回しにしがち',behaviours:[['✓','仲間を観察','同じ階の猫が疲れると先に気付きます。'],['✦','ケアが得意','肉球サロンでは他の猫の回復も助けます。'],['⌂','夜の見回り','夜番前はロビーを気にする回数が増えます。']]},
+  mimi:{name:'ミミ',art:ART.cats.mimi,trait:'冒険好き',dream:'段ボール工房',quote:'次はどこを見に行く？',now:'新しい箱の角を押し、秘密基地に変えられないか試している。',likes:'新しい道具、箱、まだ開いていない階',care:'面白い物を見ると仕事を中断する',behaviours:[['□','箱を試す','段ボールを見ると中へ入るか押してみます。'],['⌁','工作に集中','工房では短時間だけ驚くほど集中します。'],['↟','上の階が気になる','増築直後は新しい階へ何度も向かいます。']]}
+};
+
+const MEMORY={
+  key:{icon:'⌂',eyebrow:'PROLOGUE',title:'空きタワーの鍵',body:'長く使われていなかった夜の塔を、猫たちの家と小さな店へ戻すことになった。'},
+  firstPrep:{icon:'≈',eyebrow:'MUGI 01',title:'最初の仕込み',body:'ムギは魚の皿を並べ終えると、一番小さな切れ端だけを大事そうに隠した。'},
+  specialize:{icon:'♢',eyebrow:'FOOD SHOP',title:'食堂の進む道',body:'同じ魚料理でも、店の形が変われば客と夜番での役割も変わる。'},
+  firstNight:{icon:'!',eyebrow:'NIGHT SHIFT 01',title:'この塔は空き家じゃない',body:'C.L.E.A.N.の清掃機を止めた夜、猫たちは初めてこの塔を自分たちの家だと言った。'},
+  firstBuild:{icon:'＋',eyebrow:'RESTORATION',title:'上の階へ',body:'閉ざされていた階に灯りが戻り、ミミは誰より先に階段を上った。'},
+  visitor:{icon:'●',eyebrow:'VISITING CAT',title:'窓の外の気配',body:'まだ名前を知らない猫が、食堂の明かりを遠くから見ていた。'}
+};
+
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const el={
+  app:$('#app'),splash:$('#splash'),start:$('#startBtn'),game:$('#game'),coins:$('#coins'),parts:$('#parts'),income:$('#incomeRate'),
+  coinsBtn:$('#coinsBtn'),partsBtn:$('#partsBtn'),menu:$('#menuBtn'),focus:$('#focusBar'),focusIcon:$('#focusIcon'),focusEye:$('#focusEyebrow'),focusText:$('#focusText'),
+  world:$('#world'),scroll:$('#towerScroll'),tower:$('#tower'),overview:$('#overviewBtn'),jump:$('#jumpBtn'),jumpFloor:$('#jumpFloor'),toasts:$('#toasts'),
+  nav:$('#nav'),memoryBadge:$('#memoryBadge'),modal:$('#modal'),coach:$('#coach'),tpl:$('#sheetTpl'),eventDock:$('#eventDock'),eventName:$('#eventName'),
+  enemyFloor:$('#enemyFloor'),enemyHp:$('#enemyHp'),enemyHpText:$('#enemyHpText'),energy:$('#energy'),retreat:$('#retreatBtn')
+};
+
+let state=load();
+let visible=false;
+let economyTimer=0;
+let saveTimer=0;
+let battleFrameId=0;
+let lastBattleFrame=0;
+let offlineReport=calculateOffline();
+let activeFocus=null;
+
+function floor(type,number){
+  const cfg=SHOP[type];
+  return{id:`${type}-${number}`,number,type,level:1,catId:type==='food'?'mugi':null,stock:cfg?cfg.batch:0,nextSale:Date.now()+3500,specialization:null,prepared:0};
+}
+
+function fresh(){
+  const now=Date.now();
+  return{
+    version:V,coins:420,parts:0,day:1,created:now,lastSeen:now,rescueAt:now,rescueTotal:0,sales:0,nightClears:0,lastNight:0,
+    floors:[floor('lobby',1),floor('home',2),floor('food',3)],
+    cats:{mugi:{mood:88,floorId:'food-3',lastPet:0},luna:{mood:91,floorId:null,lastPet:0},toto:{mood:87,floorId:null,lastPet:0},mimi:{mood:93,floorId:null,lastPet:0}},
+    memories:['key'],newMemories:0,firstVisit:true,overview:false,battle:null,settings:{sound:true}
+  };
+}
+
+function migrateOld(old){
+  const s=fresh();
+  if(old&&typeof old==='object'){
+    if(Number.isFinite(+old.coins))s.coins=Math.max(0,+old.coins);
+    if(Number.isFinite(+old.parts))s.parts=Math.max(0,+old.parts);
+    if(Number.isFinite(+old.sales))s.sales=Math.max(0,+old.sales);
+    if(Number.isFinite(+old.clears))s.nightClears=Math.max(0,+old.clears);
+    if(Number.isFinite(+old.lastSeen))s.lastSeen=+old.lastSeen;
+  }
+  return s;
+}
+
+function normal(raw){
+  const base=fresh();
+  const s={...base,...raw,settings:{...base.settings,...(raw?.settings||{})},cats:{...base.cats,...(raw?.cats||{})},battle:null};
+  s.floors=Array.isArray(raw?.floors)?raw.floors.filter(f=>f&&FLOOR[f.type]).map(f=>({...floor(f.type,+f.number||1),...f})).sort((a,b)=>a.number-b.number).slice(0,MAX_FLOORS):base.floors;
+  if(!s.floors.some(f=>f.type==='lobby'))s.floors.unshift(floor('lobby',1));
+  if(!s.floors.some(f=>f.type==='home'))s.floors.splice(1,0,floor('home',2));
+  if(!s.floors.some(f=>f.type==='food'))s.floors.push(floor('food',3));
+  s.memories=Array.isArray(raw?.memories)?raw.memories.filter(id=>MEMORY[id]):['key'];
+  if(!s.memories.includes('key'))s.memories.unshift('key');
+  s.version=V;
+  return s;
+}
+
+function load(){
+  try{
+    const current=localStorage.getItem(KEY);
+    if(current)return normal(JSON.parse(current));
+    const old=localStorage.getItem(OLD_KEY);
+    return old?migrateOld(JSON.parse(old)):fresh();
+  }catch(err){console.warn(err);return fresh()}
+}
+
+function save(immediate=false){
+  clearTimeout(saveTimer);
+  const run=()=>{try{localStorage.setItem(KEY,JSON.stringify({...state,battle:null,lastSeen:Date.now()}))}catch(err){toast('保存できませんでした。','warn')}};
+  if(immediate)run();else saveTimer=setTimeout(run,180);
+}
+
+function calculateOffline(){
+  const now=Date.now();
+  const elapsed=Math.min(OFFLINE_CAP,Math.max(0,now-(+state.lastSeen||now)));
+  if(elapsed<20000){state.lastSeen=now;return null}
+  const food=getFloorByType('food');
+  let sold=0,earned=0,rescue=0;
+  if(food&&food.catId&&food.stock>0){
+    const cfg=shopRuntime(food);
+    sold=Math.min(food.stock,Math.floor(elapsed/cfg.saleMs));
+    food.stock-=sold;earned=sold*cfg.price;state.coins+=earned;state.sales+=sold;food.nextSale=now+cfg.saleMs;
+  }
+  if(state.coins<RESCUE_CAP){
+    rescue=Math.min(Math.floor(elapsed/1000)*RESCUE_RATE,RESCUE_CAP-state.coins);
+    state.coins+=rescue;state.rescueTotal=(+state.rescueTotal||0)+rescue;
+  }
+  for(const c of Object.values(state.cats))c.mood=clamp((+c.mood||80)+(c.floorId?2:5),0,100);
+  state.lastSeen=now;state.rescueAt=now;
+  return{elapsed,sold,earned,rescue};
+}
+
+function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
+function fmt(n){n=Math.max(0,Math.floor(+n||0));return n<10000?n.toLocaleString('ja-JP'):`${(n/10000).toFixed(n>=100000?0:1)}万`}
+function duration(ms){const s=Math.max(0,Math.floor(ms/1000));if(s<60)return`${s}秒`;const m=Math.floor(s/60);return`${m}分${s%60?`${s%60}秒`:''}`}
+function escapeHtml(value){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+function getFloor(id){return state.floors.find(f=>f.id===id)}
+function getFloorByType(type){return state.floors.find(f=>f.type===type)}
+function topFloor(){return Math.max(...state.floors.map(f=>f.number))}
+function buildCost(){return 450+Math.max(0,state.floors.length-3)*220}
+function residentCats(){return Object.entries(state.cats).map(([id,c])=>({id,...c,data:CAT[id]}))}
+
+function shopRuntime(f){
+  const base={...SHOP[f.type]};
+  if(f.type==='food'&&f.specialization==='street'){base.price=16;base.saleMs=3800;base.attack=9;base.attackMs=650}
+  if(f.type==='food'&&f.specialization==='kaiseki'){base.price=31;base.saleMs=6900;base.attack=20;base.attackMs=1250}
+  return base;
+}
+
+function renderAll(keepScroll=true){renderTop();renderTower(keepScroll);renderFocus();renderNav();updateEventDock()}
+
+function renderTop(){
+  el.coins.textContent=fmt(state.coins);el.parts.textContent=fmt(state.parts);
+  el.income.textContent=state.coins<RESCUE_CAP?`支援 +${RESCUE_RATE}/秒`:'自動営業';
+  el.jumpFloor.textContent=`${topFloor()}F`;
+}
+
+function roomNarrative(f){
+  if(f.type==='lobby'){
+    if(state.battle?.active)return'C.L.E.A.N.の清掃機がタワーへ入っています。';
+    if(nightReady())return'トトが玄関を見つめています。夜番を始められます。';
+    return'荷物の音がすると、トトが先に耳を向けます。';
+  }
+  if(f.type==='home'){
+    const free=residentCats().filter(c=>!c.floorId).map(c=>c.data.name);
+    return free.length?`${free.join('・')}が、それぞれ好きな場所で休んでいます。`:'今は全員が店へ出ています。';
+  }
+  const cat=f.catId?CAT[f.catId]:null;
+  if(!cat)return'まだ働く猫が決まっていません。部屋の明かりだけが点いています。';
+  if(f.type==='food'){
+    if(!f.specialization)return'ムギは店の形を決めるまで、魚箱の前を離れません。';
+    if(f.stock<=1)return'魚の皿がほとんどありません。ムギが空いた棚を見ています。';
+    return f.specialization==='street'?'ムギが次々と皿を滑らせ、店の回転を上げています。':'ムギが一皿ずつ匂いと位置を確かめています。';
+  }
+  return`${cat.name}が${FLOOR[f.type].name}の道具を確かめています。`;
+}
+
+function floorAction(f){
+  if(f.type==='food'){
+    if(!f.specialization)return{icon:'♢',label:'店を決める',tone:'lime',action:'specialize'};
+    if(f.stock<=2)return{icon:'≈',label:'仕込み',tone:'warm',action:'prep'};
+    return{icon:'≈',label:'店を見る',tone:'teal',action:'floor'};
+  }
+  if(f.type==='lobby')return{icon:'!',label:nightReady()?'夜番':'玄関',tone:nightReady()?'warm':'teal',action:nightReady()?'night':'floor'};
+  if(f.type==='home')return{icon:'♡',label:'暮らし',tone:'teal',action:'floor'};
+  return{icon:f.catId?'◎':'●',label:f.catId?'店を見る':'猫を配置',tone:'teal',action:f.catId?'floor':'assign-floor'};
+}
+
+function catMarkup(id,cls=''){
+  const c=CAT[id];if(!c)return'';
+  return`<button class="catButton ${id} ${cls}" data-action="cat" data-cat="${id}" type="button" aria-label="${escapeHtml(c.name)}"><img src="${c.art}" alt="${escapeHtml(c.name)}" draggable="false"><span class="catName">${escapeHtml(c.name)}</span></button>`;
+}
+
+function floorHtml(f){
+  const cfg=FLOOR[f.type];const action=floorAction(f);const threat=state.battle?.active&&state.battle.floor===f.number;
+  let cats='';let bubble='';
+  if(f.type==='home'){
+    const free=residentCats().filter(c=>!c.floorId).slice(0,3);
+    cats=free.map(c=>catMarkup(c.id)).join('');
+    bubble=free.length?`<div class="behaviourBubble">${escapeHtml(free[0].data.now)}</div>`:'';
+  }else if(f.catId){cats=catMarkup(f.catId);if(f.type==='food')bubble=`<div class="behaviourBubble">${escapeHtml(CAT[f.catId].now)}</div>`}
+  const shop=SHOP[f.type]?`<div class="shopGauge"><span>在庫 <b data-stock="${f.id}">${f.stock}</b></span><span>LV.${f.level}</span></div>`:'';
+  const enemy=threat?`<div class="nightEnemy"><small>C.L.E.A.N.</small><img src="${ART.enemy}" alt="侵入した清掃機"></div>`:'';
+  return`<article class="floor ${f.type}${threat?' underThreat':''}" data-floor="${f.id}" data-no="${f.number}" style="--accent:${cfg.accent}">
+    <img class="roomArt" src="${ART.rooms[f.type]}" alt="">
+    <div class="floorHead"><div class="floorIdentity"><i>${cfg.icon}</i><span><small>${f.number}F</small> ${escapeHtml(cfg.name)}</span></div><span class="floorLevel">LV.${f.level}</span></div>
+    ${shop}<div class="catStage">${cats}</div>${bubble}${enemy}
+    <div class="floorStory"><div class="narrative"><small>LIVE IN THE TOWER</small><b>${escapeHtml(roomNarrative(f))}</b></div><button class="roomAction ${action.tone}" data-action="${action.action}" data-floor="${f.id}" type="button"><i>${action.icon}</i><span>${action.label}</span></button></div>
+  </article>`;
+}
+
+function renderTower(keepScroll=true){
+  const previous=keepScroll?el.scroll.scrollTop:0;
+  const floors=[...state.floors].sort((a,b)=>b.number-a.number);
+  el.tower.classList.toggle('overview',!!state.overview);
+  el.tower.innerHTML=`<article class="roofScene"><img src="${ART.roof}" alt="月夜の屋上"></article>${floors.map(floorHtml).join('')}`;
+  if(keepScroll)el.scroll.scrollTop=previous;
+  requestAnimationFrame(updateEnemyVisual);
+}
+
+function focusTask(){
+  if(state.battle?.active)return{icon:'!',eye:'NIGHT SHIFT',text:`${state.battle.floor}FでC.L.E.A.N.を止める`,action:'none'};
+  const food=getFloorByType('food');
+  if(food&&!food.specialization)return{icon:'♢',eye:'FIRST DECISION',text:'さかな食堂を、どんな店にするか決める',action:'specialize'};
+  if(food&&food.stock<=2)return{icon:'≈',eye:'MUGI NEEDS HELP',text:'魚の皿を滑らせ、ムギの仕込みを手伝う',action:'prep'};
+  if(nightReady())return{icon:'!',eye:'NIGHT SHIFT READY',text:'昼の商品を使って、最初の夜番を始める',action:'night'};
+  if(state.floors.length<MAX_FLOORS&&state.coins>=buildCost())return{icon:'＋',eye:'RESTORATION READY',text:`${fmt(buildCost())}コインで新しい階を復旧する`,action:'build'};
+  const lowest=residentCats().sort((a,b)=>a.mood-b.mood)[0];
+  return{icon:'♡',eye:'CAT LIFE',text:`${lowest.data.name}の今の様子を見る`,action:'cat',cat:lowest.id};
+}
+
+function renderFocus(){
+  activeFocus=focusTask();el.focusIcon.textContent=activeFocus.icon;el.focusEye.textContent=activeFocus.eye;el.focusText.textContent=activeFocus.text;
+}
+
+function renderNav(){
+  el.memoryBadge.textContent=state.newMemories||0;el.memoryBadge.classList.toggle('hidden',!state.newMemories);
+  el.overview.innerHTML=state.overview?'<i>▥</i><span>通常</span>':'<i>▦</i><span>俯瞰</span>';
+}
+
+function updateFloorDynamics(){
+  renderTop();renderFocus();
+  for(const f of state.floors){const stock=document.querySelector(`[data-stock="${CSS.escape(f.id)}"]`);if(stock)stock.textContent=f.stock}
+  updateEventDock();
+}
+
+function rescueIncome(now=Date.now()){
+  if(state.coins>=RESCUE_CAP){state.rescueAt=now;return 0}
+  const at=Number.isFinite(+state.rescueAt)?+state.rescueAt:now;
+  const seconds=Math.floor(Math.max(0,now-at)/1000);if(seconds<1)return 0;
+  const gain=Math.min(seconds*RESCUE_RATE,RESCUE_CAP-state.coins);state.coins+=gain;state.rescueTotal=(+state.rescueTotal||0)+gain;state.rescueAt=at+seconds*1000;return gain;
+}
+
+function economy(){
+  const now=Date.now();let changed=rescueIncome(now)>0;let storyChange=false;
+  if(!state.battle?.active){
+    for(const f of state.floors){
+      if(!SHOP[f.type]||!f.catId||f.stock<=0||now<f.nextSale)continue;
+      const cfg=shopRuntime(f);f.stock--;state.coins+=cfg.price;state.sales++;f.nextSale=now+cfg.saleMs;changed=true;
+      if(f.type==='food'&&f.stock===2)storyChange=true;
+      const cat=state.cats[f.catId];if(cat)cat.mood=clamp(cat.mood-.12,0,100);
+    }
+  }
+  if(changed){save();updateFloorDynamics()}if(storyChange)renderTower(true);
+}
+
+function nightReady(){
+  if(state.battle?.active)return false;
+  const shops=state.floors.filter(f=>SHOP[f.type]&&f.catId&&f.stock>0);
+  if(!getFloorByType('food')?.specialization)return false;
+  if(!shops.length)return false;
+  return Date.now()-(+state.lastNight||0)>15000;
+}
+
+function openSheet(title,html,eyebrow="CAT'S TOWER"){
+  closeSheet();const frag=el.tpl.content.cloneNode(true);frag.querySelector('header small').textContent=eyebrow;frag.querySelector('h2').textContent=title;frag.querySelector('.sheetBody').innerHTML=html;el.modal.appendChild(frag);
+}
+function closeSheet(){el.modal.innerHTML=''}
+function section(title,right,body){return`<section class="section"><h3 class="sectionTitle"><span>${title}</span><span>${right||''}</span></h3>${body}</section>`}
+function info(text){return`<div class="info">${text}</div>`}
+
+function catListSheet(){
+  state.newMemories=0;
+  const cards=residentCats().map(c=>{
+    const floor=c.floorId?getFloor(c.floorId):null;
+    return`<article class="card catListCard"><div class="catPortrait"><img src="${c.data.art}" alt="${c.data.name}"></div><div><h3>${c.data.name}</h3><p class="role">${floor?`${floor.number}F · ${FLOOR[floor.type].name}`:'共同部屋で休憩中'}</p><span class="traitTag">${c.data.trait}</span></div><button class="look" data-action="cat" data-cat="${c.id}" type="button">›</button></article>`;
+  }).join('');
+  openSheet(`猫たち · ${residentCats().length}匹`,`${info('数値より先に、表情・行動・好きな場所を見てください。猫の癖が、店と夜番の役割を教えてくれます。')}${section('住人猫','4匹',cards)}`,'CAT RESIDENTS');
+}
+
+function catProfile(id){
+  const d=CAT[id],c=state.cats[id];if(!d||!c)return;
+  const floor=c.floorId?getFloor(c.floorId):null;
+  const behaviours=d.behaviours.map(([icon,title,body])=>`<div class="behaviourItem"><i>${icon}</i><div><b>${title}</b><p>${body}</p></div></div>`).join('');
+  openSheet(d.name,`<section class="profileHero"><img src="${d.art}" alt="${d.name}"><div class="profileCopy"><small>NOW IN THE TOWER</small><h3>${d.name}</h3><p>「${d.quote}」</p><div class="profileMood"><div><span>ごきげん</span><span>${Math.round(c.mood)}%</span></div><div class="track"><i style="width:${c.mood}%"></i></div></div></div></section>${section('今日の様子','',info(d.now))}${section('この猫を知る','',`<div class="profileGrid"><div class="profileFact"><small>性格</small><strong>${d.trait}</strong><p>${d.care}</p></div><div class="profileFact"><small>夢の仕事</small><strong>${d.dream}</strong><p>${d.likes}</p></div><div class="profileFact"><small>現在地</small><strong>${floor?`${floor.number}F`:'住居'}</strong><p>${floor?FLOOR[floor.type].name:'共同部屋で休憩中'}</p></div><div class="profileFact"><small>関係</small><strong>住人猫</strong><p>会話と思い出は進行に応じて増えます。</p></div></div>`)}${section('行動から分かること','',`<div class="behaviourList">${behaviours}</div>`)}<div class="actions"><button class="btn lime" data-action="pet" data-cat="${id}" type="button">なでる</button><button class="btn" data-action="assign-open" data-cat="${id}" type="button">仕事を選ぶ</button></div>`,`CAT PROFILE · ${d.trait}`);
+}
+
+function assignSheet(catId){
+  const d=CAT[catId];if(!d)return;
+  const shops=state.floors.filter(f=>SHOP[f.type]);
+  const cards=shops.map(f=>`<div class="card"><div class="row"><div class="main"><p class="title">${f.number}F · ${FLOOR[f.type].name}</p><p class="desc">${FLOOR[f.type].story}</p><p class="meta">${f.catId&&f.catId!==catId?`${CAT[f.catId].name}と交代`:state.cats[catId].floorId===f.id?'現在の仕事':'配置できます'}</p></div><button class="btn ${CAT[catId].dream.includes(FLOOR[f.type].short)?'lime':''}" data-action="assign" data-cat="${catId}" data-floor="${f.id}" ${state.cats[catId].floorId===f.id?'disabled':''} type="button">${state.cats[catId].floorId===f.id?'配属中':'配置'}</button></div></div>`).join('');
+  openSheet(`${d.name}の仕事`,`${info('効率の数字だけでなく、猫の好きな場所と行動が自然に見える仕事を選びます。')}${section('開いている店','',cards)}${state.cats[catId].floorId?'<div class="actions"><button class="btn ghost" data-action="unassign" data-cat="'+catId+'" type="button">共同部屋へ戻す</button></div>':''}`,'ASSIGNMENT');
+}
+
+function assignFloorSheet(floorId){
+  const f=getFloor(floorId);if(!f)return;
+  const cards=residentCats().map(c=>`<div class="card"><div class="row"><div class="catPortrait" style="width:70px;height:78px;flex:0 0 70px"><img src="${c.data.art}" alt="${c.data.name}"></div><div class="main"><p class="title">${c.data.name} · ${c.data.trait}</p><p class="desc">${c.data.now}</p></div><button class="btn" data-action="assign" data-cat="${c.id}" data-floor="${f.id}" type="button">配置</button></div></div>`).join('');
+  openSheet(`${FLOOR[f.type].name}で働く猫`,section('住人猫から選ぶ','',cards),'ASSIGNMENT');
+}
+
+function assignCat(catId,floorId){
+  const target=getFloor(floorId),cat=state.cats[catId];if(!target||!cat||!SHOP[target.type])return;
+  for(const f of state.floors)if(f.catId===catId)f.catId=null;
+  if(target.catId&&state.cats[target.catId])state.cats[target.catId].floorId=null;
+  target.catId=catId;cat.floorId=target.id;cat.mood=clamp(cat.mood+3,0,100);closeSheet();renderAll(true);scrollToFloor(target.id);toast(`${CAT[catId].name}が${FLOOR[target.type].name}で仕事を始めました。`,'good');save();
+}
+
+function unassign(catId){
+  const c=state.cats[catId];if(!c)return;for(const f of state.floors)if(f.catId===catId)f.catId=null;c.floorId=null;closeSheet();renderAll(true);toast(`${CAT[catId].name}は共同部屋へ戻りました。`,'good');save();
+}
+
+function pet(catId){
+  const c=state.cats[catId];if(!c)return;const now=Date.now();if(now-(+c.lastPet||0)<20000)return toast(`${CAT[catId].name}は満足そうです。`);c.lastPet=now;c.mood=clamp(c.mood+7,0,100);navigator.vibrate?.(18);catProfile(catId);toast(`${CAT[catId].name}が目を細めました。`,'good');save();
+}
+
+function specializationSheet(){
+  const food=getFloorByType('food');if(!food)return;
+  const choice=(id,title,body,a,b,c)=>`<button class="specialCard" data-action="special" data-special="${id}" type="button"><header><h3>${title}</h3></header><p>${body}</p><div class="specialStats"><span><small>客の速さ</small><b>${a}</b></span><span><small>一皿の価値</small><b>${b}</b></span><span><small>夜番</small><b>${c}</b></span></div></button>`;
+  openSheet('さかな食堂の進む道',`${info('売上だけではなく、店の見た目、ムギの働き方、夜番の攻撃方法が同時に変わります。')}${section('二つの店づくり','',`<div class="specialGrid">${choice('street','屋台型の食堂','小さな皿を次々と出す、明るく忙しい店。ムギは客が続くほど元気になります。','速い','16¢','連射')}${choice('kaiseki','小料理屋型の食堂','一皿ずつ丁寧に仕上げる、静かで高単価な店。','ゆっくり','31¢','高威力')}</div>`)}`,'FIRST IMPORTANT DECISION');
+}
+
+function chooseSpecialization(type){
+  const food=getFloorByType('food');if(!food||!['street','kaiseki'].includes(type))return;food.specialization=type;food.nextSale=Date.now()+1200;unlockMemory('specialize');closeSheet();renderAll(true);scrollToFloor(food.id);toast(type==='street'?'さかな食堂を屋台型へ整えました。':'さかな食堂を小料理屋型へ整えました。','good');coach('次は魚の皿を棚へ滑らせます。短い手作業が、ムギの生活と夜番の在庫につながります。','≈');save();
+}
+
+function prepSheet(){
+  const food=getFloorByType('food');if(!food)return;const cfg=shopRuntime(food);
+  openSheet('ムギの仕込み',`<div class="prepScene"><i>≈</i><h3>魚の皿を棚まで滑らせる</h3><p>一度の仕込みで在庫が${cfg.batch}皿増えます。必要コインは${cfg.prepCost}。<br>販売にも夜番にも、同じ皿を使います。</p><div id="prepTrack" class="prepTrack"><div id="prepPlate" class="prepPlate">≈</div></div><div class="prepHint">皿を右端までドラッグ</div><div class="actions"><button id="prepAssist" class="btn ghost" type="button">タップで補助</button></div></div>`,'SHORT HANDS-ON ACTION');
+  requestAnimationFrame(bindPrepGesture);
+}
+
+function bindPrepGesture(){
+  const track=$('#prepTrack'),plate=$('#prepPlate'),assist=$('#prepAssist');if(!track||!plate)return;
+  let dragging=false,done=false;
+  const max=()=>Math.max(1,track.clientWidth-plate.clientWidth-14);
+  const move=e=>{if(!dragging||done)return;const r=track.getBoundingClientRect();const x=clamp(e.clientX-r.left-plate.clientWidth/2,0,max());plate.style.transform=`translateX(${x}px)`;if(x/max()>.91){done=true;completePrep()}};
+  track.addEventListener('pointerdown',e=>{dragging=true;track.setPointerCapture?.(e.pointerId);move(e)});
+  track.addEventListener('pointermove',move);track.addEventListener('pointerup',()=>{if(done)return;dragging=false;plate.style.transition='transform .25s';plate.style.transform='translateX(0)';setTimeout(()=>plate.style.transition='',280)});
+  assist?.addEventListener('click',()=>{if(done)return;done=true;plate.style.transition='transform .5s cubic-bezier(.2,.8,.2,1)';plate.style.transform=`translateX(${max()}px)`;setTimeout(completePrep,520)});
+}
+
+function completePrep(){
+  const food=getFloorByType('food');if(!food)return;const cfg=shopRuntime(food);if(state.coins<cfg.prepCost){toast('仕込み用のコインが足りません。管理人支援で120コインまで回復します。','warn');return}
+  state.coins-=cfg.prepCost;food.stock=Math.min(food.stock+cfg.batch,18);food.prepared=(+food.prepared||0)+1;food.nextSale=Date.now()+1400;state.cats.mugi.mood=clamp(state.cats.mugi.mood+4,0,100);unlockMemory('firstPrep');closeSheet();renderAll(true);scrollToFloor(food.id);toast(`魚の皿を${cfg.batch}皿並べました。`,'good');save();
+}
+
+function buildSheet(){
+  const built=new Set(state.floors.map(f=>f.type));const available=['play','care','craft'].filter(t=>!built.has(t));const cost=buildCost();
+  if(state.floors.length>=MAX_FLOORS)return openSheet('タワーの復旧',`<div class="info">Vertical Sliceでは6階まで復旧できます。次の段階で訪問猫と屋上の暮らしを追加します。</div>`,'RESTORATION');
+  const cards=available.map(type=>{const f=FLOOR[type];return`<button class="buildCard" style="--bc:${f.accent}" data-action="build" data-type="${type}" ${state.coins<cost?'disabled':''} type="button"><i>${f.icon}</i><h3>${f.name}</h3><p>${f.story}</p><span class="cost">¢ ${fmt(cost)}</span></button>`}).join('');
+  openSheet('新しい階を復旧',`${info('新しい店は売上だけでなく、猫の居場所、訪問猫、夜番の解決方法を増やします。')}${section('閉ざされた階',`${fmt(cost)}コイン`,`<div class="buildGrid">${cards}</div>`)}${state.coins<cost?`<p class="desc">あと${fmt(cost-state.coins)}コイン。通常営業と夜番で増やせます。</p>`:''}`,'RESTORE THE TOWER');
+}
+
+function buildFloor(type){
+  if(!['play','care','craft'].includes(type)||state.floors.some(f=>f.type===type)||state.floors.length>=MAX_FLOORS)return;const cost=buildCost();if(state.coins<cost)return toast('コインが足りません。','warn');state.coins-=cost;const f=floor(type,topFloor()+1);f.stock=SHOP[type].batch;state.floors.push(f);unlockMemory('firstBuild');closeSheet();renderAll(false);requestAnimationFrame(()=>scrollToFloor(f.id));toast(`${FLOOR[type].name}に明かりが戻りました。`,'good');save();
+}
+
+function memorySheet(){
+  state.newMemories=0;const order=['key','firstPrep','specialize','firstNight','firstBuild','visitor'];
+  const cards=order.map(id=>{const m=MEMORY[id],open=state.memories.includes(id);return`<article class="memoryCard ${open?'':'memoryLocked'}"><i>${open?m.icon:'?'}</i><small>${open?m.eyebrow:'LOCKED MEMORY'}</small><h3>${open?m.title:'まだ起きていない出来事'}</h3><p>${open?m.body:'猫の暮らし、店づくり、夜番を進めると解放されます。'}</p></article>`}).join('');
+  openSheet('思い出帳',`${info('思い出は報酬一覧ではなく、猫たちがこの塔を家にしていく記録です。')}${section('タワーの記録',`${state.memories.length}/${order.length}`,`<div class="memoryGrid">${cards}</div>`)}`,'MEMORY ALBUM');
+}
+
+function unlockMemory(id){if(!MEMORY[id]||state.memories.includes(id))return;state.memories.push(id);state.newMemories=(+state.newMemories||0)+1;renderNav();toast(`思い出「${MEMORY[id].title}」を記録しました。`,'good')}
+
+function floorSheet(floorId){
+  const f=getFloor(floorId);if(!f)return;const cfg=FLOOR[f.type];
+  if(f.type==='food'){
+    const runtime=shopRuntime(f);const spec=f.specialization==='street'?'屋台型':f.specialization==='kaiseki'?'小料理屋型':'未決定';
+    return openSheet(cfg.name,`${info(roomNarrative(f))}${section('今の店',spec,`<div class="profileGrid"><div class="profileFact"><small>在庫</small><strong>${f.stock}皿</strong><p>販売と夜番で共通して使用</p></div><div class="profileFact"><small>一皿</small><strong>${runtime.price}¢</strong><p>${Math.round(runtime.saleMs/100)/10}秒ごとに自動販売</p></div></div>`)}<div class="actions"><button class="btn lime" data-action="prep" type="button">仕込みを手伝う</button><button class="btn" data-action="specialize" type="button">店の方向を確認</button></div>${f.catId?section('働く猫','',`<div class="card catListCard"><div class="catPortrait"><img src="${CAT[f.catId].art}" alt="${CAT[f.catId].name}"></div><div><h3>${CAT[f.catId].name}</h3><p class="role">${CAT[f.catId].trait}</p><span class="traitTag">${CAT[f.catId].now}</span></div><button class="look" data-action="cat" data-cat="${f.catId}" type="button">›</button></div>`):''}`,`${f.number}F · LIVING SHOP`);
+  }
+  if(f.type==='home')return openSheet(cfg.name,`${info(roomNarrative(f))}${section('共同生活','',residentCats().filter(c=>!c.floorId).map(c=>`<div class="card catListCard"><div class="catPortrait"><img src="${c.data.art}" alt="${c.data.name}"></div><div><h3>${c.data.name}</h3><p class="role">${c.data.trait}</p><span class="traitTag">${c.data.now}</span></div><button class="look" data-action="cat" data-cat="${c.id}" type="button">›</button></div>`).join('')||'<div class="info">今は全員が店へ出ています。</div>')}`,`${f.number}F · HOME`);
+  if(f.type==='lobby')return openSheet(cfg.name,`${info(roomNarrative(f))}${section('夜番',nightReady()?'準備完了':'準備中',`<div class="card"><div class="row"><div class="main"><p class="title">C.L.E.A.N.の自動清掃機</p><p class="desc">この建物を空き家と誤認し、猫たちの箱と商品を回収しようとします。</p><p class="meta">店の商品が、そのまま夜番の防衛手段になります。</p></div><button class="btn warm" data-action="night" ${nightReady()?'':'disabled'} type="button">始める</button></div></div>`)}`,'1F · NIGHT ENTRANCE');
+  const cat=f.catId?CAT[f.catId]:null;
+  openSheet(cfg.name,`${info(cfg.story)}${section('現在の状態','',cat?`<div class="card catListCard"><div class="catPortrait"><img src="${cat.art}" alt="${cat.name}"></div><div><h3>${cat.name}</h3><p class="role">${cat.trait}</p><span class="traitTag">${cat.now}</span></div><button class="look" data-action="cat" data-cat="${f.catId}" type="button">›</button></div>`:`<div class="card"><div class="row"><div class="main"><p class="title">働く猫がいません</p><p class="desc">猫を配置すると、店の生活と夜番の役割が動き始めます。</p></div><button class="btn" data-action="assign-floor" data-floor="${f.id}" type="button">選ぶ</button></div></div>`)}`,`${f.number}F · ${cfg.short.toUpperCase()}`);
+}
+
+function resourceSheet(kind){
+  const coin=kind==='coin';openSheet(coin?'コイン':'修復部品',`<div class="info">${coin?`通常営業で自動的に増えます。完全停止を防ぐため、所持金が${RESCUE_CAP}未満の時だけロビーの管理人支援が毎秒${RESCUE_RATE}コイン補います。`:'夜番とタワーの事件で獲得し、店の見た目と役割を強化します。'}</div><div class="profileGrid" style="margin-top:12px"><div class="profileFact"><small>現在</small><strong>${coin?fmt(state.coins)+'¢':fmt(state.parts)+'個'}</strong><p>${coin?'累計営業 '+fmt(state.sales)+'回':'夜番成功 '+state.nightClears+'回'}</p></div><div class="profileFact"><small>${coin?'管理人支援':'用途'}</small><strong>${coin?fmt(state.rescueTotal)+'¢':'店舗強化'}</strong><p>${coin?'必要時だけ動く安全弁':'次のVertical Sliceで拡張'}</p></div></div>`,'TOWER RESOURCE');
+}
+
+function menuSheet(){
+  openSheet('設定と試作情報',`${section('設定','',`<div class="card"><div class="row"><div class="main"><p class="title">効果音</p><p class="desc">現在は触覚フィードバックを中心にしています。</p></div><button class="btn ghost" data-action="sound" type="button">${state.settings.sound?'ON':'OFF'}</button></div></div>`)}${section('Vertical Slice','',`<div class="profileGrid"><div class="profileFact"><small>VERSION</small><strong>${V}</strong><p>Living Tower再設計版</p></div><div class="profileFact"><small>FLOORS</small><strong>${state.floors.length}/${MAX_FLOORS}</strong><p>断面ドールハウス</p></div><div class="profileFact"><small>CATS</small><strong>4</strong><p>住人猫</p></div><div class="profileFact"><small>NIGHT</small><strong>${state.nightClears}</strong><p>夜番成功</p></div></div>`)}<div class="actions"><button class="btn danger" data-action="reset-confirm" type="button">セーブデータを初期化</button></div>`,'CAT\'S TOWER · LIVING TOWER');
+}
+
+function resetConfirm(){openSheet('最初からやり直す',`<div class="info">階、猫の配置、思い出、コイン、夜番記録を初期状態へ戻します。</div><div class="actions"><button class="btn ghost" data-close="1" type="button">戻る</button><button class="btn danger" data-action="reset" type="button">初期化する</button></div>`,'RESET SAVE DATA')}
+function resetGame(){localStorage.removeItem(KEY);state=fresh();offlineReport=null;closeSheet();renderAll(false);requestAnimationFrame(()=>scrollToFloor('food-3'));coach('魚箱を棚へ滑らせ、ムギの最初の店を動かしてください。','≈');save(true)}
+
+function beginNight(){
+  if(!nightReady())return toast('食堂の方向を決め、猫と商品在庫を準備してください。','warn');
+  closeSheet();state.battle={active:true,hp:118,maxHp:118,floor:1,progress:0,energy:100,slowUntil:0,armorDownUntil:0,nextAttack:0,shots:0,started:performance.now()};lastBattleFrame=performance.now();renderAll(true);el.eventDock.classList.remove('hidden');scrollToFloor('lobby-1');coach('店は自動攻撃します。重要な瞬間だけ、毛糸・箱・磁石を使ってください。','!');cancelAnimationFrame(battleFrameId);battleFrameId=requestAnimationFrame(battleLoop);
+}
+
+function battleLoop(t){
+  const b=state.battle;if(!b?.active)return;const dt=Math.min(.06,Math.max(0,(t-lastBattleFrame)/1000));lastBattleFrame=t;
+  b.energy=clamp(b.energy+9.5*dt,0,100);b.progress+=(t<b.slowUntil?3.1:8.3)*dt;
+  const floorNow=state.floors.find(f=>f.number===b.floor);
+  if(floorNow&&SHOP[floorNow.type]&&floorNow.catId&&floorNow.stock>0&&t>=b.nextAttack){
+    const cfg=shopRuntime(floorNow);b.nextAttack=t+cfg.attackMs;b.shots++;if(b.shots%2===0)floorNow.stock=Math.max(0,floorNow.stock-1);
+    if(cfg.slow)b.slowUntil=Math.max(b.slowUntil,t+cfg.slow);if(cfg.break)b.armorDownUntil=Math.max(b.armorDownUntil,t+cfg.break);hitEnemy(cfg.attack,t);flashFloor(floorNow.id);
+  }
+  if(b.progress>=100){b.progress=0;b.floor++;if(b.floor>topFloor())return finishNight(false);renderTower(true);scrollToFloor(state.floors.find(f=>f.number===b.floor)?.id)}
+  if(b.hp<=0)return finishNight(true);updateEnemyVisual();updateEventDock();battleFrameId=requestAnimationFrame(battleLoop);
+}
+
+function hitEnemy(amount,t=performance.now()){const b=state.battle;if(!b)return;const mult=t<b.armorDownUntil?1.35:1;b.hp=Math.max(0,b.hp-amount*mult);navigator.vibrate?.(12)}
+function flashFloor(id){const node=el.tower.querySelector(`[data-floor="${CSS.escape(id)}"]`);if(!node)return;node.animate([{filter:'brightness(1)'},{filter:'brightness(1.25)'},{filter:'brightness(1)'}],{duration:280})}
+
+function useTool(type){
+  const b=state.battle;if(!b?.active)return;const cost={yarn:25,box:40,magnet:30}[type];if(!cost||b.energy<cost)return toast('管理エネルギーが足りません。','warn');b.energy-=cost;const now=performance.now();
+  if(type==='yarn'){b.slowUntil=now+5200;hitEnemy(5,now);toast('毛糸が車輪へ絡まりました。')}
+  if(type==='box'){hitEnemy(32,now);b.progress=Math.max(0,b.progress-28);toast('段ボールで進行を押し戻しました。')}
+  if(type==='magnet'){b.progress=0;b.armorDownUntil=now+5200;hitEnemy(7,now);toast('磁石で清掃機の装甲を乱しました。')}
+  updateEventDock();updateEnemyVisual();
+}
+
+function updateEnemyVisual(){
+  const b=state.battle;if(!b?.active)return;const enemy=$('.nightEnemy');if(enemy)enemy.style.transform=`translateX(${Math.round(b.progress*2.05)}px)`;
+}
+
+function updateEventDock(){
+  const b=state.battle;if(!b?.active){el.eventDock.classList.add('hidden');return}el.eventDock.classList.remove('hidden');el.enemyFloor.textContent=`${b.floor}F`;el.enemyHp.style.width=`${clamp(b.hp/b.maxHp*100,0,100)}%`;el.enemyHpText.textContent=Math.ceil(b.hp);el.energy.textContent=Math.floor(b.energy);$$('#eventDock [data-tool]').forEach(btn=>btn.classList.toggle('disabled',b.energy<+({yarn:25,box:40,magnet:30}[btn.dataset.tool]||0)));
+}
+
+function finishNight(win,retreat=false){
+  const b=state.battle;if(!b)return;cancelAnimationFrame(battleFrameId);state.battle=null;state.lastNight=Date.now();el.eventDock.classList.add('hidden');
+  if(win){state.coins+=180;state.parts+=4;state.nightClears++;state.day++;for(const c of Object.values(state.cats))c.mood=clamp(c.mood+5,0,100);unlockMemory('firstNight')}
+  renderAll(true);save(true);
+  if(retreat)return toast('夜番を停止しました。猫や店舗は失われません。','warn');
+  openSheet(win?'タワーを守りました':'屋上へ到達されました',`<div class="profileHero" style="min-height:250px"><img src="${ART.cats.mugi}" alt="ムギ"><div class="profileCopy"><small>${win?'NIGHT SHIFT CLEARED':'DEFENSE REPORT'}</small><h3>${win?'ここは、猫たちの家。':'準備を見直そう。'}</h3><p>${win?'昼に準備した商品が、夜のタワーを守りました。':'店と猫は失われません。在庫と道具の使い方を変えて再挑戦できます。'}</p></div></div>${win?`<div class="profileGrid" style="margin-top:10px"><div class="profileFact"><small>コイン</small><strong>+180</strong><p>復旧資金</p></div><div class="profileFact"><small>修復部品</small><strong>+4</strong><p>店舗強化用</p></div></div>`:''}<div class="actions"><button class="btn lime" data-close="1" type="button">タワーへ戻る</button>${win?'':`<button class="btn" data-action="night" type="button">再挑戦</button>`}</div>`,win?'NIGHT SHIFT CLEARED':'NIGHT SHIFT FAILED');
+}
+
+function offlineSheet(){
+  const r=offlineReport;offlineReport=null;if(!r)return;
+  openSheet('留守のあいだ',`<div class="info">${duration(r.elapsed)}ぶん、猫たちはそれぞれの時間を過ごしていました。夜番は勝手に始まりません。</div><div class="profileGrid" style="margin-top:11px"><div class="profileFact"><small>自動販売</small><strong>${r.sold}皿</strong><p>+${fmt(r.earned)}コイン</p></div><div class="profileFact"><small>管理人支援</small><strong>+${fmt(r.rescue)}</strong><p>完全停止を防止</p></div></div>${section('猫の様子','',`<div class="card catListCard"><div class="catPortrait"><img src="${ART.cats.luna}" alt="ルナ"></div><div><h3>ルナは窓辺で眠っていました</h3><p class="role">共同部屋</p><span class="traitTag">急がない。毛糸は逃げない。</span></div><button class="look" data-action="cat" data-cat="luna" type="button">›</button></div>`)}<div class="actions"><button class="btn lime" data-close="1" type="button">タワーを見る</button></div>`,'WELCOME BACK');
+}
+
+function coach(text,icon='◎'){
+  el.coach.innerHTML=`<aside class="coachBubble"><i>${icon}</i><p>${escapeHtml(text)}</p><button data-action="coach-close" type="button">×</button></aside>`;setTimeout(()=>{if($('.coachBubble'))el.coach.innerHTML=''},6500);
+}
+
+function toast(text,tone=''){
+  const node=document.createElement('div');node.className=`toast ${tone}`;node.textContent=text;el.toasts.appendChild(node);setTimeout(()=>node.remove(),3050);
+}
+
+function scrollToFloor(id){
+  if(!id)return;setTimeout(()=>{const node=el.tower.querySelector(`[data-floor="${CSS.escape(id)}"]`);node?.scrollIntoView({behavior:'smooth',block:'center'})},80);
+}
+
+function updateJump(){
+  const nodes=$$('.floor');if(!nodes.length)return;const center=el.scroll.getBoundingClientRect().top+el.scroll.clientHeight/2;let best=nodes[0],dist=Infinity;for(const n of nodes){const r=n.getBoundingClientRect(),d=Math.abs(r.top+r.height/2-center);if(d<dist){dist=d;best=n}}el.jumpFloor.textContent=`${best.dataset.no}F`;
+}
+
+function handleFocus(){
+  const f=activeFocus;if(!f||f.action==='none')return;if(f.action==='specialize')specializationSheet();else if(f.action==='prep')prepSheet();else if(f.action==='night')beginNight();else if(f.action==='build')buildSheet();else if(f.action==='cat')catProfile(f.cat);
+}
+
+function towerClick(event){
+  const action=event.target.closest('[data-action]');if(action){const type=action.dataset.action;if(type==='cat')return catProfile(action.dataset.cat);if(type==='prep')return prepSheet();if(type==='specialize')return specializationSheet();if(type==='night')return beginNight();if(type==='assign-floor')return assignFloorSheet(action.dataset.floor);if(type==='floor')return floorSheet(action.dataset.floor)}
+  const floorNode=event.target.closest('.floor');if(floorNode)floorSheet(floorNode.dataset.floor);
+}
+
+function navClick(event){
+  if(state.battle?.active)return toast('夜番中はタワーへ集中してください。','warn');const btn=event.target.closest('[data-nav]');if(!btn)return;$$('#nav button').forEach(b=>b.classList.toggle('on',b===btn));const nav=btn.dataset.nav;if(nav==='tower')closeSheet();else if(nav==='cats')catListSheet();else if(nav==='build')buildSheet();else if(nav==='memories')memorySheet();
+}
+
+function modalClick(event){
+  const close=event.target.closest('[data-close]');if(close)return closeSheet();if(event.target.classList.contains('shade')&&event.target.dataset.close)return closeSheet();const node=event.target.closest('[data-action]');if(!node)return;const action=node.dataset.action;
+  if(action==='cat')catProfile(node.dataset.cat);else if(action==='pet')pet(node.dataset.cat);else if(action==='assign-open')assignSheet(node.dataset.cat);else if(action==='assign-floor')assignFloorSheet(node.dataset.floor);else if(action==='assign')assignCat(node.dataset.cat,node.dataset.floor);else if(action==='unassign')unassign(node.dataset.cat);else if(action==='special')chooseSpecialization(node.dataset.special);else if(action==='specialize')specializationSheet();else if(action==='prep')prepSheet();else if(action==='build')buildFloor(node.dataset.type);else if(action==='night')beginNight();else if(action==='sound'){state.settings.sound=!state.settings.sound;menuSheet();save()}else if(action==='reset-confirm')resetConfirm();else if(action==='reset')resetGame();
+}
+
+function startGame(){
+  if(visible)return;visible=true;el.splash.animate([{opacity:1},{opacity:0}],{duration:480,fill:'forwards'}).finished.finally(()=>el.splash.classList.add('hidden'));el.game.classList.remove('hidden');renderAll(false);requestAnimationFrame(()=>scrollToFloor('food-3'));economyTimer=setInterval(economy,500);if(offlineReport)setTimeout(offlineSheet,650);else if(state.firstVisit){state.firstVisit=false;setTimeout(()=>coach('説明画面はありません。光っている魚箱を開き、皿を棚まで滑らせてください。','≈'),650);save()}
+}
+
+function init(){
+  el.start.addEventListener('click',startGame);el.tower.addEventListener('click',towerClick);el.nav.addEventListener('click',navClick);el.modal.addEventListener('click',modalClick);el.focus.addEventListener('click',handleFocus);el.menu.addEventListener('click',menuSheet);el.coinsBtn.addEventListener('click',()=>resourceSheet('coin'));el.partsBtn.addEventListener('click',()=>resourceSheet('part'));
+  el.overview.addEventListener('click',()=>{if(state.battle?.active)return;state.overview=!state.overview;renderTower(false);renderNav();requestAnimationFrame(()=>el.scroll.scrollTop=0);save()});
+  el.jump.addEventListener('click',()=>{const top=[...state.floors].sort((a,b)=>b.number-a.number)[0];scrollToFloor(top?.id)});el.scroll.addEventListener('scroll',()=>requestAnimationFrame(updateJump),{passive:true});
+  el.eventDock.addEventListener('click',event=>{const tool=event.target.closest('[data-tool]');if(tool)useTool(tool.dataset.tool)});el.retreat.addEventListener('click',()=>{if(state.battle?.active)finishNight(false,true)});
+  el.coach.addEventListener('click',event=>{if(event.target.closest('[data-action="coach-close"]'))el.coach.innerHTML=''});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){save(true);if(state.battle?.active)finishNight(false,true)}else{state.rescueAt=Date.now();lastBattleFrame=performance.now()}});addEventListener('pagehide',()=>save(true));
+  if('serviceWorker'in navigator&&location.protocol!=='file:')addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=090').catch(console.warn));
+  save(true);
+  window.__CATS_TEST_API__={version:V,start:startGame,getState:()=>JSON.parse(JSON.stringify({...state,battle:null})),reset:resetGame,addCoins:n=>{state.coins+=+n||1000;renderAll(true);save(true)},specialize:type=>chooseSpecialization(type||'street'),startNight:beginNight};
+}
+
 init();
 })();
