@@ -1,0 +1,126 @@
+name: Apply Cat's tower V0.8 Living Tower rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-v080-living-tower.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cats-v080-atomic-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'activate V0.8 Living Tower rebuild')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Assemble V0.8 root from staged sources
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow
+          mkdir -p tests scripts assets/v080 assets/icons .github/workflows
+          cp .v080/index.html index.html
+          cp .v080/styles.css styles.css
+          cp .v080/app.js app.js
+          cp .v080/sw.js sw.js
+          cp .v080/manifest.webmanifest manifest.webmanifest
+          cp .v080/living-tower-v080.mjs tests/living-tower-v080.mjs
+          cp .v080/build_v080_art.py scripts/build_v080_art.py
+          cp .v080/verify-main.yml .github/workflows/verify-main.yml
+          python scripts/build_v080_art.py
+
+      - name: Remove obsolete visual patch and V0.7 QA files
+        run: |
+          rm -f visual-fix-v04.css character-assets-v06.js
+          rm -f tests/character-visual-v07.mjs tests/tower-visual-v07.mjs
+          rm -f scripts/apply_v07.py scripts/apply_v071.py
+
+      - name: Verify assembled source and generated raster art
+        run: |
+          set -euo pipefail
+          node --check app.js
+          node --check sw.js
+          node --check tests/living-tower-v080.mjs
+          grep -q "const VERSION='0.8.0'" app.js
+          ! grep -q "RASTER_ART_V03_START" styles.css
+          ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
+          ! grep -q "V05_CHARACTER_ART_START" styles.css
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          expected={
+            'mugi-v080.webp':(512,512),
+            'mugi-sleep-v080.webp':(512,512),
+            'room-food-v080.webp':(1024,720),
+            'room-home-v080.webp':(1024,720),
+            'room-lobby-v080.webp':(1024,720),
+            'room-roof-v080.webp':(1024,720),
+            'room-food-night-v080.webp':(1024,720),
+            'title-live-v080.webp':(768,1365),
+            'memory-first-home-v080.webp':(1024,720),
+          }
+          for name,size in expected.items():
+            path=Path('assets/v080')/name
+            with Image.open(path) as image:
+              image.load()
+              assert image.format=='WEBP',(name,image.format)
+              assert image.size==size,(name,image.size,size)
+            assert path.stat().st_size>5000,(name,path.stat().st_size)
+          print('assembled V0.8 raster art verified')
+          PY
+
+      - name: Install Chromium and WebKit QA runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.60.0
+          npx playwright install --with-deps chromium webkit
+
+      - name: Run mobile visual and interaction gates before commit
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 >/tmp/cats-v080-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/apply-chromium node tests/living-tower-v080.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/apply-webkit node tests/living-tower-v080.mjs
+
+      - name: Upload pre-commit visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-v080-precommit-evidence
+          path: test-results
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit V0.8 atomically to main
+        run: |
+          set -euo pipefail
+          rm -rf .v080
+          rm -f .github/workflows/apply-v080-living-tower.yml
+          git config user.name "2hg7trp7rv-design"
+          git config user.email "2hg7trp7rv@privaterelay.appleid.com"
+          git add -A
+          git diff --cached --stat
+          git commit -m "rebuild Cat's tower as V0.8 Living Tower vertical slice"
+          git push origin HEAD:main
