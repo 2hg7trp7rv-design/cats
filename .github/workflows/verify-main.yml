@@ -37,7 +37,7 @@ jobs:
           set -euo pipefail
           node --check app.js
           node --check tests/living-v09.mjs
-          grep -q "const V='0.9.0'" app.js
+          grep -q "const V='0.9.1'" app.js
           grep -q "title-living-v09.webp" index.html
           ! grep -q "art.css" index.html
           ! grep -q "art.js" index.html
@@ -99,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-living-v09-visual-evidence
+          name: cats-living-v091-visual-evidence
           path: test-results
           if-no-files-found: error
           retention-days: 14
