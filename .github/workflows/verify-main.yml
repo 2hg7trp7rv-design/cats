@@ -1,4 +1,4 @@
-name: Verify Cat's tower main
+name: Verify Cat's tower Living Tower main
 
 on:
   push:
@@ -7,10 +7,11 @@ on:
       - index.html
       - styles.css
       - app.js
-      - assets/**
-      - tests/character-visual-v07.mjs
-      - tests/tower-visual-v071.mjs
-      - vercel.json
+      - sw.js
+      - manifest.webmanifest
+      - assets/living/**
+      - assets/illustrations/**
+      - tests/living-v09.mjs
       - .github/workflows/verify-main.yml
   workflow_dispatch:
 
@@ -18,53 +19,87 @@ permissions:
   contents: read
 
 concurrency:
-  group: cats-main-qa
+  group: cats-living-main-qa
   cancel-in-progress: true
 
 jobs:
-  visual-qa:
+  mobile-visual-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Static contract checks
         run: |
           set -euo pipefail
           node --check app.js
-          node --check tests/character-visual-v07.mjs
-          node --check tests/tower-visual-v071.mjs
-          grep -q "const V='0.7.1'" app.js
-          ! grep -q "raw.githubusercontent.com/2hg7trp7rv-design/cats/main/assets/illustrations/cat-" app.js
+          node --check tests/living-v09.mjs
+          grep -q "const V='0.9.0'" app.js
+          grep -q "title-living-v09.webp" index.html
+          ! grep -q "art.css" index.html
+          ! grep -q "art.js" index.html
+          ! grep -q "splashTower" index.html
+          ! grep -q "icon.svg" index.html
           ! grep -q "RASTER_ART_V03_START" styles.css
           ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
           ! grep -q "V05_CHARACTER_ART_START" styles.css
-          test "$(grep -c 'CHARACTER_VISUAL_V07_START' styles.css)" -eq 1
-          test ! -e visual-fix-v04.css
           test ! -e character-assets-v06.js
-          for f in assets/illustrations/cat-mugi.v070.webp assets/illustrations/cat-luna.v070.webp assets/illustrations/cat-toto.v070.webp assets/illustrations/cat-mimi.v070.webp; do test -s "$f"; done
+          for f in \
+            assets/living/title-living-v09.webp \
+            assets/living/roof-v09.webp \
+            assets/living/room-lobby-v09.webp \
+            assets/living/room-home-v09.webp \
+            assets/living/room-food-v09.webp \
+            assets/living/room-play-v09.webp \
+            assets/living/room-care-v09.webp \
+            assets/living/room-craft-v09.webp \
+            assets/living/cat-mugi-living-v09.webp; do test -s "$f"; done
+
+      - name: Verify raster dimensions and decoding
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          expected={
+            'title-living-v09.webp':(1170,2532),'roof-v09.webp':(1280,520),
+            'room-lobby-v09.webp':(1280,760),'room-home-v09.webp':(1280,760),
+            'room-food-v09.webp':(1280,760),'room-play-v09.webp':(1280,760),
+            'room-care-v09.webp':(1280,760),'room-craft-v09.webp':(1280,760),
+            'cat-mugi-living-v09.webp':(1024,1024)
+          }
+          root=Path('assets/living')
+          assert not list(root.glob('*.svg'))
+          for name,size in expected.items():
+            p=root/name
+            with Image.open(p) as im:
+              im.load(); assert im.format=='WEBP',(name,im.format); assert im.size==size,(name,im.size)
+            print(name,size,p.stat().st_size)
+          PY
+
       - name: Install browser QA runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
           npx playwright install --with-deps chromium webkit
-      - name: Chromium and WebKit visual QA
+
+      - name: Chromium and WebKit Living Tower QA
         run: |
           set -euo pipefail
           python3 -m http.server 4173 >/tmp/cats-http.log 2>&1 &
           PID=$!
           trap 'kill $PID' EXIT
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/local-chromium node tests/character-visual-v07.mjs
-          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/local-webkit node tests/character-visual-v07.mjs
-          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/tower-chromium node tests/tower-visual-v071.mjs
-          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/tower-webkit node tests/tower-visual-v071.mjs
-      - name: Upload visual evidence
+          CATS_BROWSER=chromium CATS_TEST_OUT=test-results/living-chromium node tests/living-v09.mjs
+          CATS_BROWSER=webkit CATS_TEST_OUT=test-results/living-webkit node tests/living-v09.mjs
+
+      - name: Upload Living Tower visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-main-visual-evidence
+          name: cats-living-v09-visual-evidence
           path: test-results
           if-no-files-found: error
           retention-days: 14
