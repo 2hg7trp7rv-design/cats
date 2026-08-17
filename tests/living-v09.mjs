@@ -63,7 +63,7 @@ await sheet.locator('[data-action="cat"][data-cat="mugi"]').tap();
 await page.waitForFunction(()=>document.querySelector('#modal .sheet header small')?.textContent?.startsWith('CAT PROFILE'));
 assert(await page.locator('.profileHero img').isVisible());
 await page.locator('#modal .sheet').screenshot({path:`${out}/05-mugi-profile.png`});
-await page.locator('#modal [data-close="1"]').first().tap();
+await page.locator('#modal button[data-close="1"]').tap();
 
 await page.evaluate(()=>window.__CATS_TEST_API__.specialize('street'));
 await page.locator('.floor.food').scrollIntoViewIfNeeded();

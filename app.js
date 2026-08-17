@@ -1,6 +1,6 @@
 (()=>{'use strict';
 
-const V='0.9.1';
+const V='0.9.2';
 const KEY='cats-tower-living-v09';
 const OLD_KEY='cats-tower-v01';
 const MAX_FLOORS=6;
@@ -499,7 +499,7 @@ function navClick(event){
 }
 
 function modalClick(event){
-  const close=event.target.closest('[data-close]');if(close)return closeSheet();if(event.target.classList.contains('shade')&&event.target.dataset.close)return closeSheet();const node=event.target.closest('[data-action]');if(!node)return;const action=node.dataset.action;
+  const close=event.target.closest('button[data-close]');if(close)return closeSheet();if(event.target.classList.contains('shade')&&event.target.dataset.close)return closeSheet();const node=event.target.closest('[data-action]');if(!node)return;const action=node.dataset.action;
   if(action==='cat')catProfile(node.dataset.cat);else if(action==='pet')pet(node.dataset.cat);else if(action==='assign-open')assignSheet(node.dataset.cat);else if(action==='assign-floor')assignFloorSheet(node.dataset.floor);else if(action==='assign')assignCat(node.dataset.cat,node.dataset.floor);else if(action==='unassign')unassign(node.dataset.cat);else if(action==='special')chooseSpecialization(node.dataset.special);else if(action==='specialize')specializationSheet();else if(action==='prep')prepSheet();else if(action==='build')buildFloor(node.dataset.type);else if(action==='night')beginNight();else if(action==='sound'){state.settings.sound=!state.settings.sound;menuSheet();save()}else if(action==='reset-confirm')resetConfirm();else if(action==='reset')resetGame();
 }
 
