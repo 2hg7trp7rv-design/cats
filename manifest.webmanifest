@@ -1,20 +1,12 @@
 {
-  "name": "Cat's tower",
+  "name": "Cat's tower — Living Tower",
   "short_name": "Cat's tower",
-  "description": "ぬいぐるみのような猫たちが暮らし、働き、タワーを守るスマートフォン向け経営・防衛ゲーム。",
+  "description": "猫の暮らし、店づくり、夜番がひとつにつながるスマートフォン専用Living Towerゲーム。",
   "lang": "ja",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a1424",
-  "theme_color": "#13223a",
-  "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#071424",
+  "theme_color": "#071424"
 }
