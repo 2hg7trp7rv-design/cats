@@ -3,35 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <meta name="theme-color" content="#081728">
+  <meta name="theme-color" content="#071424">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="ぬいぐるみのような猫たちと、縦に伸びるタワーを育てるスマートフォン専用ゲーム。">
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/art.css?v=080">
-  <title>Cat's tower</title>
+  <meta name="description" content="ぬいぐるみ猫の暮らし、店づくり、夜番がひとつにつながるスマートフォン専用Living Towerゲーム。">
+  <link rel="manifest" href="/manifest.webmanifest?v=090">
+  <link rel="stylesheet" href="/styles.css?v=090">
+  <title>Cat's tower — Living Tower</title>
 </head>
 <body>
-  <aside class="unsupported" aria-hidden="true"><div><b>Cat's tower</b><p>スマートフォンの縦画面で開いてください。</p></div></aside>
+  <aside class="unsupported" aria-hidden="true"><div><b>Cat's tower</b><p>スマートフォンの縦画面専用です。</p></div></aside>
+
   <main id="app" class="app">
-    <section id="splash" class="splash">
-      <div class="rain"></div><div class="skyline"></div>
-      <div class="splashTower"><i></i><i></i><i></i><i></i><div id="splashCat"></div></div>
-      <div class="splashCopy"><small>A TINY TOWER FOR SOFT LITTLE CATS</small><h1><span>Cat's</span><span>tower</span></h1><p>店をひらいて、猫を迎えて、<br>夜のタワーを守ろう。</p><button id="startBtn" class="bigBtn">管理をはじめる</button><em>V0.8.0 · RASTER ART BUILD</em></div>
+    <section id="splash" class="splash" aria-label="Cat's tower タイトル">
+      <img class="splashArtwork" src="/assets/living/title-living-v09.webp" alt="夜の街に建つ猫たちのタワー">
+      <div class="splashVeil"></div>
+      <div class="splashCopy">
+        <small>ILLUSTRATED PLUSH DOLLHOUSE</small>
+        <h1><span>Cat's</span><span>tower</span></h1>
+        <p>昼は、小さな猫たちの店。<br>夜は、みんなで守る家。</p>
+        <button id="startBtn" class="primaryCta" type="button">タワーへ行く</button>
+        <em>V0.9.0 · LIVING TOWER VERTICAL SLICE</em>
+      </div>
     </section>
+
     <section id="game" class="game hidden">
-      <header class="topbar"><div class="brand"><i></i><span>Cat's tower<small>NIGHT CARE TOWER</small></span></div><div class="resources"><button id="coinsBtn" aria-label="コイン"><i class="coin">¢</i><span><b id="coins">0</b><small id="incomeRate">+1 / 秒</small></span></button><button id="partsBtn" aria-label="部品"><i class="part">⌁</i><span><b id="parts">0</b><small>防衛報酬</small></span></button></div></header>
-      <button id="guideBar" class="guideBar"><i id="guideIcon">◎</i><span id="guideText">タワーを育てよう</span><b>›</b></button>
-      <section class="world"><button id="battleCall" class="battleCall hidden" type="button" aria-label="夜間防衛を開始"><i>!</i><span><small>INVASION READY</small><b id="battleCallText">初回防衛を開始</b></span><em>開始</em></button><div class="backdrop"><i class="moon"></i><i class="cloud c1"></i><i class="cloud c2"></i><i class="buildings"></i><i class="rain worldRain"></i></div><div id="towerScroll" class="towerScroll"><div id="tower" class="tower"></div></div><button id="topBtn" class="topBtn"><b id="topFloor">3F</b><small>TOP</small></button><div id="toasts" class="toasts"></div></section>
-      <nav id="nav" class="nav"><button data-nav="tower" class="on"><i>▥</i><span>タワー</span></button><button data-nav="cats"><i>◉</i><span>猫</span></button><button data-nav="build" class="build"><i>＋</i><span>増築</span></button><button data-nav="tasks"><i>✓</i><span>タスク</span><b id="taskBadge" class="badge hidden">0</b></button><button data-nav="menu"><i>•••</i><span>メニュー</span></button></nav>
-      <nav id="battleNav" class="battleNav hidden"><button data-tool="yarn"><i class="yarnIcon"></i><span>毛糸網</span><small>25</small></button><button data-tool="static"><i class="staticIcon">ϟ</i><span>静電毛玉</span><small>35</small></button><button data-tool="box"><i class="boxIcon">□</i><span>段ボール</span><small>40</small></button><button data-tool="magnet"><i class="magnetIcon">∩</i><span>磁石</span><small>30</small></button><button id="pauseBtn"><i>Ⅱ</i><span>停止</span><small id="energy">100</small></button></nav>
+      <header class="topbar">
+        <div class="brand"><i aria-hidden="true"></i><span>Cat's tower<small>LIVING TOWER</small></span></div>
+        <div class="topActions">
+          <button id="coinsBtn" class="resource" type="button" aria-label="コイン"><i>¢</i><span><b id="coins">0</b><small id="incomeRate">自動営業</small></span></button>
+          <button id="partsBtn" class="resource partResource" type="button" aria-label="修復部品"><i>⌁</i><span><b id="parts">0</b><small>修復部品</small></span></button>
+          <button id="menuBtn" class="menuButton" type="button" aria-label="設定">•••</button>
+        </div>
+      </header>
+
+      <button id="focusBar" class="focusBar" type="button">
+        <i id="focusIcon">◎</i>
+        <span><small id="focusEyebrow">NOW IN THE TOWER</small><b id="focusText">ムギの様子を見に行く</b></span>
+        <em>›</em>
+      </button>
+
+      <section id="world" class="world">
+        <div class="nightBackdrop" aria-hidden="true"><i class="moon"></i><i class="stars"></i><i class="city"></i><i class="rain"></i></div>
+        <div id="towerScroll" class="towerScroll"><div id="tower" class="tower"></div></div>
+        <button id="overviewBtn" class="overviewBtn" type="button"><i>▦</i><span>俯瞰</span></button>
+        <button id="jumpBtn" class="jumpBtn" type="button"><b id="jumpFloor">3F</b><small>TOP</small></button>
+
+        <aside id="eventDock" class="eventDock hidden" aria-live="polite">
+          <div class="eventHead"><span><small>NIGHT SHIFT</small><b id="eventName">C.L.E.A.N.侵入</b></span><button id="retreatBtn" type="button">停止</button></div>
+          <div class="enemyHud"><span id="enemyFloor">1F</span><div class="enemyHp"><i id="enemyHp"></i></div><b id="enemyHpText">100</b></div>
+          <div class="toolRow">
+            <button data-tool="yarn" type="button"><i>◉</i><span>毛糸網</span><small>25</small></button>
+            <button data-tool="box" type="button"><i>□</i><span>段ボール</span><small>40</small></button>
+            <button data-tool="magnet" type="button"><i>∩</i><span>磁石</span><small>30</small></button>
+            <div class="energy"><small>ENERGY</small><b id="energy">100</b></div>
+          </div>
+        </aside>
+
+        <div id="toasts" class="toasts"></div>
+      </section>
+
+      <nav id="nav" class="nav" aria-label="ゲームメニュー">
+        <button data-nav="tower" class="on" type="button"><i>▥</i><span>タワー</span></button>
+        <button data-nav="cats" type="button"><i>●</i><span>猫</span></button>
+        <button data-nav="build" class="build" type="button"><i>＋</i><span>増築</span></button>
+        <button data-nav="memories" type="button"><i>▣</i><span>思い出</span><b id="memoryBadge" class="badge hidden">0</b></button>
+      </nav>
     </section>
-    <div id="modal" class="modal"></div><div id="coach" class="coach"></div>
+
+    <div id="modal" class="modal"></div>
+    <div id="coach" class="coach"></div>
   </main>
-  <template id="sheetTpl"><div class="shade" data-close="1"><section class="sheet" role="dialog" aria-modal="true"><i class="handle"></i><header><div><small></small><h2></h2></div><button data-close="1">×</button></header><div class="sheetBody"></div></section></div></template>
-  <script src="/app.js" defer></script>
-  <script src="/art.js?v=080" defer></script>
+
+  <template id="sheetTpl">
+    <div class="shade" data-close="1">
+      <section class="sheet" role="dialog" aria-modal="true">
+        <i class="handle"></i>
+        <header><div><small></small><h2></h2></div><button data-close="1" type="button">×</button></header>
+        <div class="sheetBody"></div>
+      </section>
+    </div>
+  </template>
+
+  <script src="/app.js?v=090" defer></script>
 </body>
 </html>
