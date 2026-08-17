@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "updatedDate": "2026-08-17",
+  "project": "Cat's tower",
+  "canonicalRepository": "2hg7trp7rv-design/cats_tower",
+  "canonicalBranch": "main",
+  "canonicalVersion": "0.8.0",
+  "implementationBaselineCommit": "8a5b65202bdb10af2ee8f28e0e9fe29042ac5c4d",
+  "productionUrl": "https://cats-tau-dusky.vercel.app/",
+  "vercelProjectId": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
+  "vercelTeamId": "team_6odZCZQ1QxjzhPdC9sgEtoCM",
+  "status": "functional-vertical-slice-with-placeholder-art",
+  "sourceOfTruth": [
+    "AGENTS.md",
+    "PROJECT_HANDOVER.md",
+    "PROJECT_STATUS.json",
+    "main branch",
+    "latest Vercel production deployment"
+  ],
+  "automatedQa": {
+    "preCommitRunId": 32020677845,
+    "chromium390x844": true,
+    "webkit390x844": true,
+    "rasterDecodeAndDimensions": true,
+    "javascriptPageErrors": false,
+    "mainVisualSvgUsage": false
+  },
+  "physicalIPhoneVerified": false,
+  "productionDeploymentReady": true,
+  "artProductionReady": false,
+  "currentArtAssessment": "The V0.8 assets are raster WebP files, but they are procedural flat illustrations and do not yet satisfy the approved plush dollhouse art direction.",
+  "completedVerticalSlice": [
+    "title entry",
+    "roof",
+    "fish restaurant",
+    "shared home room",
+    "lobby",
+    "normal and overview tower modes",
+    "automatic fish sales",
+    "manual fish preparation",
+    "two fish restaurant specializations",
+    "Mugi mood pet and rest interactions",
+    "memories",
+    "offline progress",
+    "first C.L.E.A.N. night shift"
+  ],
+  "notCompleted": [
+    "production-quality Mugi art and action states",
+    "production-quality room art and layered foregrounds",
+    "physical iPhone visual validation",
+    "Luna full resident implementation",
+    "Toto full resident implementation",
+    "Mimi full resident implementation",
+    "yarn club",
+    "paw salon",
+    "cardboard workshop",
+    "visitor cat loop",
+    "additional night events",
+    "sound and haptics",
+    "cloud save",
+    "monetization"
+  ],
+  "nextPriority": "Replace Mugi and the fish restaurant placeholder visuals with one production-quality layered vertical slice, then validate it on a physical iPhone before expanding content.",
+  "doNotExpandBefore": [
+    "Mugi visual identity is fixed across title work sleep and night states",
+    "fish restaurant visual composition is approved",
+    "modal and tower evidence screenshots are visually reviewed",
+    "physical iPhone screenshots are checked"
+  ]
+}

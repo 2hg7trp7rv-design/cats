@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
     paths:
+      - README.md
+      - AGENTS.md
+      - PROJECT_HANDOVER.md
+      - PROJECT_STATUS.json
       - index.html
       - styles.css
       - app.js
@@ -38,6 +42,37 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Repository handover and source contracts
+        run: |
+          set -euo pipefail
+          test -s AGENTS.md
+          test -s PROJECT_HANDOVER.md
+          test -s PROJECT_STATUS.json
+          test -s README.md
+          test ! -e .v080
+          test ! -e test
+          test ! -e art.css
+          test ! -e art.js
+          test ! -e icon.svg
+          test ! -e visual-fix-v04.css
+          test ! -e character-assets-v06.js
+          test ! -d node_modules
+          test ! -d test-results
+          test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
+          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort)" = "living-tower-v080.mjs"
+          test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status=json.loads(Path('PROJECT_STATUS.json').read_text())
+          assert status['canonicalVersion']=='0.8.0'
+          assert status['canonicalBranch']=='main'
+          assert status['physicalIPhoneVerified'] is False
+          assert status['artProductionReady'] is False
+          assert status['productionUrl']=='https://cats-tau-dusky.vercel.app/'
+          print('handover contracts passed')
+          PY
+
       - name: Static and raster asset contracts
         run: |
           set -euo pipefail
@@ -51,13 +86,6 @@ jobs:
           ! grep -q "RASTER_ART_V03_START" styles.css
           ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
           ! grep -q "V05_CHARACTER_ART_START" styles.css
-          test ! -e visual-fix-v04.css
-          test ! -e character-assets-v06.js
-          test ! -e art.css
-          test ! -e art.js
-          test ! -e icon.svg
-          test ! -d node_modules
-          test ! -d test-results
           python - <<'PY'
           from pathlib import Path
           from PIL import Image
@@ -108,7 +136,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-v080-living-tower-evidence
+          name: cats-v080-main-evidence
           path: test-results
           if-no-files-found: warn
           retention-days: 14
