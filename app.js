@@ -571,7 +571,7 @@ document.addEventListener('visibilitychange',()=>{
   resumeFromBackground();
 });
 
-if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=081p2').catch(()=>{}));
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=081p3').catch(()=>{}));
 
 const qa=new URLSearchParams(location.search).has('qa');
 if(qa){

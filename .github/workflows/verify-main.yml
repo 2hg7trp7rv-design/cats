@@ -8,6 +8,7 @@ on:
       - AGENTS.md
       - PROJECT_HANDOVER.md
       - PROJECT_STATUS.json
+      - .vercelignore
       - index.html
       - styles.css
       - game-data.js
@@ -61,6 +62,9 @@ jobs:
           test ! -e character-assets-v06.js
           test ! -d node_modules
           test ! -d test-results
+          grep -qx 'tests/' .vercelignore
+          grep -qx 'assets/v080/r1/' .vercelignore
+          grep -qx 'assets/v080/\*.webp' .vercelignore
           test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
           test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort)" = "living-tower-v080.mjs"
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
@@ -98,6 +102,8 @@ jobs:
           grep -q "/assets/v080/pixel-r2/tower-night-r2.png" index.html
           grep -q "/assets/v080/pixel-r2/mugi-sprites-r2.png" sw.js
           grep -q "/assets/v080/pixel-r2/crow-sprites-r2.png" sw.js
+          grep -q "serviceWorker.register('/sw.js?v=081p3')" app.js
+          grep -q "cats-tower-v081-pixel-tower-r2-p3" sw.js
           grep -q 'font-family:"CatsTowerJP"' styles.css
           grep -q "/assets/fonts/noto-sans-jp-700-ja.woff2" styles.css
           ! grep -Eiq 'assets/(living|v0?9)|V0\.9' index.html game-data.js game-core.js app.js styles.css sw.js manifest.webmanifest
