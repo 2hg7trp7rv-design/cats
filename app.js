@@ -284,7 +284,12 @@ function openSheet(title,eyebrow,html,id=''){
   fragment.querySelector('.sheetBody').innerHTML=html;
   els.modal.appendChild(fragment);
   activeSheet=id;
-  requestAnimationFrame(()=>els.modal.querySelector('button[data-close]')?.focus());
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const closeButton=els.modal.querySelector('button[data-close]');
+    closeButton?.focus({preventScroll:true});
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+  }));
 }
 
 function closeSheet(restoreFocus=true){

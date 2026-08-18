@@ -1,6 +1,6 @@
-const CACHE='cats-tower-v081-pixel-tower-r2';
+const CACHE='cats-tower-v081-pixel-tower-r2-p3';
 const CORE=[
-  '/','/index.html','/styles.css?v=081p2','/game-data.js?v=081p2','/game-core.js?v=081p2','/app.js?v=081p2','/manifest.webmanifest',
+  '/','/index.html','/styles.css?v=081p3','/game-data.js?v=081p3','/game-core.js?v=081p3','/app.js?v=081p3','/manifest.webmanifest',
   '/assets/v080/pixel-r2/tower-night-r2.png',
   '/assets/v080/pixel-r2/mugi-sprites-r2.png',
   '/assets/v080/pixel-r2/crow-sprites-r2.png',

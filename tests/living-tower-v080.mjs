@@ -147,6 +147,18 @@ async function waitSheet(){
   assert.equal(await sheet.getAttribute('aria-labelledby'),'sheetTitle','Dialogs must have an accessible name');
   assert((await sheet.locator('#sheetTitle').innerText()).trim().length>0,'Dialog title must not be empty');
   await page.waitForFunction(()=>document.activeElement?.matches('#modal [data-close="1"]'),null,{timeout:5000});
+  const viewportContract=await sheet.evaluate(node=>{
+    const rect=node.getBoundingClientRect();
+    return{
+      top:rect.top,bottom:rect.bottom,left:rect.left,right:rect.right,
+      width:rect.width,height:rect.height,
+      innerWidth,innerHeight,scrollX,scrollY,
+    };
+  });
+  assert.equal(viewportContract.scrollX,0,'Opening a dialog must not horizontally scroll the document');
+  assert.equal(viewportContract.scrollY,0,'Opening a dialog must not vertically scroll the document');
+  assert(viewportContract.width>0&&viewportContract.height>0,'An opened dialog must have a visible box');
+  assert(viewportContract.right>0&&viewportContract.bottom>0&&viewportContract.left<viewportContract.innerWidth&&viewportContract.top<viewportContract.innerHeight,'An opened dialog must intersect the viewport before any test-side locator scrolling');
   return sheet;
 }
 
