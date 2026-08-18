@@ -18,11 +18,11 @@
 - Repository: `2hg7trp7rv-design/cats_tower`
 - Canonical branch: `main`
 - Product direction: `0.8.1`
-- Candidate build: `v081-pixel-tower-r2`
-- Candidate implementation commit: `f26cebc6dc460cd457fae1034010859f81a8751c`
+- Production build: `v081-pixel-tower-r2-p3`
+- Production runtime commit: `ebe26884f9e4500d8e755f0b4fae328ef208c6b6`
 - Production: `https://cats-tau-dusky.vercel.app/`
 
-2026-08-18時点でV0.8.1実装候補は上記commitへ固定され、ローカルChromium 390×844 / 375×667の各16画面がPASSし、全32枚を目視済みです。GitHubへの外部pushは明示承認待ちのため、`main`反映、WebKitを含むCI、Production配信は未確定です。最後に照合したProductionは旧V0.8.0相当です。URLがHTTP 200でも候補commitの配信証明にはなりません。
+2026-08-18時点でV0.8.1 Pixel Tower Vertical Sliceは`main`と固定Productionへ配信済みです。Productionの実行時13ファイルは上記commitとhash一致しています。Chromium / WebKitの390×844、375×667は全環境PASSし、64画面を目視済みです。物理iPhoneと追加猫・敵・城・長期バランスを含むフルゲームは未完成です。
 
 旧V0.9.xへ戻さないでください。V0.8.0 Living TowerとV0.8 R1 plush sliceも、現在のゲーム性・実行時アートの正本ではありません。
 
@@ -72,7 +72,7 @@ V0.8.0とV0.1の保存をschema2へ移行し、破損JSONはfresh stateへ安全
 - `tests/living-tower-v080.mjs` — Chromium / WebKitのVertical Tower QA
 - `.github/workflows/verify-main.yml` — `main`検証
 
-## 完了条件
+## Productionで検証する条件
 
 - JavaScript構文とPixel R2画像decodeが成功する
 - Chromium / WebKitの390×844と375×667がすべて成功する
@@ -80,9 +80,9 @@ V0.8.0とV0.1の保存をschema2へ移行し、破損JSONはfresh stateへ安全
 - schema2再読込、V0.8.0 / V0.1移行、破損JSON回復を確認する
 - 全証跡画像を目視する
 - 対象commitを`main`と固定Production URLへ反映し、配信ファイルを照合する
-- 物理iPhoneで主要フローを確認する
+- テスト、引継ぎ文書、旧R1 / Living Towerアートを公開対象へ含めない
 
-自動QA、HTTP 200、画像decodeだけを、デザイン、バランス、物理iPhoneの合格と同義にしないでください。物理iPhoneは未検証です。
+上記の自動QAとProduction照合は完了しています。ただし自動QA、HTTP 200、画像decodeを、長期バランスや物理iPhoneの合格と同義にしないでください。物理iPhoneは未検証です。
 
 ## 未完の製品領域
 
@@ -92,4 +92,4 @@ V0.8.0とV0.1の保存をschema2へ移行し、破損JSONはfresh stateへ安全
 - 長期バランスとコンテンツ
 - 本番サウンド、触覚、クラウドセーブ、課金、イベント
 
-これらはV0.8.1候補の4環境QA、証跡目視、`main`、Production、物理iPhone確認の後に進めます。
+次は物理iPhoneで主要フローを確認し、その後に追加猫、敵、城、長期コンテンツを拡張します。

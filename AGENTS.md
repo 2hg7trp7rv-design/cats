@@ -19,10 +19,12 @@
 - Production URL: `https://cats-tau-dusky.vercel.app/`
 - Vercel project: `prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB`
 - Vercel team: `team_6odZCZQ1QxjzhPdC9sgEtoCM`
-- Candidate implementation commit: `f26cebc6dc460cd457fae1034010859f81a8751c`
-- Candidate Production deployment: pending; external push requires explicit approval
+- Source snapshot: `0c4c191624b6ffca45c9da91f065d5b9fe49c36a`
+- Production runtime commit: `ebe26884f9e4500d8e755f0b4fae328ef208c6b6`
+- Production deployment: `dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm`
+- Last visually audited Actions run / artifact: `32091801556` / `9308695207`
 
-2026-08-18時点でV0.8.1実装は上記commitへ固定され、ローカルChromium 2環境と全32証跡の目視はPASSしている。外部pushの明示承認待ちであり、`main`、WebKitを含むGitHub Actions、Production配信は未確定である。Vercel URLがHTTP 200でも、対象commitを配信している証拠にはならない。
+2026-08-18時点でV0.8.1 Pixel Tower Vertical Sliceは`main`と固定Productionへ配信済みである。ProductionのHTML、CSS、JS、Service Worker、Pixel R2画像、Webfont、PWA iconの13点は上記runtime commitとhash一致し、テスト、引継ぎ文書、旧R1 / Living Towerアートは公開対象から除外済みである。Chromium / WebKitの390×844、375×667は全環境PASSし、64証跡を目視済みである。物理iPhoneとフルゲームの長期コンテンツは未完成である。
 
 旧V0.9.x、V0.7.x、V0.6以前へ戻さない。旧V0.8.0 Living TowerおよびV0.8 R1 plush sliceも、現在のゲーム性・アート正本ではない。
 
@@ -187,11 +189,10 @@ V0.8.0 Living Tower保存からは、コイン、在庫から変換したfish、
 
 ## 現在の最優先
 
-1. 明示承認後にcandidate `f26cebc`をpushして`main`へfast-forwardする
-2. GitHub Actionsで4環境QAを完走し、全64証跡を目視する
-3. 旧R1 plushがランタイム、cache、QAへ再混入していないことを確認する
-4. `main`へ反映する
-5. Vercel Productionを対象commitへ更新する
-6. 物理iPhoneで確認する
+1. 物理iPhoneでタイトル、戦場、支援、壁、夜明け、PWA更新を確認する
+2. ルナ、トト、ミミの固有spriteと能力を追加する
+3. 自然な天敵、ボス、次の城を追加する
+4. 長期バランス、サウンド、触覚を本番化する
+5. 最初の同時保存前から保護するwriter lock / revision arbitrationを追加する
 
-追加猫、追加敵、別城、イベント、課金へ進むのはその後である。
+現行Productionはゲーム理論とアートを証明するVertical Sliceであり、フルゲーム完成とは扱わない。

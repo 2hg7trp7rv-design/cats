@@ -2,7 +2,7 @@
 
 更新日: 2026-08-18
 対象: `2hg7trp7rv-design/cats_tower` / `main`
-次期正本候補: V0.8.1 Pixel Tower Vertical Slice
+現行正本: V0.8.1 Pixel Tower Vertical Slice
 
 ## 1. 最初に理解すべき結論
 
@@ -14,16 +14,11 @@ Cat's towerのゲーム性は、V0.8.1で縦型放置インクリメンタルRPG
 
 以前のV0.8.0 Living Towerは、店舗・共同部屋・短い三択夜番が主役になり、参考作品のゲーム性から外れていた。旧ゲームループは正本ではない。
 
-V0.8.1のソース、Pixel R2アセット、schema2エンジン、決定論的QAは`f26cebc6dc460cd457fae1034010859f81a8751c`へ固定されている。ローカルChromium 390×844 / 375×667は各16画面PASSし、全32枚を目視済みである。ただし2026-08-18時点では、次が未完である。
+V0.8.1のソース、Pixel R2アセット、schema2エンジン、決定論的QAは`main`へ統合済みである。ユーザー承認時のsource snapshotは`0c4c191624b6ffca45c9da91f065d5b9fe49c36a`、初回GitHub統合は`3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19`、WebKit viewport修正は`5d16682e51b974e4b3f72a3ceb7a58c229e827f7`、現行Production runtime基準は`ebe26884f9e4500d8e755f0b4fae328ef208c6b6`である。
 
-- candidate commitは確定したが、外部pushは明示承認待ち
-- `main`への反映は未確定
-- Vercel Productionへの配信は未確定
-- WebKitを含むGitHub Actions全4環境QAは未完走
-- CIが生成する全64証跡の目視監査は未完
-- 物理iPhoneは未確認
+固定Productionでは実行時13ファイルのhash一致、テスト・引継ぎ文書・旧アートの公開除外、Chromium 390×844 / 375×667の実走を確認済みである。GitHub ActionsでもChromium / WebKitの2幅、計64画面を検証済みである。物理iPhoneと追加猫・敵・城・長期バランスは未完成である。
 
-したがって、現時点で「V0.8.1 Production完成」と報告してはいけない。
+したがって「V0.8.1 Production Vertical Slice配信済み」は正しいが、「フルゲーム完成」または「iPhone実機確認済み」と報告してはいけない。
 
 ---
 
@@ -34,19 +29,21 @@ V0.8.1のソース、Pixel R2アセット、schema2エンジン、決定論的QA
 | GitHub repository | `2hg7trp7rv-design/cats_tower` |
 | Canonical branch | `main` |
 | Product direction | V0.8.1 Pixel Tower Vertical Slice |
-| Candidate build | `v081-pixel-tower-r2` |
-| Candidate implementation commit | `f26cebc6dc460cd457fae1034010859f81a8751c` |
-| 現在の作業ブランチ | `codex/v080-r1-vertical-slice` |
+| Production build | `v081-pixel-tower-r2-p3` |
+| Source snapshot | `0c4c191624b6ffca45c9da91f065d5b9fe49c36a` |
+| Production runtime commit | `ebe26884f9e4500d8e755f0b4fae328ef208c6b6` |
+| 現在の正本ブランチ | `main` |
 | 作業開始時HEAD | `6c3adac7a31cff3864f55028e77719c54471c84a` |
 | Production URL | `https://cats-tau-dusky.vercel.app/` |
 | Vercel project ID | `prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB` |
 | Vercel team ID | `team_6odZCZQ1QxjzhPdC9sgEtoCM` |
-| 最後に照合した`main` / Production | `f70fd31af5aa1546ef7356edcba2e7a68deb4384`相当の旧V0.8.0 |
-| V0.8.1 Production | pending |
+| 最後に照合したruntime | `main@ebe26884f9e4500d8e755f0b4fae328ef208c6b6` |
+| V0.8.1 Production deployment | `dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm` / READY |
+| Last visually audited Actions run | `32091801556` / artifact `9308695207` |
 
 バージョン番号の大きさを理由に、旧V0.9.xへ戻さない。V0.9.xは途中試作であり、現在の正しい系列ではない。
 
-Production URLが開けることと、V0.8.1が配信されていることは別である。納品前に公開HTML、JS、CSS、アセット、deployment SHAを候補commitと照合する。
+Production URLが開けることと、V0.8.1が配信されていることは別である。納品前に公開HTML、JS、CSS、アセット、deployment SHAを対象runtime commitと照合する。
 
 ---
 
@@ -210,7 +207,7 @@ Production URLが開けることと、V0.8.1が配信されていることは別
 - 木、布、魚、塔の生活感
 - ゲーム数値は画面端へ整理し、戦場を中央に残す
 
-### Pixel R2正本候補
+### Pixel R2正本
 
 `assets/v080/pixel-r2/`
 
@@ -378,7 +375,7 @@ V0.8.0 Living Tower保存からは、次を維持または変換する。
 - HTTP 4xx / 5xx 0
 - SVG主役アート 0
 
-ローカルではChromium 390×844 / 375×667が各16画面PASSし、全32枚を目視済みである。初回8F到達60.7秒、夜明け後43.9秒、再走比0.723、タップ直接ダメージ0、10Fクロバネ表示、11F突破、schema2再読込と旧保存移行を確認した。WebKit 2環境を含む全4環境はGitHub Actionsで最終確定するため、この引き継ぎ更新時点ではpendingである。
+Production Chromium 390×844 / 375×667は各16画面PASSし、全32枚を目視済みである。GitHub ActionsはChromium / WebKitの両幅、16画面×4環境を生成する。初回8F到達60.7秒、夜明け後43.9秒、再走比0.723、タップ直接ダメージ0、10Fクロバネ表示、11F突破、schema2再読込と旧保存移行を確認した。WebKitでシートが画面外へ移動した初回証跡は`5d16682`で修正し、修正後64枚を目視して再発がないことを確認した。
 
 ---
 
@@ -431,14 +428,13 @@ vibration呼び出しはあるが、サウンド資産と本番触覚設計は�
 
 ## 10. 次に行う順番
 
-1. ユーザーの明示承認後、candidate `f26cebc`をGitHubへpushする
-2. `main`をcandidateへfast-forwardする
-3. GitHub ActionsでChromium / WebKitの390×844、375×667を完走する
-4. CIの16画面×4環境、計64証跡を目視する
-5. Vercel Productionが対象`main` commitを配信していることをファイルhashで確認する
-6. 物理iPhoneでタイトル、戦場、支援、壁、夜明けを確認する
+1. 物理iPhoneでタイトル、戦場、支援、壁、夜明け、PWA更新を確認する
+2. ルナ、トト、ミミの固有spriteと能力を実装する
+3. 自然な追加天敵、ボス、次の城を実装する
+4. 長期転生曲線、サウンド、触覚を本番化する
+5. 最初の同時保存前から保護するwriter lock / revision arbitrationを実装する
 
-この工程が終わる前に、追加猫・追加敵・次の城を量産しない。
+現行Vertical Sliceのゲーム性と画面構造を壊さず、同じ縦塔ループを横へ広げる。
 
 ---
 
@@ -463,7 +459,7 @@ vibration呼び出しはあるが、サウンド資産と本番触覚設計は�
 
 1. 変更ファイル
 2. 変更しなかった領域
-3. candidate / main commit SHA
+3. source snapshot / runtime / main commit SHA
 4. Vercel Production URL
 5. Production deployment SHA
 6. Chromium 390×844結果
