@@ -1,56 +1,591 @@
 (()=>{
 'use strict';
-const VERSION='0.8.0',KEY='cats-tower-v080',LEGACY_KEY='cats-tower-v01';
-const ART={title:'/assets/v080/title-live-v080.webp',food:'/assets/v080/room-food-v080.webp',foodNight:'/assets/v080/room-food-night-v080.webp',home:'/assets/v080/room-home-v080.webp',lobby:'/assets/v080/room-lobby-v080.webp',roof:'/assets/v080/room-roof-v080.webp',memory:'/assets/v080/memory-first-home-v080.webp',mugi:'/assets/v080/mugi-v080.webp',mugiSleep:'/assets/v080/mugi-sleep-v080.webp',luna:'/assets/illustrations/cat-luna.v070.webp',toto:'/assets/illustrations/cat-toto.v070.webp',mimi:'/assets/illustrations/cat-mimi.v070.webp'};
-const CATS={mugi:{name:'ムギ',role:'さかな食堂の店主見習い',trait:'食いしん坊。魚の匂いに誰より早く気づく。',art:ART.mugi},luna:{name:'ルナ',role:'静かな場所を探している猫',trait:'眠ることと毛糸の上で丸くなることが好き。',art:ART.luna},toto:{name:'トト',role:'見回りが得意な猫',trait:'仲間の変化にすぐ気づく、しっかり者。',art:ART.toto},mimi:{name:'ミミ',role:'箱と工作が好きな猫',trait:'新しい道具を見ると試さずにはいられない。',art:ART.mimi}};
-const $=s=>document.querySelector(s),now=()=>Date.now(),clamp=(n,a,b)=>Math.min(b,Math.max(a,n)),fmt=n=>Math.max(0,Math.floor(Number(n)||0)).toLocaleString('ja-JP'),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const els={splash:$('#splash'),start:$('#startBtn'),game:$('#game'),coins:$('#coins'),income:$('#incomeText'),context:$('#contextBar'),contextIcon:$('#contextIcon'),contextText:$('#contextText'),tower:$('#tower'),scroll:$('#towerScroll'),world:document.querySelector('.world'),overview:$('#overviewBtn'),nav:$('#bottomNav'),modal:$('#modal'),tpl:$('#sheetTemplate'),toasts:$('#toastArea'),memoryBadge:$('#memoryBadge'),menu:$('#menuBtn'),coin:$('#coinBtn'),brand:$('#brandBtn')};
-function fresh(){const t=now();return{version:VERSION,coins:108,stock:4,sales:0,mugiMood:82,specialization:null,autoOrder:true,orderEnds:0,homeRestored:true,firstNightDone:false,nightAttempts:0,memories:['arrival'],memoryNew:true,lastSeen:t,lastSale:t+3500,lastSupport:t,lastPet:0,lastRest:0,hasPlayed:false,sound:true}}
-function migrateLegacy(raw){const s=fresh();try{const old=JSON.parse(raw);if(Number.isFinite(+old.coins))s.coins=clamp(+old.coins,0,999999);if(Number.isFinite(+old.sales))s.sales=Math.max(0,+old.sales);const food=Array.isArray(old.floors)?old.floors.find(f=>f?.type==='food'):null;if(food){s.stock=clamp(+food.stock||0,0,12);s.orderEnds=+food.orderEnd||0}s.hasPlayed=true}catch{}return s}
-function normal(s){s.version=VERSION;s.coins=clamp(+s.coins||0,0,9999999);s.stock=clamp(+s.stock||0,0,12);s.sales=Math.max(0,+s.sales||0);s.mugiMood=clamp(+s.mugiMood||80,0,100);s.memories=Array.isArray(s.memories)?[...new Set(s.memories)]:['arrival'];s.lastSeen=Number.isFinite(+s.lastSeen)?+s.lastSeen:now();s.lastSale=Number.isFinite(+s.lastSale)?+s.lastSale:now()+3500;s.lastSupport=Number.isFinite(+s.lastSupport)?+s.lastSupport:now();return s}
-function load(){try{const raw=localStorage.getItem(KEY);if(raw)return normal({...fresh(),...JSON.parse(raw)});const old=localStorage.getItem(LEGACY_KEY);return old?migrateLegacy(old):fresh()}catch{return fresh()}}
-let state=load(),overview=false,timer=0,battle=null;
-function save(){state.lastSeen=now();localStorage.setItem(KEY,JSON.stringify(state))}
-function saleInterval(){return state.specialization==='street'?3300:state.specialization==='bistro'?5600:4300}function salePrice(){return state.specialization==='street'?11:state.specialization==='bistro'?22:14}function orderCost(){return state.specialization==='bistro'?38:30}
-function offlineProgress(){const t=now(),seconds=Math.min(8*3600,Math.max(0,Math.floor((t-state.lastSeen)/1000)));if(seconds<8)return null;const sold=Math.min(state.stock,Math.floor(seconds/(saleInterval()/1000)));if(sold){state.stock-=sold;state.sales+=sold;state.coins+=sold*salePrice();state.mugiMood=clamp(state.mugiMood-sold*.3,0,100)}if(state.orderEnds&&state.orderEnds<=t){state.orderEnds=0;state.stock=clamp(state.stock+6,0,12)}if(!state.stock&&state.coins<35)state.coins=Math.min(35,state.coins+Math.min(seconds,35-state.coins));state.lastSeen=t;state.lastSale=t+saleInterval();save();return{seconds,sold}}
-const offline=offlineProgress();
-function toast(text,tone=''){const x=document.createElement('div');x.className=`toast ${tone}`;x.textContent=text;els.toasts.appendChild(x);setTimeout(()=>x.remove(),2900)}
-function addMemory(id){if(!state.memories.includes(id)){state.memories.push(id);state.memoryNew=true;els.memoryBadge.classList.remove('hidden');save();toast('新しい思い出が増えました。','good')}}
-function updateHeader(){els.coins.textContent=fmt(state.coins);if(state.orderEnds>now())els.income.textContent=`仕入れ ${Math.ceil((state.orderEnds-now())/1000)}秒`;else if(!state.stock&&state.coins<35)els.income.textContent='+1 / 秒 支援';else els.income.textContent=`自動営業 ${salePrice()}¢`;els.memoryBadge.classList.toggle('hidden',!state.memoryNew)}
-function currentTask(){if(state.orderEnds>now())return{icon:'□',text:`商品が届くまで ${Math.ceil((state.orderEnds-now())/1000)}秒`,action:'food'};if(state.orderEnds&&state.orderEnds<=now())return{icon:'□',text:'さかな食堂に商品が届きました',action:'food'};if(!state.specialization)return{icon:'◇',text:'さかな食堂の進む方向を決める',action:'build'};if(state.stock<=2)return{icon:'≈',text:'ムギと魚を棚へ並べる',action:'food'};if(!state.firstNightDone&&state.sales>=2)return{icon:'!',text:'最初の夜番を始める',action:'lobby'};if(state.mugiMood<55)return{icon:'●',text:'共同部屋でムギを休ませる',action:'home'};return{icon:'◎',text:'ムギの今日の様子を見る',action:'home'}}
-function updateContext(){const t=currentTask();els.contextIcon.textContent=t.icon;els.contextText.textContent=t.text;els.context.dataset.action=t.action}
-function floorCard({type,no,name,icon,art,status,statusColor,actionLabel,actionIcon}){return`<article class="floor ${type}" data-room="${type}"><img class="roomArt" src="${art}" alt="${esc(name)}" draggable="false"><div class="floorTag"><span class="floorNo">${no}</span><span class="roomName"><i>${icon}</i>${esc(name)}</span></div><span class="roomStatus" style="--status:${statusColor}"><i></i>${status}</span>${actionLabel?`<button class="roomAction" data-action="open-room" data-room="${type}"><strong>${actionIcon}</strong>${actionLabel}</button>`:''}</article>`}
-function renderTower(preserve=true){const pos=preserve?els.scroll.scrollTop:0,foodStatus=state.orderEnds>now()?`仕入れ中 · ${Math.ceil((state.orderEnds-now())/1000)}秒`:state.stock?`焼きさかなを販売中 · 在庫 ${state.stock}/12`:'魚の棚が空になっています',nightStatus=state.firstNightDone?'C.L.E.A.N.の初回監査を退けました':state.sales>=2?'最初の夜番を始められます':'店を動かすと夜番が開きます';els.tower.innerHTML=[floorCard({type:'roof',no:'ROOF',name:'猫たちの屋上',icon:'✦',art:ART.roof,status:'月と街を眺める静かな場所',statusColor:'#64cbbf',actionLabel:'全体を見る',actionIcon:'▦'}),floorCard({type:'food',no:'3F',name:'さかな食堂',icon:'≈',art:ART.food,status:foodStatus,statusColor:state.stock?'#d8ef78':'#ff815e',actionLabel:'店を見る',actionIcon:'≈'}),floorCard({type:'home',no:'2F',name:'猫の共同部屋',icon:'●',art:ART.home,status:`ムギのごきげん ${Math.round(state.mugiMood)}%`,statusColor:'#ef9c8f',actionLabel:'会いに行く',actionIcon:'●'}),floorCard({type:'lobby',no:'1F',name:'タワーロビー',icon:'⌂',art:ART.lobby,status:nightStatus,statusColor:state.sales>=2?'#ff815e':'#45d6cc',actionLabel:state.sales>=2?'夜番':'ロビー',actionIcon:state.sales>=2?'!':'⌂'})].join('');if(preserve)els.scroll.scrollTop=pos}
-function render(preserve=true){updateHeader();updateContext();renderTower(preserve)}
-function openSheet(title,eyebrow,html){closeSheet(false);const frag=els.tpl.content.cloneNode(true);frag.querySelector('header small').textContent=eyebrow;frag.querySelector('h2').textContent=title;frag.querySelector('.sheetBody').innerHTML=html;els.modal.appendChild(frag)}
-function closeSheet(cancelBattle=true){if(cancelBattle&&battle?.active){clearInterval(battle.timer);battle.active=false;battle=null;toast('夜番を中断しました。','warn')}els.modal.innerHTML=''}
-function section(title,right,body){return`<section class="section"><h3 class="sectionTitle"><span>${title}</span><span>${right||''}</span></h3>${body}</section>`}
-function specializationHtml(){return`<div class="choiceGrid"><button class="card choice" style="--choice:#ef8c5a" data-action="specialize" data-style="street"><i>≈</i><h3>にぎやかな屋台型</h3><p>客数が多く、魚を素早く販売。夜番では高速連射。</p><b>短い周期・低単価</b></button><button class="card choice" style="--choice:#d7b064" data-action="specialize" data-style="bistro"><i>◌</i><h3>静かな小料理屋型</h3><p>少ない客へ丁寧に提供。夜番では一発が重い。</p><b>長い周期・高単価</b></button></div>`}
-function openFood(){const styleName=state.specialization==='street'?'にぎやかな屋台型':state.specialization==='bistro'?'静かな小料理屋型':'まだ決めていません';openSheet('さかな食堂','3F · MUGI’S LITTLE KITCHEN',`<div class="sceneHero"><img src="${ART.food}" alt="ムギが働くさかな食堂"><div class="sceneHeroCopy"><small>THE FIRST SHOP</small><h3>ムギの夢が、店の形になる。</h3><p>営業は自動。プレイヤーは店の方向と、ここぞという準備を決めます。</p></div></div>${section('店の状態','',`<div class="stats"><div class="stat"><small>在庫</small><strong>${state.stock}/12</strong><p>なくなると自動営業が停止</p></div><div class="stat"><small>累計販売</small><strong>${fmt(state.sales)}皿</strong><p>1皿 ${salePrice()}コイン</p></div><div class="stat"><small>店の方向</small><strong>${styleName}</strong><p>暮らし・売上・夜番が変化</p></div><div class="stat"><small>自動仕入れ</small><strong>${state.autoOrder?'ON':'OFF'}</strong><p>在庫2以下で作動</p></div></div>`)}${section('短い手作業','魚を棚へ',`<div class="card fishTask"><h3>皿を右の棚まで滑らせる</h3><p>毎回の販売は自動です。手で準備するのは、強化したい時だけ。</p><div class="fishLane"><span id="fishPlate" class="fishPlate"></span><input id="fishRange" class="fishRange" type="range" min="0" max="100" value="0" aria-label="魚の皿を棚へ滑らせる"></div><div class="actions"><button class="button ghost" data-action="auto-order">自動仕入れ ${state.autoOrder?'ON':'OFF'}</button><button class="button lime" data-action="quick-prep">魚を並べる · 8¢</button></div></div>`)}${!state.specialization?section('店の進む方向','最初の重要な選択',specializationHtml()):''}`);bindFishRange()}
-function bindFishRange(){const range=$('#fishRange'),plate=$('#fishPlate');if(!range||!plate)return;const move=()=>{const lane=range.parentElement,max=Math.max(0,lane.clientWidth-110);plate.style.setProperty('--fishX',`${max*(+range.value/100)}px`)};range.addEventListener('input',move);range.addEventListener('change',()=>{if(+range.value>=88)prepareFish();else{range.value=0;move()}});move()}
-function prepareFish(){if(state.stock>=12)return toast('棚はもういっぱいです。');if(state.coins<8)return toast('8コイン必要です。','warn');state.coins-=8;state.stock=clamp(state.stock+4,0,12);state.mugiMood=clamp(state.mugiMood+2,0,100);addMemory('first-prep');save();toast('ムギと魚を棚へ並べました。','good');openFood();render(true)}
-function specialize(style){if(state.specialization||!['street','bistro'].includes(style))return;state.specialization=style;state.mugiMood=clamp(state.mugiMood+5,0,100);save();toast(style==='street'?'にぎやかな屋台型に決めました。':'静かな小料理屋型に決めました。','good');openFood();render(true)}
-function openHome(){openSheet('猫の共同部屋','2F · A HOME BEFORE A WORKPLACE',`<div class="sceneHero"><img src="${ART.home}" alt="共同部屋で休むムギ"><div class="sceneHeroCopy"><small>MUGI IS HOME</small><h3>${state.mugiMood<55?'今日は少し疲れている。':'ムギは安心して丸くなっている。'}</h3><p>店の効率より先に、猫の暮らしを見る場所です。</p></div></div>${section('今日のムギ','',`<div class="stats"><div class="stat"><small>ごきげん</small><strong>${Math.round(state.mugiMood)}%</strong><p>${state.mugiMood>=75?'尻尾がよく動いています':state.mugiMood>=50?'少し休みたそうです':'今日は仕事を減らした方がよさそう'}</p></div><div class="stat"><small>好きなもの</small><strong>焼きさかな</strong><p>箱より先に魚を見つける</p></div><div class="stat"><small>今の役割</small><strong>店主見習い</strong><p>3F・さかな食堂</p></div><div class="stat"><small>関係</small><strong>最初の家族</strong><p>この塔へ最初に来た猫</p></div></div>`)}<div class="actions"><button class="button lime" data-action="pet">ムギをなでる</button><button class="button" data-action="rest">一緒に休む</button></div>`)}
-function petMugi(){if(now()-state.lastPet<20000)return toast('ムギはまだ満足そうです。');state.lastPet=now();state.mugiMood=clamp(state.mugiMood+6,0,100);save();toast('ムギが目を細めました。','good');openHome();render(true)}
-function restMugi(){if(now()-state.lastRest<45000)return toast('さっき休んだばかりです。');state.lastRest=now();state.mugiMood=clamp(state.mugiMood+14,0,100);addMemory('first-home');save();toast('静かな時間を一緒に過ごしました。','good');openHome();render(true)}
-function openLobby(){const ready=state.sales>=2&&state.stock>=2;openSheet('タワーロビー','1F · NIGHT SHIFT ENTRANCE',`<div class="sceneHero"><img src="${ART.lobby}" alt="夜のタワーロビー"><div class="sceneHeroCopy"><small>C.L.E.A.N. AUTOMATED INSPECTION</small><h3>${state.firstNightDone?'ここは、もう空き家ではない。':'市の清掃機が、この塔を無人だと誤認している。'}</h3><p>昼の商品が、夜には猫たちの家を守る手段になります。</p></div></div>${section('今夜の条件','',`<div class="stats"><div class="stat"><small>必要販売</small><strong>${Math.min(state.sales,2)}/2</strong><p>店が動いている証明</p></div><div class="stat"><small>魚の在庫</small><strong>${state.stock}/2</strong><p>通常攻撃に使用</p></div></div>`)}<div class="actions"><button class="button ${ready?'warm':'ghost'}" data-action="start-night" ${ready?'':'disabled'}>${state.firstNightDone?'夜番をもう一度試す':'最初の夜番を始める'}</button></div>${!ready?`<div class="info" style="margin-top:12px">先にさかな食堂で2皿以上販売し、魚を2個以上残してください。</div>`:''}`)}
-function openRoof(){overview=true;els.world.classList.add('overview');els.overview.querySelector('small').textContent='通常';closeSheet();els.scroll.scrollTo({top:0,behavior:'smooth'})}
-function catsSheet(){const cards=Object.entries(CATS).map(([id,c],i)=>`<article class="card catCard ${i?'locked':''}"><img src="${c.art}" alt="${c.name}" draggable="false"><div><h3>${c.name}</h3><p>${c.role}<br>${c.trait}</p><span>${i?'訪問予定':'現在の住人'}</span></div></article>`).join('');openSheet('猫たち','RESIDENTS & FUTURE VISITORS',`<div class="info">住人猫は深い物語と生活動作を持ち、訪問猫は塔へ収集の広がりを作ります。V0.8ではムギの縦型スライスを完成させます。</div>${section('住人と訪問予定','1 / 4',`<div class="catList">${cards}</div>`)}`)}
-function buildSheet(){openSheet('塔を育てる','REPAIR & SPECIALIZE',`${section('さかな食堂','暮らし・売上・夜番を同時に変える',state.specialization?`<div class="card" style="padding:16px"><h3 style="margin:0 0 6px">${state.specialization==='street'?'にぎやかな屋台型':'静かな小料理屋型'}</h3><p style="margin:0;color:#fff8;font-size:9px;line-height:1.6">単純な「売上＋10%」ではなく、見た目・営業周期・夜番の攻撃方法が変わります。</p></div>`:specializationHtml())}${section('次の復旧候補','V0.9',`<div class="choiceGrid"><article class="card choice"><i style="--choice:#72b8a0">◎</i><h3>毛糸クラブ</h3><p>訪問猫が増える遊び場。夜は毛糸で清掃機を遅くする。</p><b>次のVertical Slice</b></article><article class="card choice"><i style="--choice:#a996eb">✦</i><h3>肉球サロン</h3><p>猫の疲労を整える。夜は泡で装甲を弱める。</p><b>設計枠を確保</b></article></div>`)}`)}
-function memoriesSheet(){state.memoryNew=false;save();els.memoryBadge.classList.add('hidden');const data=[['arrival','塔へ来た夜','ムギが最初の窓からこちらを見た。',ART.title],['first-prep','最初の仕込み','一緒に魚を棚へ並べた。',ART.food],['first-home','ここが家になる','仕事を忘れて、一緒に休んだ。',ART.memory],['first-night','空き家ではない','C.L.E.A.N.へ猫たちの暮らしを示した。',ART.foodNight]],cards=data.map(([id,title,text,art])=>{const unlocked=state.memories.includes(id);return`<article class="card memoryCard ${unlocked?'':'locked'}"><img src="${art}" alt=""><div><small>${unlocked?'MEMORY':'LOCKED MEMORY'}</small><h3>${unlocked?title:'まだ起きていない出来事'}</h3>${unlocked?`<p style="margin:4px 0 0;color:#fff8;font-size:8px">${text}</p>`:''}</div></article>`}).join('');openSheet('思い出帳','LIFE INSIDE THE TOWER',`<div class="info">数値の達成だけでなく、猫と塔で起きた短い出来事を残します。</div>${section('ムギとの記録',`${state.memories.length}/4`,`<div class="memoryGrid">${cards}</div>`)}`)}
-function menuSheet(){openSheet('設定','CAT’S TOWER · V0.8',`<div class="card" style="padding:15px"><h3 style="margin:0 0 6px">Living Tower Vertical Slice</h3><p style="margin:0;color:#fff8;font-size:9px;line-height:1.65">ムギ、さかな食堂、共同部屋、最初の夜番を、本番方向の最小完成単位として実装しています。</p></div><div class="actions"><button class="button ghost" data-action="toggle-sound">効果音 ${state.sound?'ON':'OFF'}</button><button class="button warm" data-action="reset-confirm">最初から</button></div>`)}
-function resetConfirm(){openSheet('最初からやり直す','RESET V0.8 SAVE',`<div class="battleResult"><i>!</i><h3>進行をすべて消します</h3><p>コイン、思い出、店の方向、夜番の記録は元に戻せません。</p></div><div class="actions"><button class="button ghost" data-close="1">戻る</button><button class="button warm" data-action="reset">初期化する</button></div>`)}
-function coinSheet(){openSheet('タワーのコイン','AUTOMATED ECONOMY',`<div class="stats"><div class="stat"><small>所持金</small><strong>${fmt(state.coins)}¢</strong><p>店の復旧と準備に使用</p></div><div class="stat"><small>通常販売</small><strong>${salePrice()}¢</strong><p>${Math.round(saleInterval()/100)/10}秒ごと</p></div><div class="stat"><small>救済</small><strong>最大35¢</strong><p>完全停止時だけロビーのチップ箱に蓄積</p></div><div class="stat"><small>強制広告</small><strong>なし</strong><p>コア体験を止めない</p></div></div>`)}
-function startNight(){if(state.sales<2||state.stock<2)return toast('まだ夜番の準備ができていません。','warn');closeSheet(false);state.nightAttempts++;battle={active:true,hp:state.firstNightDone?105:82,max:state.firstNightDone?105:82,progress:0,stunUntil:0,lastShot:0,bellUsed:false,boxUsed:false,timer:0};openSheet('最初の夜番','C.L.E.A.N. INSPECTION',`<div class="battleCard"><img class="battleBg" src="${ART.foodNight}" alt="夜のさかな食堂"><div class="battleTint"></div><div class="battleHud"><header><small>AUTOMATED CLEANING UNIT</small><h3>店を「廃棄物」から守る</h3><div class="enemyBar"><i id="enemyHp" style="width:100%"></i></div></header></div><div class="enemyProgress"><small><span>1F 入口</span><span id="enemyProgressLabel">屋上まで 100%</span></small><div class="progressTrack"><i id="enemyProgress" style="width:0%"></i></div></div><div class="battleTools"><button data-action="battle-fish"><i>≈</i><b>魚を投げる</b><small>在庫1・14ダメージ</small></button><button data-action="battle-bell"><i>♢</i><b>ベルを鳴らす</b><small>3秒停止・1回</small></button><button data-action="battle-box"><i>□</i><b>箱で止める</b><small>22ダメージ・1回</small></button></div></div>`);battle.timer=setInterval(battleTick,200);battleTick()}
-function battleDamage(n){if(!battle?.active)return;battle.hp=Math.max(0,battle.hp-n);if(battle.hp<=0)finishNight(true)}
-function battleTick(){if(!battle?.active)return;const t=now(),dt=.2;if(t>=battle.stunUntil)battle.progress+=100/34*dt;const attackEvery=state.specialization==='street'?1050:state.specialization==='bistro'?1750:1350,damage=state.specialization==='bistro'?11:state.specialization==='street'?6:8;if(state.stock>0&&t-battle.lastShot>=attackEvery){battle.lastShot=t;state.stock--;battleDamage(damage)}const hp=$('#enemyHp'),pg=$('#enemyProgress'),label=$('#enemyProgressLabel');if(hp)hp.style.width=`${battle.hp/battle.max*100}%`;if(pg)pg.style.width=`${clamp(battle.progress,0,100)}%`;if(label)label.textContent=`屋上まで ${Math.max(0,Math.ceil(100-battle.progress))}%`;if(battle.progress>=100)finishNight(false)}
-function battleTool(type){if(!battle?.active)return;if(type==='fish'){if(state.stock<1)return toast('魚の在庫がありません。','warn');state.stock--;battleDamage(14);toast('ムギが魚を投げました。')}if(type==='bell'){if(battle.bellUsed)return toast('ベルはもう使いました。');battle.bellUsed=true;battle.stunUntil=now()+3000;toast('清掃機が音を確認しています。','good');const b=$('[data-action="battle-bell"]');if(b)b.disabled=true}if(type==='box'){if(battle.boxUsed)return toast('箱はもう使いました。');battle.boxUsed=true;battleDamage(22);toast('入口を箱で塞ぎました。','good');const b=$('[data-action="battle-box"]');if(b)b.disabled=true}}
-function finishNight(win){if(!battle?.active)return;clearInterval(battle.timer);battle.active=false;battle=null;if(win){state.firstNightDone=true;state.coins+=68;state.mugiMood=clamp(state.mugiMood+10,0,100);addMemory('first-night');save();render(true);openSheet('夜番を終えました','THE TOWER IS NOT EMPTY',`<div class="battleResult"><i>✓</i><h3>ここは、猫たちが暮らす家です。</h3><p>C.L.E.A.N.は一時的に撤退しました。昼の店と商品が、そのまま夜の解決方法になりました。</p></div><div class="stats"><div class="stat"><small>報酬</small><strong>+68¢</strong><p>次の復旧に使用</p></div><div class="stat"><small>思い出</small><strong>1枚</strong><p>思い出帳へ追加</p></div></div><div class="actions"><button class="button lime" data-close="1">タワーへ戻る</button></div>`)}else{state.mugiMood=clamp(state.mugiMood-3,0,100);save();render(true);openSheet('今夜は撤退','NIGHT SHIFT REPORT',`<div class="battleResult"><i style="background:linear-gradient(#ffb28b,#ef7953);color:#401d13">!</i><h3>失うものはありません。</h3><p>猫や店舗は消えません。魚を準備し、使う道具の順番を変えて再挑戦できます。</p></div><div class="actions"><button class="button ghost" data-close="1">タワーへ戻る</button><button class="button warm" data-action="start-night">再挑戦</button></div>`)}}
-function runContext(){const a=els.context.dataset.action;if(a==='food')openFood();else if(a==='home')openHome();else if(a==='lobby')openLobby();else buildSheet()}function openRoom(type){if(type==='food')openFood();else if(type==='home')openHome();else if(type==='lobby')openLobby();else openRoof()}function navTo(name){els.nav.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));if(name==='tower')closeSheet();else if(name==='cats')catsSheet();else if(name==='build')buildSheet();else memoriesSheet()}
-function tick(){const t=now();let changed=false;if(state.orderEnds&&state.orderEnds<=t){state.orderEnds=0;state.stock=clamp(state.stock+6,0,12);toast('魚が届きました。ムギが棚を確認しています。','good');changed=true}if(!battle?.active&&state.stock>0&&t>=state.lastSale){state.stock--;state.sales++;state.coins+=salePrice();state.mugiMood=clamp(state.mugiMood-.35,0,100);state.lastSale=t+saleInterval();changed=true}if(!state.orderEnds&&state.autoOrder&&state.stock<=2&&state.coins>=orderCost()){state.coins-=orderCost();state.orderEnds=t+5000;toast('ムギが次の魚を仕入れました。');changed=true}if(!state.stock&&!state.orderEnds&&state.coins<35&&t-state.lastSupport>=1000){const n=Math.floor((t-state.lastSupport)/1000);state.coins=Math.min(35,state.coins+n);state.lastSupport+=n*1000;changed=true}if(changed){save();render(true)}else{updateHeader();updateContext()}}
-function startGame(){if(!els.game.classList.contains('hidden'))return;state.hasPlayed=true;save();els.splash.animate([{opacity:1},{opacity:0}],{duration:420,fill:'forwards'}).finished.finally(()=>els.splash.classList.add('hidden'));els.game.classList.remove('hidden');render(false);requestAnimationFrame(()=>{const food=els.tower.querySelector('[data-room="food"]');if(food)els.scroll.scrollTop=Math.max(0,food.offsetTop-110)});clearInterval(timer);timer=setInterval(tick,500);if(offline?.sold)toast(`留守中に焼きさかなが${offline.sold}皿売れました。`,'good')}
-function modalClick(e){const close=e.target.closest('[data-close]');if(close){if(e.target===close||close.tagName==='BUTTON')closeSheet();return}const a=e.target.closest('[data-action]');if(!a)return;const type=a.dataset.action;if(type==='specialize')specialize(a.dataset.style);else if(type==='quick-prep')prepareFish();else if(type==='auto-order'){state.autoOrder=!state.autoOrder;save();openFood();render(true)}else if(type==='pet')petMugi();else if(type==='rest')restMugi();else if(type==='start-night')startNight();else if(type==='battle-fish')battleTool('fish');else if(type==='battle-bell')battleTool('bell');else if(type==='battle-box')battleTool('box');else if(type==='toggle-sound'){state.sound=!state.sound;save();menuSheet()}else if(type==='reset-confirm')resetConfirm();else if(type==='reset'){localStorage.removeItem(KEY);state=fresh();closeSheet(false);render(false);toast('V0.8を最初から開始しました。','good')}}
-function towerClick(e){const a=e.target.closest('[data-action="open-room"]');if(a)return openRoom(a.dataset.room);const f=e.target.closest('[data-room]');if(f)openRoom(f.dataset.room)}function toggleOverview(){overview=!overview;els.world.classList.toggle('overview',overview);els.overview.querySelector('small').textContent=overview?'通常':'全体';if(overview)els.scroll.scrollTo({top:0,behavior:'smooth'})}
-els.start.addEventListener('click',startGame);els.context.addEventListener('click',runContext);els.tower.addEventListener('click',towerClick);els.nav.addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(b)navTo(b.dataset.nav)});els.overview.addEventListener('click',toggleOverview);els.modal.addEventListener('click',modalClick);els.menu.addEventListener('click',menuSheet);els.coin.addEventListener('click',coinSheet);els.brand.addEventListener('click',()=>openSheet("Cat's tower",'LIVING TOWER CONCEPT',`<div class="info">昼は小さな猫たちの店。夜はみんなで守る家。猫の行動を観察し、短い判断で古い塔を本当の居場所へ変えていきます。</div>`));addEventListener('pagehide',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=080').catch(()=>{}));
-updateHeader();updateContext();if(state.hasPlayed)els.start.textContent='タワーへ戻る';window.__CATS_TEST_API__={version:VERSION,getState:()=>structuredClone(state),reset:()=>{localStorage.removeItem(KEY);state=fresh();render(false)},unlock:()=>{state.specialization='street';state.stock=10;state.sales=8;state.coins=800;state.memories=['arrival','first-prep','first-home','first-night'];state.firstNightDone=true;save();render(false)},startNight};
+
+const Data=window.CatsTowerData;
+const Core=window.CatsTowerCore;
+if(!Data||!Core)throw new Error('Cat tower engine failed to load');
+
+const $=selector=>document.querySelector(selector);
+const $$=selector=>[...document.querySelectorAll(selector)];
+const now=()=>Date.now();
+const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
+const storageGet=key=>{try{return localStorage.getItem(key)}catch{return null}};
+const storageSet=(key,value)=>{try{localStorage.setItem(key,value);return true}catch{return false}};
+const storageRemove=key=>{try{localStorage.removeItem(key);return true}catch{return false}};
+const format=value=>{
+  const number=Math.max(0,Number(value)||0);
+  if(number<10000)return Math.floor(number).toLocaleString('ja-JP');
+  const units=[['京',1e16],['兆',1e12],['億',1e8],['万',1e4]];
+  const unit=units.find(([,size])=>number>=size);
+  return unit?`${(number/unit[1]).toFixed(number/unit[1]>=100?0:1)}${unit[0]}`:String(Math.floor(number));
+};
+
+const els={
+  splash:$('#splash'),start:$('#startBtn'),game:$('#game'),coins:$('#coins'),shards:$('#dawnShards'),
+  floor:$('#floorLabel'),best:$('#bestFloor'),catCount:$('#catCount'),dispatchMeter:$('#dispatchMeter'),dispatchGauge:$('#dispatchGauge'),
+  battlefield:$('#towerBattlefield'),scene:$('.towerScene'),backdrop:$('#towerBackdrop'),unitLayer:$('#unitLayer'),
+  effects:$('#effectLayer'),enemyName:$('#enemyName'),enemyMark:$('#enemyMark'),enemyHp:$('#enemyHp'),enemyHpTrack:$('#enemyHpTrack'),
+  enemyHpText:$('#enemyHpText'),supportNode:$('#supportNode'),callout:$('#floorCallout'),tap:$('#tapDispatch'),
+  mugiLevel:$('#mugiLevel'),weaponLevel:$('#weaponLevel'),dispatchLevel:$('#dispatchLevel'),
+  mugiCost:$('#mugiCost'),weaponCost:$('#weaponCost'),dispatchCost:$('#dispatchCost'),
+  dawn:$('#dawnButton'),dawnPreview:$('#dawnRewardPreview'),nav:$('#bottomNav'),modal:$('#modal'),
+  template:$('#sheetTemplate'),toasts:$('#toastArea'),memoryBadge:$('#memoryBadge'),menu:$('#menuBtn'),
+  coin:$('#coinBtn'),shard:$('#shardBtn'),brand:$('#brandBtn')
+};
+
+const primaryRaw=storageGet(Data.SAVE_KEY);
+const legacyRaw=storageGet(Data.LEGACY_KEY);
+const restored=Core.restoreState(primaryRaw,legacyRaw,now());
+if(restored.migrated&&primaryRaw&&!storageGet(Data.SCHEMA1_BACKUP_KEY)){
+  storageSet(Data.SCHEMA1_BACKUP_KEY,primaryRaw);
+}
+let engine=Core.createEngine(restored.state,{now:now()});
+const offlineElapsed=Math.max(0,now()-engine.state.lastSeen);
+const offline=engine.applyOffline(offlineElapsed,now());
+let saveBlocked=Boolean(restored.unsupportedSchema);
+let saveBlockKind=restored.unsupportedSchema?'future':'';
+let storageWarningShown=false;
+let running=false;
+let raf=0;
+let lastFrame=performance.now();
+let lastRender=0;
+let lastSave=performance.now();
+let lastFloor=engine.state.currentFloor;
+let activeSheet='';
+let sheetReturnFocus=null;
+let calloutTimer=0;
+
+function save(){
+  if(saveBlocked)return false;
+  const saved=storageSet(Data.SAVE_KEY,engine.serialize(now()));
+  if(!saved&&!storageWarningShown){
+    storageWarningShown=true;
+    requestAnimationFrame(()=>toast('この端末では保存できません。空き容量とSafariの設定を確認してください。','warn'));
+  }
+  return saved;
+}
+
+function toast(text,tone=''){
+  const node=document.createElement('div');
+  node.className=`toast ${tone}`;
+  node.textContent=text;
+  els.toasts.appendChild(node);
+  setTimeout(()=>node.remove(),2900);
+}
+
+function showCallout(title,text=''){
+  clearTimeout(calloutTimer);
+  els.callout.innerHTML=`<strong>${esc(title)}</strong>${text?`<small>${esc(text)}</small>`:''}`;
+  els.callout.classList.remove('hidden');
+  calloutTimer=setTimeout(()=>els.callout.classList.add('hidden'),1500);
+}
+
+function showEffect(text,x=79,y=57,tone=''){
+  const node=document.createElement('span');
+  node.className=`battleFx ${tone}`;
+  node.style.left=`${x}%`;
+  node.style.top=`${y}%`;
+  node.textContent=text;
+  els.effects.appendChild(node);
+  setTimeout(()=>node.remove(),650);
+}
+
+function addMemory(id){
+  if(!engine.state.memories.includes(id)){
+    engine.state.memories.push(id);
+    engine.state.memoryNew=true;
+  }
+}
+
+function handleEvents(visual=true){
+  const events=engine.drainEvents();
+  for(const event of events.slice(-32)){
+    if(event.type==='cat-hit'&&visual){
+      showEffect(`-${format(event.damage)}`,82,54,'hitFx');
+    }else if(event.type==='enemy-hit'&&visual){
+      showEffect('!',67,64,'dangerFx');
+    }else if(event.type==='floor-cleared'){
+      if(visual)showCallout(`${event.floor}F 制圧`,`猫たちは ${event.nextFloor}F へ`);
+    }else if(event.type==='support-unlocked'){
+      const name=event.id==='restaurant'?'さかな食堂':'猫の共同部屋';
+      if(visual)toast(`${name}が塔の支援拠点になりました。`,'good');
+    }else if(event.type==='upgrade-bought'&&visual){
+      showEffect('UP!',24,76,'goodFx');
+    }else if(event.type==='dawn-complete'){
+      if(visual)showCallout('夜明け',`恒久戦力 ×${event.permanentMultiplier.toFixed(2)}`);
+    }
+  }
+}
+
+function spriteFrame(phase,isEnemy=false){
+  if(phase==='attacking')return isEnemy?'peck':'attack';
+  if(phase==='moving')return isEnemy?'fly':'walk';
+  if(phase==='defeated')return isEnemy?'retreat':'cheer';
+  return 'idle';
+}
+
+function renderUnits(runtime){
+  const liveIds=new Set();
+  for(const unit of runtime.units){
+    liveIds.add(String(unit.id));
+    let node=els.unitLayer.querySelector(`.catUnit[data-unit-id="${unit.id}"]`);
+    if(!node){
+      node=document.createElement('div');
+      node.className=`catUnit catUnit--${unit.kind}`;
+      node.dataset.unitId=String(unit.id);
+      node.dataset.facing='right';
+      node.innerHTML='<span class="spriteSheet spriteSheet--mugi" data-frame="walk"></span>';
+      els.unitLayer.appendChild(node);
+    }
+    const x=10+unit.progress*59;
+    const y=71+(unit.lane-.5)*16;
+    node.style.setProperty('--x',`${x}%`);
+    node.style.setProperty('--y',`${y}%`);
+    node.dataset.phase=unit.phase;
+    node.querySelector('.spriteSheet').dataset.frame=spriteFrame(unit.phase);
+    node.style.opacity=unit.hp>0?'1':'0';
+    if(unit.kind==='helper')node.style.setProperty('--helper-hue',`${(unit.id%4)*34}deg`);
+  }
+  $$('.catUnit[data-unit-id]').forEach(node=>{if(!liveIds.has(node.dataset.unitId))node.remove()});
+
+  let enemy=els.unitLayer.querySelector('#enemyUnit');
+  if(!enemy){
+    enemy=document.createElement('div');
+    enemy.id='enemyUnit';
+    enemy.className='enemyUnit';
+    enemy.dataset.facing='left';
+    enemy.innerHTML='<span class="spriteSheet spriteSheet--crow" data-frame="idle"></span>';
+    els.unitLayer.appendChild(enemy);
+  }
+  enemy.dataset.enemy=runtime.enemy.isBoss?'boss':runtime.enemy.id;
+  enemy.dataset.phase=runtime.phase==='fighting'?'attacking':'moving';
+  enemy.style.setProperty('--x','82%');
+  enemy.style.setProperty('--y','67%');
+  enemy.querySelector('.spriteSheet').dataset.frame=spriteFrame(enemy.dataset.phase,true);
+}
+
+function renderSupport(state){
+  const node=els.supportNode;
+  node.className='supportNode hidden';
+  node.removeAttribute('data-action');
+  if(state.roomUnlocked||state.roomLevel>0){
+    node.className='supportNode supportNode--home';
+    node.dataset.action='open-home';
+    node.innerHTML='<span>⌂</span><strong>共同部屋</strong>';
+    node.style.setProperty('--x','76%');
+    node.style.setProperty('--y','38%');
+  }else if(state.restaurantUnlocked||state.currentFloor>=Data.BALANCE.restaurantUnlockFloor){
+    node.className='supportNode supportNode--food';
+    node.dataset.action='open-food';
+    node.innerHTML='<span>≈</span><strong>さかな食堂</strong>';
+    node.style.setProperty('--x','76%');
+    node.style.setProperty('--y','43%');
+  }
+}
+
+function renderUpgrade(id,levelNode,costNode){
+  const state=engine.state;
+  const cost=Core.getUpgradeCost(state,id);
+  const definition=Data.UPGRADES[id];
+  const button=$(`[data-upgrade="${id}"]`);
+  levelNode.textContent=`Lv.${state[definition.stateField]}`;
+  costNode.textContent=Number.isFinite(cost)?`${format(cost)}¢`:'LOCK';
+  button.disabled=!Number.isFinite(cost)||state.coins<cost;
+}
+
+function render(){
+  const state=engine.state;
+  const runtime=engine.getRuntime();
+  const metrics=engine.getMetrics();
+  els.coins.textContent=format(state.coins);
+  els.shards.textContent=format(state.dawnShards);
+  els.coin.setAttribute('aria-label',`コイン ${format(state.coins)}`);
+  els.shard.setAttribute('aria-label',`夜明けのかけら ${format(state.dawnShards)}`);
+  els.floor.textContent=`${state.currentFloor}F`;
+  els.best.textContent=`${state.bestFloor}F`;
+  els.catCount.textContent=runtime.unitCount;
+  const dispatchProgress=1-clamp(runtime.autoDispatchCooldownMs/Math.max(1,metrics.dispatchIntervalMs),0,1);
+  const dispatchPercent=Math.round(dispatchProgress*100);
+  els.dispatchMeter.style.width=`${dispatchPercent}%`;
+  els.dispatchGauge.setAttribute('aria-valuenow',String(dispatchPercent));
+  els.enemyName.textContent=runtime.enemy.name;
+  els.enemyMark.textContent=runtime.enemy.isBoss?'BOSS':runtime.atWall?'WALL':'WILD';
+  els.enemyHpText.textContent=`HP ${format(runtime.enemyHp)} / ${format(runtime.enemyMaxHp)}`;
+  const enemyPercent=Math.round(clamp(runtime.enemyHp/Math.max(1,runtime.enemyMaxHp)*100,0,100));
+  els.enemyHp.style.width=`${enemyPercent}%`;
+  els.enemyHpTrack.setAttribute('aria-valuenow',String(enemyPercent));
+  els.battlefield.dataset.phase=runtime.phase;
+  const focus=clamp(100-((state.currentFloor-1)%6)*17,0,100);
+  els.backdrop.style.objectPosition=`center ${focus}%`;
+  els.scene.style.setProperty('--tower-focus',`${focus}%`);
+  els.tap.disabled=runtime.unitCount>=Data.BALANCE.unitCap||runtime.manualDispatchCooldownMs>0;
+  renderUnits(runtime);
+  renderSupport(state);
+  renderUpgrade('mugi',els.mugiLevel,els.mugiCost);
+  renderUpgrade('weapon',els.weaponLevel,els.weaponCost);
+  renderUpgrade('dispatch',els.dispatchLevel,els.dispatchCost);
+  const dawn=engine.previewDawn();
+  const showDawn=dawn.available&&(runtime.atWall||state.currentFloor>Data.BALANCE.wallFloor||state.ascensions>0);
+  els.dawn.classList.toggle('hidden',!showDawn);
+  els.dawnPreview.textContent=`今なら ◇${format(dawn.reward)} · 戦力 ×${dawn.multiplierAfter.toFixed(2)}`;
+  els.memoryBadge.classList.toggle('hidden',!state.memoryNew);
+  if(state.currentFloor!==lastFloor){
+    lastFloor=state.currentFloor;
+    els.battlefield.classList.remove('floorTransition');
+    requestAnimationFrame(()=>els.battlefield.classList.add('floorTransition'));
+  }
+}
+
+function frame(timestamp){
+  if(!running)return;
+  const delta=clamp(timestamp-lastFrame,0,250);
+  lastFrame=timestamp;
+  engine.advance(delta);
+  if(timestamp-lastRender>=80){
+    handleEvents(true);
+    render();
+    lastRender=timestamp;
+  }
+  if(timestamp-lastSave>=3000){save();lastSave=timestamp}
+  raf=requestAnimationFrame(frame);
+}
+
+function startLoop(){
+  if(running)return;
+  running=true;
+  lastFrame=performance.now();
+  raf=requestAnimationFrame(frame);
+}
+
+function stopLoop(){
+  running=false;
+  cancelAnimationFrame(raf);
+  raf=0;
+}
+
+function startGame(){
+  engine.state.hasPlayed=true;
+  els.splash.classList.add('hidden');
+  els.game.classList.remove('hidden');
+  save();
+  render();
+  if(saveBlocked)showSaveLock(saveBlockKind);
+  else startLoop();
+  if(offline.coinsEarned>0)toast(`留守中の支援で ${format(offline.coinsEarned)}コインを受け取りました。`,'good');
+}
+
+function openSheet(title,eyebrow,html,id=''){
+  if(!activeSheet&&document.activeElement instanceof HTMLElement)sheetReturnFocus=document.activeElement;
+  closeSheet(false);
+  const fragment=els.template.content.cloneNode(true);
+  fragment.querySelector('header small').textContent=eyebrow;
+  fragment.querySelector('h2').textContent=title;
+  fragment.querySelector('.sheetBody').innerHTML=html;
+  els.modal.appendChild(fragment);
+  activeSheet=id;
+  requestAnimationFrame(()=>els.modal.querySelector('button[data-close]')?.focus());
+}
+
+function closeSheet(restoreFocus=true){
+  els.modal.innerHTML='';
+  activeSheet='';
+  if(restoreFocus){
+    setNavActive('tower');
+    const target=sheetReturnFocus;
+    sheetReturnFocus=null;
+    if(target?.isConnected)requestAnimationFrame(()=>target.focus());
+  }
+}
+
+function setNavActive(name){
+  els.nav.querySelectorAll('button').forEach(button=>{
+    const active=button.dataset.nav===name;
+    button.classList.toggle('active',active);
+    if(active)button.setAttribute('aria-current','page');
+    else button.removeAttribute('aria-current');
+  });
+}
+
+function showSaveLock(kind='external'){
+  const future=kind==='future';
+  openSheet(
+    future?'新しい記録を保護しています':'別のタブで更新されました',
+    'SAVE PROTECTION',
+    `<div class="info">${future
+      ?`この保存は新しいschema ${esc(restored.unsupportedSchema)}です。現在の版では上書きせず保護します。`
+      :'進行の巻き戻りを防ぐため、このタブの戦闘と保存を停止しました。'}</div><div class="actions"><button class="button ghost" data-action="reload-page">再読み込み</button>${future?'<button class="button warm" data-action="reset-confirm">初期化を選ぶ</button>':''}</div>`,
+    'save-lock',
+  );
+  els.modal.querySelector('.modalShade')?.removeAttribute('data-close');
+  els.modal.querySelector('button[data-close]')?.remove();
+  requestAnimationFrame(()=>els.modal.querySelector('[data-action]')?.focus());
+}
+
+function section(title,right,body){
+  return`<section class="section"><h3 class="sectionTitle"><span>${esc(title)}</span><span>${esc(right||'')}</span></h3>${body}</section>`;
+}
+
+function supportPreview(kind,title,text){
+  const position=kind==='food'?'58%':'75%';
+  return`<div class="sceneHero supportPreview supportPreview--${kind}">
+    <img class="pixelAsset" src="/assets/v080/pixel-r2/tower-night-r2.png" alt="${esc(title)}" style="object-position:center ${position}">
+    <div class="sceneHeroCopy"><small>TOWER SUPPORT NODE</small><h3>${esc(title)}</h3><p>${esc(text)}</p></div>
+  </div>`;
+}
+
+function openFood(){
+  const state=engine.state;
+  const cost=Core.getUpgradeCost(state,'restaurant');
+  const styleName=state.specialization==='street'?'にぎやかな配給所':state.specialization==='bistro'?'静かな夜食処':'未選択';
+  openSheet('さかな食堂','3F · CONQUERED SUPPORT',`${supportPreview('food','制圧階で猫たちを支える店','接客ゲームではなく、攻撃と戦利品を強くする塔内施設です。')}
+    ${section('現在の支援',`Lv.${state.restaurantLevel}`,`<div class="stats">
+      <div class="stat"><small>戦闘支援</small><strong>+${Math.max(0,state.restaurantLevel-1)*7}%</strong><p>全猫の攻撃力</p></div>
+      <div class="stat"><small>商人支援</small><strong>+${Math.max(0,state.restaurantLevel-1)*12}%</strong><p>攻撃・撃破収入</p></div>
+      <div class="stat"><small>店の方向</small><strong>${styleName}</strong><p>出撃速度か一撃を選ぶ</p></div>
+      <div class="stat"><small>次の強化</small><strong>${Number.isFinite(cost)?`${format(cost)}¢`:'LOCK'}</strong><p>攻略資金を再投資</p></div>
+    </div>`)}
+    ${!state.specialization?section('店の方向','一度だけ選択',`<div class="choiceGrid">
+      <button class="card choice" data-action="specialize" data-style="street"><i style="--choice:#e9a05e">≫</i><h3>にぎやかな配給所</h3><p>猫の攻撃間隔を短くし、群れの手数を増やす。</p><b>速度型</b></button>
+      <button class="card choice" data-action="specialize" data-style="bistro"><i style="--choice:#d6be75">◆</i><h3>静かな夜食処</h3><p>一匹ずつの攻撃を重くし、壁を押し切る。</p><b>一撃型</b></button>
+    </div>`):''}
+    <div class="actions"><button class="button lime" data-action="upgrade-restaurant" ${state.coins<cost?'disabled':''}>食堂を強化 · ${format(cost)}¢</button></div>`,'food');
+}
+
+function openHome(){
+  const state=engine.state;
+  const metrics=engine.getMetrics();
+  const cost=Core.getUpgradeCost(state,'room');
+  openSheet('猫の共同部屋','5F · PERMANENT HOME',`${supportPreview('home','猫たちが夜明けを越えて戻る場所','生活画面を別ゲームにせず、周回をまたぐ恒久支援拠点にします。')}
+    ${section('夜明けを越えて残るもの',`Lv.${state.roomLevel}`,`<div class="stats">
+      <div class="stat"><small>恒久戦力</small><strong>×${metrics.permanentMultiplier.toFixed(2)}</strong><p>夜明け後も維持</p></div>
+      <div class="stat"><small>最高到達</small><strong>${state.bestFloor}F</strong><p>記録は失われない</p></div>
+      <div class="stat"><small>夜明け</small><strong>${state.ascensions}回</strong><p>過去の壁を高速再走</p></div>
+      <div class="stat"><small>次の部屋</small><strong>${Number.isFinite(cost)?`◇${format(cost)}`:'LOCK'}</strong><p>恒久戦力を追加</p></div>
+    </div>`)}
+    <div class="actions"><button class="button lime" data-action="upgrade-room" ${state.dawnShards<cost?'disabled':''}>共同部屋を強化 · ◇${format(cost)}</button></div>`,'home');
+}
+
+function openSupport(){
+  const state=engine.state;
+  openSheet('塔の支援拠点','CONQUERED FLOORS',`<div class="info">支援施設は独立した経営・生活ミニゲームではありません。猫たちの塔攻略を速くするため、制圧階へ設置されます。</div>
+    ${section('3F',state.restaurantUnlocked?'OPEN':'LOCKED',`<button class="card supportCard" data-action="open-food" ${state.restaurantUnlocked?'':'disabled'}><strong>さかな食堂</strong><small>攻撃力と戦利品を支援</small></button>`)}
+    ${section('5F',state.roomUnlocked?'OPEN':'LOCKED',`<button class="card supportCard" data-action="open-home" ${state.roomUnlocked?'':'disabled'}><strong>猫の共同部屋</strong><small>夜明けを越える恒久支援</small></button>`)}`,'support');
+}
+
+function openDawn(){
+  const preview=engine.previewDawn();
+  if(!preview.available)return toast(`${preview.unlockFloor}Fまで進むと夜明けを選べます。`,'warn');
+  const rows=list=>list.map(item=>`<li><span>${esc(item.label)}</span><strong>${typeof item.value==='number'?format(item.value):esc(item.value??'—')}${item.nextValue!==undefined?` → ${typeof item.nextValue==='number'?format(item.nextValue):esc(item.nextValue)}`:''}</strong></li>`).join('');
+  openSheet('夜明けを迎える','PRESTIGE · PUSH OR RETURN',`<div class="dawnLead"><strong>今戻れば ◇${format(preview.reward)}</strong><p>進み続けて報酬を増やすか、今戻って恒久戦力を早く使うかを選びます。</p></div>
+    <section data-dawn-list="lost"><h3>この周回で失う</h3><ul>${rows(preview.lost)}</ul></section>
+    <section data-dawn-list="kept"><h3>夜明け後も残る</h3><ul>${rows(preview.kept)}</ul></section>
+    <section data-dawn-list="gained"><h3>今回得る</h3><ul>${rows(preview.gained)}</ul></section>
+    <div class="actions"><button class="button ghost" data-close="1">まだ登る</button><button class="button warm" data-action="confirm-dawn">夜明けを迎える</button></div>`,'dawn');
+}
+
+function catsSheet(){
+  openSheet('猫たち','AUTOMATIC CLIMBING PARTY',`<div class="info">猫は自動で出撃し、タップすると追加で駆けつけます。タップそのものは敵へダメージを与えません。</div>
+    ${section('先導猫','1 / 4',`<article class="card pixelCatCard"><span class="spriteSheet spriteSheet--mugi" data-frame="idle"></span><div><h3>ムギ</h3><p>最初に塔へ来た先導猫。群れの先頭で天敵へ向かう。</p><b>Lv.${engine.state.mugiLevel}</b></div></article>
+    <div class="futureCats"><span>ルナ · 近日</span><span>トト · 近日</span><span>ミミ · 近日</span></div>`)}`,'cats');
+}
+
+function memoriesSheet(){
+  engine.state.memoryNew=false;
+  const data=[
+    ['arrival','塔へ来た夜','ムギが最初の階段を見上げた。'],
+    ['restaurant-open','3Fを店に','制圧した階が猫たちの食堂になった。'],
+    ['room-open','帰る場所','共同部屋が夜明けを越える拠点になった。'],
+    ['first-dawn','最初の夜明け','失ったものより速く、猫たちは再び駆け上がった。'],
+    ['first-night','初回夜番','塔の上で大きな天敵を退けた。']
+  ];
+  const cards=data.map(([id,title,text],index)=>{
+    const unlocked=engine.state.memories.includes(id);
+    return`<article class="card pixelMemory ${unlocked?'':'locked'}"><img class="pixelAsset" src="/assets/v080/pixel-r2/tower-night-r2.png" alt="" style="object-position:center ${100-index*18}%"><div><small>${unlocked?'MEMORY':'LOCKED'}</small><h3>${unlocked?esc(title):'まだ起きていない出来事'}</h3>${unlocked?`<p>${esc(text)}</p>`:''}</div></article>`;
+  }).join('');
+  const unlockedCount=data.filter(([id])=>engine.state.memories.includes(id)).length;
+  openSheet('思い出帳','THE CLIMB REMAINS',section('ムギとの記録',`${unlockedCount}/${data.length}`,`<div class="memoryGrid">${cards}</div>`),'memories');
+  save();
+  render();
+}
+
+function menuSheet(){
+  openSheet('設定',`CAT'S TOWER · ${Data.VERSION}`,`<div class="card settingsCard"><h3>Pixel Tower Vertical Slice</h3><p>自動出撃、タップ増援、即時強化、階層攻略、夜明け、高速再走を一つの塔で実装しています。</p></div><div class="actions"><button class="button ghost" data-action="toggle-sound">効果音 ${engine.state.sound?'ON':'OFF'}</button><button class="button warm" data-action="reset-confirm">最初から</button></div>`,'menu');
+}
+
+function resetConfirm(){
+  openSheet('最初からやり直す','RESET V0.8.1 SAVE','<div class="battleResult"><i>!</i><h3>塔の記録を消します</h3><p>最高階、夜明け、思い出、支援拠点を初期状態へ戻します。</p></div><div class="actions"><button class="button ghost" data-close="1">戻る</button><button class="button warm" data-action="reset">初期化する</button></div>','reset');
+}
+
+function coinSheet(){
+  const metrics=engine.getMetrics();
+  openSheet('戦利品','TOWER ECONOMY',`<div class="stats"><div class="stat"><small>所持コイン</small><strong>${format(engine.state.coins)}¢</strong><p>猫・武器・出撃口へ即再投資</p></div><div class="stat"><small>周回収入</small><strong>${format(engine.state.runCoinsEarned)}¢</strong><p>攻撃と撃破で獲得</p></div><div class="stat"><small>現在DPS</small><strong>${format(metrics.partyDps)}</strong><p>戦闘中の猫の合計</p></div><div class="stat"><small>広告依存</small><strong>なし</strong><p>通常戦闘で経済が成立</p></div></div>`,'coins');
+}
+
+function shardSheet(){
+  const preview=engine.previewDawn();
+  openSheet('夜明けのかけら','PERMANENT POWER',`<div class="stats"><div class="stat"><small>所持</small><strong>◇${format(engine.state.dawnShards)}</strong><p>共同部屋の恒久強化に使用</p></div><div class="stat"><small>累計</small><strong>◇${format(engine.state.lifetimeShards)}</strong><p>使っても基礎倍率は残る</p></div><div class="stat"><small>基礎戦力</small><strong>×${preview.multiplierBefore.toFixed(2)}</strong><p>全周回へ適用</p></div><div class="stat"><small>今戻る</small><strong>+◇${format(preview.reward)}</strong><p>${preview.available?'受取可能':'8Fで解禁'}</p></div></div>`,'shards');
+}
+
+function buy(id){
+  const result=engine.upgrade(id);
+  if(!result.ok){
+    toast(result.reason==='insufficient-funds'?'コインが足りません。':'まだ解放されていません。','warn');
+    return false;
+  }
+  handleEvents(true);
+  save();
+  render();
+  if(activeSheet==='food')openFood();
+  if(activeSheet==='home')openHome();
+  return true;
+}
+
+function dispatch(){
+  const before=engine.getRuntimeSummary().enemyHp;
+  const result=engine.dispatch();
+  if(!result.ok){
+    if(result.reason==='unit-cap')toast('階段は猫でいっぱいです。');
+    return result;
+  }
+  render();
+  if(engine.state.sound&&navigator.vibrate)navigator.vibrate(8);
+  const after=engine.getRuntimeSummary().enemyHp;
+  if(before!==after)console.error('Dispatch must not directly damage the enemy');
+  return result;
+}
+
+function handleAction(action,button){
+  if(saveBlocked&&!['reload-page','reset-confirm','reset'].includes(action)){
+    showSaveLock(saveBlockKind);
+    return;
+  }
+  if(action==='dispatch-cat')dispatch();
+  else if(action==='upgrade-mugi')buy('mugi');
+  else if(action==='upgrade-weapon')buy('weapon');
+  else if(action==='upgrade-dispatch')buy('dispatch');
+  else if(action==='upgrade-restaurant')buy('restaurant');
+  else if(action==='upgrade-room')buy('room');
+  else if(action==='open-food')openFood();
+  else if(action==='open-home')openHome();
+  else if(action==='open-support')openSupport();
+  else if(action==='open-dawn')openDawn();
+  else if(action==='confirm-dawn'){
+    const result=engine.dawn();
+    if(result.ok){closeSheet();handleEvents(true);save();render();toast(`◇${result.reward}を受け取り、1Fから再出発しました。`,'good')}
+  }else if(action==='specialize'){
+    const result=engine.specialize(button.dataset.style);
+    if(result.ok){
+      addMemory('restaurant-style');
+      save();openFood();render();
+    }
+  }else if(action==='toggle-sound'){
+    engine.state.sound=!engine.state.sound;save();menuSheet();
+  }else if(action==='reload-page')location.reload();
+  else if(action==='reset-confirm')resetConfirm();
+  else if(action==='reset'){
+    const cleared=[Data.SAVE_KEY,Data.LEGACY_KEY,Data.SCHEMA1_BACKUP_KEY].map(storageRemove).every(Boolean);
+    saveBlocked=false;
+    saveBlockKind='';
+    engine.reset(now());
+    closeSheet();
+    const saved=save();
+    render();
+    toast(cleared&&saved?'最初の夜へ戻りました。':'初期化を保存できませんでした。端末の保存設定を確認してください。',cleared&&saved?'good':'warn');
+  }
+}
+
+function navTo(name){
+  setNavActive(name);
+  if(name==='tower')closeSheet();
+  else if(name==='cats')catsSheet();
+  else if(name==='support')openSupport();
+  else if(name==='memories')memoriesSheet();
+}
+
+els.start.addEventListener('click',startGame);
+els.game.addEventListener('click',event=>{
+  const button=event.target.closest('[data-action]');
+  if(button&&!button.disabled)handleAction(button.dataset.action,button);
+});
+els.modal.addEventListener('click',event=>{
+  const close=event.target.closest('[data-close]');
+  if(close&&(event.target===close||close.tagName==='BUTTON')){closeSheet();return}
+  const button=event.target.closest('[data-action]');
+  if(button&&!button.disabled)handleAction(button.dataset.action,button);
+});
+els.nav.addEventListener('click',event=>{const button=event.target.closest('[data-nav]');if(button)navTo(button.dataset.nav)});
+els.menu.addEventListener('click',menuSheet);
+els.coin.addEventListener('click',coinSheet);
+els.shard.addEventListener('click',shardSheet);
+els.brand.addEventListener('click',()=>openSheet("Cat's tower",'VERTICAL IDLE TOWER','<div class="info">猫が自動で塔を登り、タップで増援し、天敵を退けて資源を即強化へ戻すゲームです。さかな食堂と共同部屋は攻略を支える塔内拠点です。</div>','brand'));
+
+document.addEventListener('keydown',event=>{
+  if(!activeSheet)return;
+  if(event.key==='Escape'){
+    event.preventDefault();
+    if(activeSheet==='save-lock')return;
+    closeSheet();
+    return;
+  }
+  if(event.key!=='Tab')return;
+  const focusable=[...els.modal.querySelectorAll('button:not(:disabled),[href],input:not(:disabled),[tabindex]:not([tabindex="-1"])')];
+  if(!focusable.length)return;
+  const first=focusable[0];
+  const last=focusable[focusable.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+});
+
+addEventListener('storage',event=>{
+  if(event.key!==Data.SAVE_KEY)return;
+  saveBlocked=true;
+  saveBlockKind='external';
+  stopLoop();
+  showSaveLock(saveBlockKind);
+});
+
+addEventListener('pagehide',()=>{save();stopLoop()});
+function resumeFromBackground(){
+  if(document.hidden)return;
+  if(saveBlocked){
+    render();
+    if(!els.game.classList.contains('hidden')&&activeSheet!=='save-lock')showSaveLock(saveBlockKind);
+    return;
+  }
+  const elapsed=Math.max(0,now()-engine.state.lastSeen);
+  const report=engine.applyOffline(elapsed,now());
+  if(report.coinsEarned)toast(`留守中に ${format(report.coinsEarned)}コインを獲得しました。`,'good');
+  lastFrame=performance.now();
+  render();
+  if(!els.game.classList.contains('hidden'))startLoop();
+}
+addEventListener('pageshow',resumeFromBackground);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){save();stopLoop();return}
+  resumeFromBackground();
+});
+
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=081p2').catch(()=>{}));
+
+const qa=new URLSearchParams(location.search).has('qa');
+if(qa){
+  window.__CATS_TEST_API__={
+    version:Data.VERSION,gameplaySchema:Data.GAMEPLAY_SCHEMA,
+    getState:()=>engine.getState(),getRuntime:()=>engine.getRuntime(),getMetrics:()=>engine.getMetrics(),
+    freeze:()=>{stopLoop();return engine.getRuntimeSummary()},
+    advance:milliseconds=>{engine.advance(milliseconds);handleEvents(false);render();return engine.getRuntimeSummary()},
+    seed:patch=>{stopLoop();engine.seed({...patch,hasPlayed:true},now());save();render();return engine.getState()},
+    reset:()=>{stopLoop();storageRemove(Data.SAVE_KEY);storageRemove(Data.LEGACY_KEY);storageRemove(Data.SCHEMA1_BACKUP_KEY);saveBlocked=false;saveBlockKind='';engine.reset(now());save();render();return engine.getState()},
+    dispatch:()=>{const result=engine.dispatch();render();return result},
+    upgrade:id=>{const result=engine.upgrade(id);render();return result},
+    specialize:style=>{const result=engine.specialize(style);render();return result},
+    startDawn:()=>engine.previewDawn(),
+    dawn:()=>{const result=engine.dawn();render();return result},
+    openDawn
+  };
+}
+
+render();
+if(engine.state.hasPlayed)els.start.textContent='夜番へ戻る';
 })();
