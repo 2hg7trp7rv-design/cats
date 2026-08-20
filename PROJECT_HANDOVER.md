@@ -1,477 +1,519 @@
 # Cat's tower 引き継ぎ書
 
-更新日: 2026-08-18
-対象: `2hg7trp7rv-design/cats_tower` / `main`
-現行正本: V0.8.1 Pixel Tower Vertical Slice
+更新日: 2026-08-20
+
+対象repository: `2hg7trp7rv-design/cats_tower`
+
+作業branch: `main`
+
+現行リリースsource: **V0.8.2 Tower Board Redesign**
+
+Vercel配信方式: **GitHub `main`からProductionへ自動deploy**
 
 ## 1. 最初に理解すべき結論
 
-Cat's towerのゲーム性は、V0.8.1で縦型放置インクリメンタルRPGへ戻した。
+現行リリースsourceには、V0.8.1実機動画と比較研究から判明した構造問題を直すV0.8.2を実装している。
 
-正しい主ループは次である。
+V0.8.2の正しい一続きの体験は次である。
 
-> 猫が自動出撃する → 塔を登って天敵と自動戦闘する → タップで増援する → 攻撃・撃破でコインを得る → 直ちに強化する → 8Fの壁へ到達する → 夜明けで転生する → 旧階層を25%以上速く再走する → 10Fの初回夜番ボスを倒す
+> 猫が自動出撃する → 役割別に戦う → 呼び鈴で増援する → 満員なら6秒号令をかける → 攻撃・撃破・配膳でコインを得る → 3F食堂と5F共同部屋が戦闘を支える → 8F黒羽の結界で夜明けを選ぶ → 1Fから再走する → 10Fクロバネを倒す → 最初の夜番を完了する
 
-以前のV0.8.0 Living Towerは、店舗・共同部屋・短い三択夜番が主役になり、参考作品のゲーム性から外れていた。旧ゲームループは正本ではない。
+このV0.8.2をGitHub `main`の正本とする。`main` pushはVercelの固定URLへ自動deployされ、公開後にlive runtimeを外部照合する。
 
-V0.8.1のソース、Pixel R2アセット、schema2エンジン、決定論的QAは`main`へ統合済みである。ユーザー承認時のsource snapshotは`0c4c191624b6ffca45c9da91f065d5b9fe49c36a`、初回GitHub統合は`3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19`、WebKit viewport修正は`5d16682e51b974e4b3f72a3ceb7a58c229e827f7`、現行Production runtime基準は`ebe26884f9e4500d8e755f0b4fae328ef208c6b6`である。
+- 精密バランスsimulation未実施
+- V0.8.2の全ブラウザQA未完了
+- 物理iPhone未確認
 
-固定Productionでは実行時13ファイルのhash一致、テスト・引継ぎ文書・旧アートの公開除外、Chromium 390×844 / 375×667の実走を確認済みである。GitHub ActionsでもChromium / WebKitの2幅、計64画面を検証済みである。物理iPhoneと追加猫・敵・城・長期バランスは未完成である。
-
-したがって「V0.8.1 Production Vertical Slice配信済み」は正しいが、「フルゲーム完成」または「iPhone実機確認済み」と報告してはいけない。
+したがって「V0.8.2を確認できるようdeployする」は正しいが、実測前に「固定URLはV0.8.2」「V0.8.2 Production Ready」「iPhone実機確認済み」と書くのは誤りである。
 
 ---
 
-## 2. 正本、作業ブランチ、公開先
+## 2. ソースと公開状態
 
 | 項目 | 現在の事実 |
 |---|---|
 | GitHub repository | `2hg7trp7rv-design/cats_tower` |
 | Canonical branch | `main` |
-| Product direction | V0.8.1 Pixel Tower Vertical Slice |
-| Production build | `v081-pixel-tower-r2-p3` |
-| Source snapshot | `0c4c191624b6ffca45c9da91f065d5b9fe49c36a` |
-| Production runtime commit | `ebe26884f9e4500d8e755f0b4fae328ef208c6b6` |
-| 現在の正本ブランチ | `main` |
-| 作業開始時HEAD | `6c3adac7a31cff3864f55028e77719c54471c84a` |
+| V0.8.2作業基点 | `7d486189cccbdb58aeb209432f1782d5393915ef` |
+| 現行リリースsource | `0.8.2` / `v082-pixel-tower-gameplay-redesign` |
+| GitHub正本 | V0.8.2 / この`main` commit |
+| Vercel Production | `main` pushの自動deploy先。live版は外部照合必須 |
 | Production URL | `https://cats-tau-dusky.vercel.app/` |
-| Vercel project ID | `prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB` |
-| Vercel team ID | `team_6odZCZQ1QxjzhPdC9sgEtoCM` |
-| 最後に照合したruntime | `main@ebe26884f9e4500d8e755f0b4fae328ef208c6b6` |
-| V0.8.1 Production deployment | `dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm` / READY |
-| Last visually audited Actions run | `32091801556` / artifact `9308695207` |
+| Production Ready | false。deploy成功とは別判定 |
+| Production runtime commit | Vercel最新Production metadataの`githubCommitSha`を現在の`main` HEADと都度照合 |
+| Production deployment | Vercelの最新Production deploymentを正本とし、固定IDを文書へ埋め込まない |
+| Vercel project | `prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB` |
+| Vercel team | `team_6odZCZQ1QxjzhPdC9sgEtoCM` |
 
-バージョン番号の大きさを理由に、旧V0.9.xへ戻さない。V0.9.xは途中試作であり、現在の正しい系列ではない。
-
-Production URLが開けることと、V0.8.1が配信されていることは別である。納品前に公開HTML、JS、CSS、アセット、deployment SHAを対象runtime commitと照合する。
+固定URLが開けてもV0.8.2が配信されている証拠にはならない。公開前後で、HTML、CSS、JS、Service Worker、manifest、R3 atlasを対象commitと照合する。
 
 ---
 
-## 3. V0.8.1のプロダクト定義
+## 3. V0.8.2を作る理由
 
-### ジャンル
+V0.8.1は正しいジャンルへ戻すことには成功したが、実機動画では次の問題が残った。
 
-スマートフォン縦画面専用の、縦塔型放置インクリメンタルRPG。
+- 一枚の塔背景をずらすだけで、猫が実際に上階へ登って見えない
+- 同じムギ素材が多数重なり、役割と個体差が読めない
+- 通常敵とボスの区別が弱い
+- クロバネが短時間で倒れ、ボス戦になっていない
+- 12匹満員後に主操作が長時間意味を失う
+- 施設が説明シート内の数値で、戦闘との因果が見えにくい
+- シートを開いていても裏で階と敵HPが進む
+- 10F後も未完成階へ進む
 
-### ゲームの中心
-
-- 戦場は常時動いている
-- 猫は自動で出撃する
-- 猫は下から上へ進む
-- 天敵へ到達すると自動攻撃する
-- 天敵も前列の猫を攻撃する
-- 猫が倒れても、次の猫が自動出撃する
-- プレイヤーのタップは追加出撃であり、直接攻撃ではない
-- 攻撃と撃破でコインを得る
-- コインはムギ、猫パンチ、出撃口へ即時再投資する
-- 支援施設は攻略で制圧した階に出現する
-- 8Fに意図的な停滞壁がある
-- 夜明けのタイミングを選ぶ
-- 夜明け後は前周回の時間が圧縮される
-
-### してはいけない再解釈
-
-- タップで敵を直接殴るクリックゲームにしない
-- さかな食堂を在庫・接客中心の別ゲームにしない
-- 共同部屋をごきげん管理の必須画面にしない
-- 初回夜番を魚・ベル・箱の三択ミニゲームへ戻さない
-- 静止カードを縦に並べただけの「塔」に戻さない
-- 数値管理画面へ猫画像を載せただけにしない
+V0.8.2は見た目の追加ではなく、これらをゲーム構造から修正する版である。
 
 ---
 
-## 4. 現在実装されている一周の流れ
+## 4. 3層塔ボード
 
-### 4.1 タイトル
+V0.8.2のプレイ画面は、縦方向に三層を常時表示する。
 
-- `Cat's tower`
-- `V0.8.1 · PIXEL TOWER VERTICAL SLICE`
-- Pixel R2の夜の縦塔
-- 「夜番を始める」
+1. 上層: 次の未制圧階
+2. 中層: 現在の戦闘階
+3. 下層: 制圧済みの後方支援階
 
-### 4.2 自動出撃
+`index.html`上の対応:
 
-- ゲーム開始後、猫は一定間隔で自動出撃する
-- 初期自動出撃間隔は2300ms
-- 強化により最短650msまで短縮する
-- 可視ユニット上限は12匹
-- 先頭の1匹はムギ、追加個体はhelperとして扱う
+- `towerSlice--next`
+- `towerSlice--battle`
+- `towerSlice--support`
 
-### 4.3 タップ増援
+現在のCSS設計は、おおむね上16%、中央59%、下25%である。最終割合は実機検証後に調整してよいが、中央戦闘階を主役にする階層は崩さない。
 
-- `猫を呼ぶ`で猫を1匹追加する
-- 手動出撃クールダウンは150ms
-- タップ時に敵HPを変更しない
-- タップ連打だけが永久に必要な設計にはしない
+上層は暗く未制圧であることを示す。中央は敵HUD、猫、敵、hit効果を持つ。下層は食堂または共同部屋の稼働状態を見せる。
 
-### 4.4 戦闘と収入
+---
 
-- 猫は移動後に自動攻撃する
-- 敵も攻撃範囲へ来た猫を攻撃する
-- 猫の攻撃ごとにコインを得る
-- 敵撃破時にも報酬を得る
-- 画面上部に現在階、最高階、出撃数、敵HPを表示する
+## 5. 階制圧の順序
 
-### 4.5 即時強化
+V0.8.1の即時置換をやめ、V0.8.2は次の順で進める。
 
-常時表示するラン内強化は次の3つ。
+1. `enemy-defeated`
+2. `floor-cleared`
+3. `victory`状態で勝利を保持
+4. `ascending`状態で猫と画面が上昇
+5. `floor-entered`で次の敵を生成
 
-- ムギ — 基礎攻撃力とHP
-- 猫パンチ — 攻撃倍率
-- 出撃口 — 自動出撃間隔
+現行V0.8.2 release値:
 
-強化ボタンは、購入前後のlevel、cost、DPS変化をQAで確認する。
+- 勝利保持: 650ms
+- 上昇: 1350ms
+- 合計遷移: 2000ms
 
-### 4.6 3F さかな食堂
+内部階数は入階時に更新する。撃破と同じ瞬間に次の敵を出さない。
 
-3F到達で解放する攻略支援施設。
+---
 
-- ラン内の攻撃力を支援する
-- 攻撃・撃破収入を支援する
-- 速度型または一撃型の専門化を選ぶ
-- ラン内levelは夜明けで失う
-- 専門化は夜明け後も残る
+## 6. 猫キャスト
 
-接客、仕入れ、魚スライドを主ループへ戻さない。
+### 名前付き猫
 
-### 4.7 5F 猫の共同部屋
+| kind | 名前 | 役割 | 解放 |
+|---|---|---|---|
+| `mugi` | ムギ | frontline | 1F |
+| `luna` | ルナ | ranged | 2F |
+| `toto` | トト | support | 5F |
 
-5F到達で解放する恒久支援拠点。
+- ムギは敵の近くで攻撃と被弾を引き受ける
+- ルナはムギより後ろから短い間隔で攻撃する
+- トトは攻撃時に味方を回復し、攻撃cooldownを短縮する
 
-- 共同部屋levelは夜明け後も維持する
-- 夜明けのかけらを使って強化する
-- 最高階、夜明け回数、恒久倍率を確認する
-- 旧V0.8のごきげん・なでる・休むは主ゲームから外す
+名前付き猫は同時に同kindを複数出さない。
 
-### 4.8 8Fの壁
+### helper
 
-- 8Fは最初の意図的な壁
-- 夜明け解放階も8F
-- 敵HP倍率と回復により、無強化放置では停滞する
-- QAでは8Fを12秒以上維持する
-- 壁に着いたとき、進み続けるか夜明けを選べる
+- `helper-tabby`: frontline
+- `helper-gray`: ranged
+- `helper-calico`: support
 
-### 4.9 夜明け
+helperはrotationで出撃する。戦闘中と`recoveryQueue`を合わせて各kind 1匹に制限し、回復中はそのkindの枠を予約する。現行R3 atlasはhelperを一行だけ持ち、kind固定のCSS hue差分で見分ける。これはV0.8.1の同じムギ大量表示より改善しているが、将来3種の固有sheetへ分ける余地がある。
 
-夜明けは転生システムである。
+### 出撃枠
+
+- 可視上限: 6
+- 初期party capacity: 4
+- ルナ解放後: 5
+- トト解放後: 6
+
+名前付き猫の枠がhelperに先に埋め尽くされないよう、解放に合わせてcapacityを増やす。
+
+---
+
+## 7. 敵と階
+
+| 条件 | 敵 |
+|---|---|
+| 通常階 | 夜ガラスと夜フクロウを交互に出す |
+| 8F | 黒羽の結界 |
+| 10F | クロバネ |
+
+### 夜ガラス
+
+既存Pixel R2の通常敵。V0.8.1から継続。
+
+### 夜フクロウ
+
+Pixel R3の追加通常敵。夜ガラスと異なる丸い顔、翼、攻撃姿勢を持つ。
+
+### 8F 黒羽の結界
+
+生物ではなく、黒い羽根が組み合わさった縦長の魔法障壁。高HPと再生を持ち、最初の夜明けを考える壁になる。
+
+### 10F クロバネ
+
+Pixel R3の専用ボス。金色の目、重い嘴、大きな翼、通常カラスと異なるシルエットを持つ。
+
+10F撃破時:
+
+- `firstNightCleared = true`
+- `completed = true`
+- `currentFloor = 10`
+- `bestFloor = 10`
+- `first-night`思い出を追加
+- 猫を`celebrating`へ変更
+- 完了シートを表示
+- 11Fへ進まない
+
+---
+
+## 8. 呼び鈴と号令
+
+プレイヤーのtapは敵を直接攻撃しない。
+
+### 空き枠がある場合
+
+- 猫を1匹手動出撃
+- 手動cooldownは150ms
+- 敵HP変化は0
+
+### 満員の場合
+
+- 呼び鈴を「みんなで号令」へ切り替える
+- 6秒間、移動と攻撃を加速
+- 現行cooldownは14秒
+- 号令による直接ダメージも0
+- cooldown中は残り時間を表示
+
+満員時に主ボタンを単なるdisabledへ戻さない。
+
+---
+
+## 9. 3F さかな食堂
+
+3F入階で解放するラン内支援施設。
+
+現行動作:
+
+- 基本配膳間隔: 11秒
+- 強化で間隔短縮
+- 下限: 6.5秒
+- 配膳buff: 4秒
+- buff中は猫の攻撃間隔を短縮
+- 配膳時にコインを付与
+- 下層支援階とtoastで配膳を可視化
+
+夜明けで食堂levelと解放状態を失い、再び3Fで解放する。食材在庫、接客、皿スライドを独立した主ゲームにしない。
+
+---
+
+## 10. 5F 猫の共同部屋
+
+5F入階で解放する復帰支援施設。
+
+猫のHPが0になると:
+
+1. 戦場から外れる
+2. `recoveryQueue`へ入る
+3. 共同部屋で回復時間を消化する
+4. 枠が空けば同じkindで再出撃する
+
+回復中のkindはroster上の予約として扱う。待機中に自動・手動出撃が同kindを代役生成して固定formation上で重ならないようにする。復帰後は6種類が各1匹へ戻る。
+
+現行基本回復時間は9秒。共同部屋解放時の係数、level、名前付きかhelperかで短縮し、下限は2.4秒である。
+
+共同部屋levelは夜明け後も残る。ごきげん管理や撫でる操作を進行必須へ戻さない。
+
+---
+
+## 11. シート中の停止
+
+`app.js`のanimation loopは、`activeSheet`が存在する間`engine.advance`を実行しない。
+
+停止対象:
+
+- 猫と敵のHP
+- 攻撃cooldown
+- 階遷移
+- 自動出撃
+- 号令時間
+- 食堂配膳
+- 共同部屋回復
+
+猫、拠点、思い出、設定、夜明け、完了画面のいずれでも同じ。重要イベントをシート裏で発生させない。
+
+---
+
+## 12. 夜明け
+
+8F到達後に解放する転生システム。
 
 失うもの:
 
 - 現在階
 - ラン内コイン
-- ラン内fish（初期値4へ戻る）
 - ムギlevel
 - 猫パンチlevel
 - 出撃口level
-- さかな食堂のラン内level
-- さかな食堂の解放状態（3Fで再解放）
+- 食堂level
+- 食堂解放状態
 
 残るもの:
 
 - 最高階
 - 共同部屋level
 - 思い出
-- さかな食堂の専門化
 - 夜明け回数
-- 累計かけら
+- 累計の朝の鈴
 
 得るもの:
 
-- 夜明けのかけら
-- 累計かけらに基づく恒久戦力
+- 朝の鈴
+- 累計鈴に基づく恒久倍率
 
-一つ目のかけらで恒久倍率は1.00から1.55へ上がる。決定論的core単体の初期バランスでは、旧8Fへの到達時間は約61.3秒から約44.6秒へ短縮し、比率は約0.728である。ブラウザ統合QAでも75%以下を必須とする。
-
-### 4.10 10F 初回夜番ボス
-
-- 10Fは最初のボス階
-- 撃破時に`firstNightCleared`をtrueにする
-- `first-night`の思い出を追加する
-- 追加コイン報酬を得る
-- 撃破後は11Fへ進む
-
-ロジックと表示の現行ボス定義はPixel R2の`great-crow`である。旧C.L.E.A.N.はV0.8.0の履歴であり、現行初回夜番へ戻さない。
+V0.8.1では短いVertical Slice用simulationで再走比約0.723を記録した。これは履歴であり、V0.8.2のバランス証明ではない。V0.8.2の精密バランスsimulationは後工程で行う。
 
 ---
 
-## 5. アートとUI
+## 13. 保存と移行
 
-### 正式方向
+### 継続する契約
 
-**温かいレトロピクセルの夜の塔**
+- 保存キー: `cats-tower-v080`
+- schema: `gameplaySchema: 2`
+- schema1 backup: `cats-tower-v080-schema1-backup`
+- legacy key: `cats-tower-v01`
 
-- 暗い青紫の夜
-- 窓から漏れる暖色光
-- 読みやすい太い輪郭
-- 小さなスマートフォン画面で認識できる猫と敵
-- 木、布、魚、塔の生活感
-- ゲーム数値は画面端へ整理し、戦場を中央に残す
+V0.8.2でもキーとschema番号を変えない。
 
-### Pixel R2正本
+schema2に追加・正規化した主な状態:
 
-`assets/v080/pixel-r2/`
+- `completed`
+- `pendingFloor`
+- `floorTransitionRemainingMs`
+- `floorTransitionStage`
 
-| ファイル | 役割 | 形式・寸法 |
-|---|---|---|
-| `tower-night-r2.png` | タイトル・縦塔戦場 | PNG RGB 941×1672 |
-| `mugi-sprites-r2.png` | ムギ4フレーム | PNG RGBA 2172×724 |
-| `crow-sprites-r2.png` | カラス4フレーム | PNG RGBA 1774×887 |
+旧V0.8.1保存の`currentFloor`が10Fより上を指し、`firstNightCleared`がtrueの場合だけ、10F完了として正規化する。夜明け後の`currentFloor: 1`に歴代`bestFloor: 11`だけが残る場合は現ランを1Fのまま維持し、bestだけ10Fへ丸める。破損JSONはfresh schema2 stateへ戻す。future schemaは上書きせず保護する。
 
-`assets/icons/icon-192.png`と`icon-512.png`は、ムギ、月夜の塔、暖色ランタンを用いたPixel R2のmaskable PWAアイコンである。`apple-touch-icon`にも同じ192px版を使う。
+既存のschema1 / V0.1移行では、次を保護または変換する。この履歴をV0.8.2対応のために削除しない。
 
-CSSは4フレームをidle、walk/fly、attack/peck、cheer/retreatとして表示する。
+- `coins → coins`
+- `stock → fish`
+- `specialization → specialization`
+- `mugiMood → mugiMood`
+- `memories → memories`
+- `hasPlayed → hasPlayed`
+- `sound → sound`
+- `firstNightDone → legacyFirstNightDone`と履歴memory
 
-日本語UIは`assets/fonts/noto-sans-jp-700-ja.woff2`を`CatsTowerJP`として同一ドメイン配信する。端末に同fontがなくても画面の字幅と太さを安定させ、読み込み失敗時はシステム日本語fontへfallbackする。
-
-### 旧R1 plush
-
-`assets/v080/r1/`のぬいぐるみ・ドールハウス画像は旧プロトタイプである。
-
-Pixel R2が実行時、Service Worker、QAのcanonicalである。旧R1はリポジトリ履歴や比較資料として残り得るが、ランタイム画像、fallback、precache、QA必須アセットにはしない。
-
----
-
-## 6. 保存と移行
-
-### 現行キー
-
-`cats-tower-v080`
-
-### 現行schema
-
-`gameplaySchema: 2`
-
-### schema1バックアップ
-
-`cats-tower-v080-schema1-backup`
-
-### 旧キー
-
-`cats-tower-v01`
-
-### 主なstate
-
-- coins
-- fish
-- currentFloor
-- bestFloor
-- checkpointFloor
-- runFloorPeak
-- enemyFloor
-- enemyHp
-- mugiLevel
-- weaponLevel
-- dispatchLevel
-- restaurantLevel
-- roomLevel
-- restaurantUnlocked
-- roomUnlocked
-- dawnShards
-- lifetimeShards
-- ascensions
-- firstNightCleared
-- tutorialStep
-- specialization
-- mugiMood
-- memories
-- totalKills
-- totalTaps
-- lifetimeCoins
-- runCoinsEarned
-- offlineCoinsEarned
-- playTimeMs
-- lastSeen
-
-### 移行
-
-V0.8.0 Living Tower保存からは、次を維持または変換する。
-
-- coins → coins
-- stock → fish
-- specialization → specialization
-- mugiMood → mugiMood
-- memories → memories
-- hasPlayed → hasPlayed
-- sound → sound
-- firstNightDone → legacy記録
-
-移行前のschema1 JSONは一度だけbackup keyへ保存する。破損JSONは例外停止させず、schema2 fresh stateへ戻す。
-
-### オフライン進行
+オフライン進行:
 
 - 最大8時間
-- コインだけを付与する
-- オフライン中に階を進めない
-- 未見ボスを突破しない
-- 復帰時にまとめて計算する
+- コインのみ
+- 階を進めない
+- 結界とボスを突破しない
 
 ---
 
-## 7. ファイル構造
+## 14. アート
 
-| ファイル | 役割 |
+### Pixel R2継続
+
+| ファイル | 役割 | 寸法 |
+|---|---|---|
+| `assets/v080/pixel-r2/tower-night-r2.png` | タイトル・塔 | 941×1672 RGB |
+| `assets/v080/pixel-r2/mugi-sprites-r2.png` | ムギ4状態 | 2172×724 RGBA |
+| `assets/v080/pixel-r2/crow-sprites-r2.png` | 夜ガラス4状態 | 1774×887 RGBA |
+
+### Pixel R3追加
+
+| ファイル | 行 | 列 | 寸法 |
+|---|---|---|---|
+| `assets/v082/pixel-r3/cats-cast-r3.png` | ルナ / トト / helper | idle / walk / action / cheer | 1448×1086 RGBA |
+| `assets/v082/pixel-r3/enemies-r3.png` | フクロウ / 結界 / クロバネ | 各4状態 | 1448×1086 RGBA |
+
+両R3 atlasは4×3、各cell 362×362。CSSは`background-size: 400% 300%`で表示する。
+
+R3はV0.8.2 runtimeへ含める。live配信の有無は公開後に固定URLで確認する。
+
+旧`assets/v080/r1/` plush素材は履歴資料であり、runtime、fallback、precache、QA依存へ戻さない。
+
+---
+
+## 15. 主要ファイル
+
+| ファイル | V0.8.2での役割 |
 |---|---|
-| `index.html` | タイトル、HUD、縦塔戦場、増援、即時強化、夜明け、ナビ、シート |
-| `styles.css` | Pixel Towerレイアウト、スプライト、支援、夜明け、レスポンシブ |
-| `game-data.js` | version、schema、バランス、敵、施設、強化、アセット |
-| `game-core.js` | 保存正規化、移行、決定論的simulation、戦闘、強化、壁、夜明け、offline |
-| `app.js` | DOM描画、入力、保存、シート、animation loop、QA API |
-| `sw.js` | Service Worker cache |
-| `manifest.webmanifest` | PWA設定 |
-| `tests/living-tower-v080.mjs` | Chromium / WebKitの縦塔E2E |
-| `.github/workflows/verify-main.yml` | mainのsource、画像、4環境QA |
-
-`game-core.js`はDOMへ依存しない。実時間animationとQAの`advance(ms)`は同じ100ms固定step simulationを使う。
+| `index.html` | 3層塔、compact HUD、戦闘dock、呼び鈴、シート |
+| `styles.css` | 3層比率、役割位置、R3 atlas、階遷移、モバイル調整 |
+| `game-data.js` | version、猫、敵、施設、号令、R3 art、数値 |
+| `game-core.js` | schema2、役割戦闘、号令、配膳、復帰、階遷移、10F完了 |
+| `app.js` | DOM、audio feedback、effects、シート停止、完了画面 |
+| `sw.js` | V0.8.2 cache定義 |
+| `manifest.webmanifest` | V0.8.2説明 |
+| `tests/living-tower-v080.mjs` | 縦塔QA。名前は履歴上継続 |
 
 ---
 
-## 8. QA契約
+## 16. 検証状態
 
-### 画面と操作
+### V0.8.1で過去に完了したもの
 
-- タイトル
-- 自動出撃中の塔
-- タップ増援
-- 3つの即時強化
-- 階層制圧
-- 3Fさかな食堂
-- 5F共同部屋
-- 8Fの壁
-- 夜明けpreview
-- 夜明け後の高速再走
-- 10F初回夜番クリア
+- Chromium / WebKit
+- 390×844 / 375×667
+- 64証跡目視
+- 固定Production 13 runtime filesのhash照合
+- Production runtime commit `ebe26884...`
 
-### ロジック
+これはV0.8.1の履歴であり、V0.8.2の合格結果ではない。
 
-- 自動出撃が1回以上発生する
-- 手動出撃が1回以上発生する
-- 手動出撃直後の直接ダメージは0
-- 初回撃破で収入が増える
-- 強化後にlevelとDPSが上がる
-- 8Fで12秒間floorが変わらない
-- 夜明けで最高階と共同部屋を維持する
-- 夜明けで食堂ランlevelを0へ戻す
-- 夜明けでかけらと恒久倍率が増える
-- 再走時間が初回の75%以下
-- 10Fボス後に`firstNightCleared`と`first-night`が残る
+### V0.8.2で確認済みの範囲
 
-### 保存
+- release source上にV0.8.2 versionとbuild定義がある
+- 3層DOMとCSSがある
+- 3名の猫、3種helper、フクロウ、結界、クロバネ定義がある
+- 直接tap damage 0と満員時号令のcoreがある
+- 食堂配膳と共同部屋復帰のcoreがある
+- 勝利・上昇・入階の段階状態がある
+- シート中に`engine.advance`しない条件がある
+- 10Fで`completed`へ固定する条件がある
+- R3 atlasがrelease runtime pathへ存在する
+- Chromium 390×844の全E2EがPASSし、18証跡を目視した
+- Chromium 375×667の全E2EがPASSし、18証跡を目視した
+- HTTP、console、overflow、tap target、シート停止の統合目視QAがPASSした
+- 6種類を固定formationへ分離し、回復中のkind予約、復帰後の6種類各1匹、kind固定helper色を回帰検査してPASSした
+- 前衛優先targetと、前衛不在時だけ後衛・支援へfallbackする役割回帰がPASSした
+- 10F撃破直後に回復queueを解消し、6種類全員を勝利rosterへ戻して分離・画面内保持した。再読込後も同じ6種類を復元する
+- 元画像の床座標を画面比率補正ではなく共通接地線へ固定し、6匹同時攻撃時の身体接地点差0.003px未満、可視alpha境界box間2.87px以上を両viewportで確認した
+- 6匹×4状態と4敵×4状態の全40組をatlas由来の身体接地点で独立検査し、猫の床誤差0.009px未満、敵の浮遊量誤差0.011px未満でPASSした。トトの攻撃シールドは身体接地点から除外し、クリッピング検査には含めた
+- 10F入階中を100ms間隔・12時点で追跡し、6種類が重ならず画面内に残ることを両viewportで確認した
+- 旧敵は`victory`と`ascending`の両方で`defeated`を維持し、入階後だけ新敵の`moving`へ切り替わる回帰がPASSした。通常motionのhit / defeat classも再描画後に残る
+- `settingsFacts`を修正し、再目視PASSした
+- 10F完了状態から完了シートが復元されることを確認した
 
-- schema2再読込
-- V0.8.0 Living Tower移行
-- V0.1移行
-- 破損V0.8保存のfresh recovery
+### V0.8.2で未確認
 
-### 環境
-
-- Chromium 390×844
-- WebKit 390×844
-- Chromium 375×667
-- WebKit 375×667
-- device scale factor 3
-- reduced motion
-- console error 0
-- page error 0
-- HTTP 4xx / 5xx 0
-- SVG主役アート 0
-
-Production Chromium 390×844 / 375×667は各16画面PASSし、全32枚を目視済みである。GitHub ActionsはChromium / WebKitの両幅、16画面×4環境を生成する。初回8F到達60.7秒、夜明け後43.9秒、再走比0.723、タップ直接ダメージ0、10Fクロバネ表示、11F突破、schema2再読込と旧保存移行を確認した。WebKitでシートが画面外へ移動した初回証跡は`5d16682`で修正し、修正後64枚を目視して再発がないことを確認した。
+- 精密バランスsimulation
+- WebKit 390×844 / 375×667のE2E
+- WebKit証跡の目視
+- 通常速度の階上昇動画
+- 物理iPhone Safari
+- ChatGPT内ブラウザ
+- PWA standalone
+- Service Worker更新挙動
+- このcommitに対するGitHub Actionsの外部結果
+- Vercel最新Production metadataと現在の`main` HEADの照合
 
 ---
 
-## 9. 既知のリスク
+## 17. 既知のリスク
 
-### 1. helper猫がムギsheetを共有
+### helperは一つのatlas行
 
-core上はムギ1匹とhelperを分けるが、現行DOMは同じムギsheetへhue差を付けて表示する。Vertical Sliceの機能証明には使えるが、追加猫の完成表現ではない。
+3種のkindと役割はあるが、現行ビジュアルは同じhelper行のhue差分である。最終的な固有性が不足する可能性がある。
 
-### 2. 初期バランスは短縮版
+### バランスは未確定
 
-core単体では初回8Fまで約1分である。Vertical Slice内で転生と高速再走を短時間に確認するための値であり、長期製品の最終テンポではない。
+V0.8.2の構造を先に直しており、8Fまでの時間、夜明け後の短縮率、10Fボス秒数は精密simulation前である。V0.8.1の値をそのまま合格値にしない。
 
-### 3. 物理iPhone未確認
-
-未確認項目:
+### 物理iPhone未確認
 
 - Dynamic Island
 - Safari下部バー
 - ホームインジケータ
-- 指での連続増援
-- 375pxでのHUD密度
+- ChatGPT内ブラウザのdismiss gesture
+- 連続tap
 - PWA standalone
-- Service Worker更新
-- Retina上のピクセル拡大
+- Retina上のpixel表示
 
-### 4. 音と触覚
+### 一部基礎artはR2
 
-vibration呼び出しはあるが、サウンド資産と本番触覚設計は未完成。
+塔、ムギ、夜ガラスはR2を継続する。R3との密度・光源差が実機で見える場合は、実装後の画面を基準に調整する。
 
-### 5. 長期コンテンツ未実装
+### 同時タブ
 
-- ルナ
-- トト
-- ミミ
-- 猫ごとの能力
-- 追加天敵
-- 追加ボス
-- 次の城
-- 長期転生曲線
-- イベント
-- 課金
-- クラウドセーブ
-
-### 6. 同時に開いた2タブの最初の競合
-
-別タブから保存更新を受信した後はsave-lockで戦闘・操作・保存を停止し、再読み込みまたは明示初期化だけを許可する。ただし、2タブがstorage eventを受け取る前の極短時間に同時更新した場合はrevision/CASがないため、最初の保存だけ後勝ちになり得る。Vertical Sliceでは複数タブ同時プレイを対象外とし、長期版でwriter lockを追加する。
+storage event後はsave-lockするが、最初の競合前にwriter lock / CASがない問題は残る。長期版の課題である。
 
 ---
 
-## 10. 次に行う順番
+## 18. 次に行う順番
 
-1. 物理iPhoneでタイトル、戦場、支援、壁、夜明け、PWA更新を確認する
-2. ルナ、トト、ミミの固有spriteと能力を実装する
-3. 自然な追加天敵、ボス、次の城を実装する
-4. 長期転生曲線、サウンド、触覚を本番化する
-5. 最初の同時保存前から保護するwriter lock / revision arbitrationを実装する
-
-現行Vertical Sliceのゲーム性と画面構造を壊さず、同じ縦塔ループを横へ広げる。
+1. 現在の`main` HEADとVercel最新Productionの`githubCommitSha`を照合する
+2. GitHub ActionsでChromium / WebKitの4環境を完走し、証跡を目視する
+3. 通常速度、物理iPhone、PWAを確認する
+4. 精密バランスsimulationは今回の方針どおり後続調整へ分離する
+5. 全ゲート通過後にProduction Readyを判定する
 
 ---
 
-## 11. 絶対に戻してはいけないもの
+## 19. 戻してはいけないもの
 
 - 旧V0.9.x
-- V0.8.0 Living Towerを主ゲームとする構成
-- Plush Dollhouseを現行アート正本とする構成
-- 静的な部屋カードだけの塔
+- V0.8.0 Living Tower管理ループを主役にすること
+- R1 plushを正本artにすること
+- 静的部屋カードだけの塔
+- 同じムギを12匹重ねること
+- 通常カラスと同じボス
 - 魚・ベル・箱の三択夜番
-- 魚の皿スライドを主ゲームにすること
-- 猫のごきげん管理を進行必須にすること
-- タップによる直接ダメージ
-- 広告を通常戦闘より強い進行手段にすること
-- 数値チップで戦場を覆うこと
-- 実機未確認なのに「iPhone実機確認済み」と書くこと
-- commit未確定なのにProduction反映済みと書くこと
+- 食材在庫・接客・魚スライド
+- ごきげん管理の必須化
+- tap直接ダメージ
+- 満員時の主操作無効化
+- 撃破と次敵出現の同時処理
+- シート裏での重要進行
+- 10F後の未完成階
+- 実機未確認なのに確認済みと書くこと
+- V0.8.2のdeploy成功だけでProduction Readyと書くこと
 
 ---
 
-## 12. 完了報告の必須項目
+## 20. V0.8.1の履歴
+
+V0.8.1 Pixel Tower Vertical Sliceは、誤ったLiving Tower管理ゲームから縦塔自動戦闘へ戻した公開基準である。
+
+- user-approved source snapshot: `0c4c191624b6ffca45c9da91f065d5b9fe49c36a`
+- feature integration: `3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19`
+- WebKit viewport fix: `5d16682e51b974e4b3f72a3ceb7a58c229e827f7`
+- Production runtime: `ebe26884f9e4500d8e755f0b4fae328ef208c6b6`
+- docs baseline: `7d486189cccbdb58aeb209432f1782d5393915ef`
+- visually audited Actions run: `32091801556`
+- artifact: `9308695207`
+
+V0.8.1の方向、自動戦闘、直接tap damageなし、8F夜明け、10Fボスという骨格は維持する。V0.8.2は、V0.8.1の実機上の欠点を修正した現行リリースsourceである。
+
+---
+
+## 21. 完了報告の必須項目
 
 1. 変更ファイル
 2. 変更しなかった領域
-3. source snapshot / runtime / main commit SHA
-4. Vercel Production URL
-5. Production deployment SHA
-6. Chromium 390×844結果
-7. WebKit 390×844結果
-8. Chromium 375×667結果
-9. WebKit 375×667結果
-10. 画像decode結果
-11. schema移行結果
-12. 8F再走比率
-13. 10Fボス結果
-14. 物理iPhone確認の有無
-15. 目視で残る問題
-16. 次工程へ進めるかのOK / NG
+3. ローカルHEADとcommit
+4. GitHub反映の有無
+5. 固定Production URL
+6. Production deploymentとruntime commit
+7. node syntax結果
+8. JSON結果
+9. 画像decode / alpha結果
+10. Chromium 390×844
+11. WebKit 390×844
+12. Chromium 375×667
+13. WebKit 375×667
+14. 精密バランスsimulation結果
+15. 10F後に11Fへ進まない結果
+16. シート停止結果
+17. 物理iPhone確認の有無
+18. 目視で残る問題
+19. Production ReadyのOK / NG
 
-ビルド成功、HTTP 200、PNG表示だけでは完成判定にならない。
+ビルド成功、HTTP 200、画像表示だけでは完成判定にならない。

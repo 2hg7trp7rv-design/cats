@@ -6,11 +6,28 @@
     throw new Error('CatsTowerData must be loaded before game-core.js');
   }
 
-  const { BALANCE, ENEMIES, ENEMY_ROTATION, UPGRADES } = Data;
+  const {
+    BALANCE,
+    CATS,
+    NAMED_CAT_ORDER,
+    HELPER_ROTATION,
+    ENEMIES,
+    ENEMY_ROTATION,
+    UPGRADES,
+  } = Data;
   const MAX_NUMBER = 1e300;
   const MAX_LEVEL = 10000;
   const MAX_FLOOR = 100000;
-  const UNIT_LANES = Object.freeze([0.27, 0.5, 0.73, 0.38, 0.62]);
+  const FINAL_FLOOR = BALANCE.firstBossFloor;
+  const UNIT_LANES = Object.freeze([0.22, 0.42, 0.66, 0.31, 0.55, 0.76]);
+  const VICTORY_ROSTER = Object.freeze([
+    'helper-calico',
+    'toto',
+    'helper-gray',
+    'luna',
+    'helper-tabby',
+    'mugi',
+  ]);
 
   function currentTime() {
     return Date.now();
@@ -61,6 +78,10 @@
       runFloorPeak: 1,
       enemyFloor: 1,
       enemyHp: null,
+      completed: false,
+      pendingFloor: null,
+      floorTransitionRemainingMs: 0,
+      floorTransitionStage: null,
       wallElapsedMs: 0,
       mugiLevel: 1,
       weaponLevel: 1,
@@ -137,19 +158,59 @@
 
     state.coins = finiteNumber(source.coins, state.coins, 0, MAX_NUMBER);
     state.fish = integer(source.fish, state.fish, 0, 999999);
-    state.currentFloor = integer(source.currentFloor, 1, 1, MAX_FLOOR);
-    state.bestFloor = integer(source.bestFloor, state.currentFloor, 1, MAX_FLOOR);
-    state.bestFloor = Math.max(state.bestFloor, state.currentFloor);
+    const sourceFloor = integer(source.currentFloor, 1, 1, MAX_FLOOR);
+    const sourceBestFloor = integer(source.bestFloor, sourceFloor, 1, MAX_FLOOR);
+    // V0.8.1 could retain bestFloor 11 after a completed run and a later dawn.
+    // Only the active run pointing beyond the finished slice proves legacy completion.
+    const legacyBossClear = Boolean(source.firstNightCleared) && sourceFloor > FINAL_FLOOR;
+    state.completed = Boolean(source.completed) || source.runStatus === 'completed' || legacyBossClear;
+    state.currentFloor = Math.min(FINAL_FLOOR, sourceFloor);
+    state.bestFloor = Math.min(FINAL_FLOOR, Math.max(sourceBestFloor, state.currentFloor));
     state.checkpointFloor = integer(source.checkpointFloor, 1, 1, state.bestFloor);
-    state.runFloorPeak = integer(source.runFloorPeak, state.currentFloor, 1, MAX_FLOOR);
-    state.runFloorPeak = Math.max(state.runFloorPeak, state.currentFloor);
-    state.enemyFloor = integer(source.enemyFloor, state.currentFloor, 1, MAX_FLOOR);
+    state.runFloorPeak = integer(source.runFloorPeak, state.currentFloor, 1, FINAL_FLOOR);
+    state.runFloorPeak = Math.min(FINAL_FLOOR, Math.max(state.runFloorPeak, state.currentFloor));
+    state.enemyFloor = integer(source.enemyFloor, state.currentFloor, 1, FINAL_FLOOR);
     state.enemyHp = source.enemyHp === null || source.enemyHp === undefined
       ? null
       : finiteNumber(source.enemyHp, null, 0, MAX_NUMBER);
     if (state.enemyFloor !== state.currentFloor) {
       state.enemyFloor = state.currentFloor;
       state.enemyHp = null;
+    }
+    const pendingFloor = source.pendingFloor === null || source.pendingFloor === undefined
+      ? null
+      : integer(source.pendingFloor, null, 1, FINAL_FLOOR);
+    const transitionStage = ['victory', 'ascending'].includes(source.floorTransitionStage)
+      ? source.floorTransitionStage
+      : null;
+    const transitionRemainingMs = finiteNumber(
+      source.floorTransitionRemainingMs,
+      0,
+      0,
+      BALANCE.floorTransitionMs,
+    );
+    if (!state.completed && pendingFloor === state.currentFloor + 1 && transitionRemainingMs > 0) {
+      state.pendingFloor = pendingFloor;
+      state.floorTransitionRemainingMs = transitionRemainingMs;
+      state.floorTransitionStage = transitionStage || 'victory';
+      state.enemyHp = 0;
+    } else {
+      state.pendingFloor = null;
+      state.floorTransitionRemainingMs = 0;
+      state.floorTransitionStage = null;
+      if (!state.completed && state.enemyHp !== null && state.enemyHp <= 0) {
+        state.enemyHp = null;
+      }
+    }
+    if (state.completed) {
+      state.currentFloor = FINAL_FLOOR;
+      state.bestFloor = FINAL_FLOOR;
+      state.runFloorPeak = FINAL_FLOOR;
+      state.enemyFloor = FINAL_FLOOR;
+      state.enemyHp = 0;
+      state.pendingFloor = null;
+      state.floorTransitionRemainingMs = 0;
+      state.floorTransitionStage = null;
     }
     state.wallElapsedMs = state.currentFloor === BALANCE.wallFloor
       ? finiteNumber(source.wallElapsedMs, 0, 0, BALANCE.wallObserveMs)
@@ -173,6 +234,7 @@
     state.lifetimeShards = Math.max(state.lifetimeShards, state.dawnShards);
     state.ascensions = integer(source.ascensions, 0, 0, Number.MAX_SAFE_INTEGER);
     state.firstNightCleared = Boolean(source.firstNightCleared);
+    if (state.completed) state.firstNightCleared = true;
     state.tutorialStep = typeof source.tutorialStep === 'string'
       ? source.tutorialStep.slice(0, 80)
       : state.tutorialStep;
@@ -268,7 +330,8 @@
   }
 
   function enemyDefinitionForFloor(floor) {
-    if (floor % BALANCE.firstBossFloor === 0) return ENEMIES.boss;
+    if (floor === BALANCE.firstBossFloor) return ENEMIES.boss;
+    if (floor === BALANCE.wallFloor) return ENEMIES.barrier;
     const id = ENEMY_ROTATION[(floor - 1) % ENEMY_ROTATION.length];
     return ENEMIES[id] || ENEMIES.crow;
   }
@@ -278,7 +341,7 @@
     const definition = enemyDefinitionForFloor(floor);
     const isBoss = definition.kind === 'boss';
     const isMiniBoss = !isBoss && floor % 5 === 0;
-    const isWall = floor === BALANCE.wallFloor;
+    const isWall = definition.kind === 'wall' || floor === BALANCE.wallFloor;
     let hpMultiplier = definition.hpMultiplier;
     if (isBoss) hpMultiplier *= BALANCE.enemyBossMultiplier;
     else if (isMiniBoss) hpMultiplier *= BALANCE.enemyMiniBossMultiplier;
@@ -304,7 +367,8 @@
       isWall,
       maxHp,
       attack,
-      attackIntervalMs: BALANCE.enemyAttackIntervalMs,
+      attackIntervalMs: BALANCE.enemyAttackIntervalMs
+        * finiteNumber(definition.attackIntervalMultiplier, 1, 0.2, 4),
       reward,
       regenPerSecond: isWall ? maxHp * BALANCE.enemyWallRegenPerSecond : 0,
     };
@@ -343,32 +407,83 @@
     );
   }
 
+  function catDefinition(kind) {
+    if (CATS[kind]) return CATS[kind];
+    // `helper` was the only generic kind in 0.8.1. Keep it as an API alias
+    // while all newly spawned helpers use an explicit appearance variant.
+    if (kind === 'helper') return CATS[HELPER_ROTATION[0]];
+    return CATS.mugi;
+  }
+
+  function unlockedNamedCats(state) {
+    const reachedFloor = Math.max(state.bestFloor, state.runFloorPeak, state.currentFloor);
+    return NAMED_CAT_ORDER.filter(id => CATS[id].unlockFloor <= reachedFloor);
+  }
+
+  function computePartyCapacity(state) {
+    const extraNamedSlots = Math.max(0, unlockedNamedCats(state).length - 1);
+    return Math.min(BALANCE.unitCap, BALANCE.startingPartyCap + extraNamedSlots);
+  }
+
   function computeCatStats(state, kind = 'mugi') {
-    const helper = kind === 'helper';
+    const definition = catDefinition(kind);
     const permanent = permanentMultiplier(state);
     const restaurantFactor = 1
       + Math.max(0, state.restaurantLevel - 1) * BALANCE.restaurantAttackPerLevel;
-    const styleAttackFactor = state.specialization === 'bistro' ? 1.13 : 1;
-    const styleSpeedFactor = state.specialization === 'street' ? 0.9 : 1;
     const attack = BALANCE.baseCatAttack
       * Math.pow(BALANCE.mugiAttackLevelFactor, state.mugiLevel - 1)
       * Math.pow(BALANCE.weaponLevelFactor, state.weaponLevel - 1)
       * permanent
       * restaurantFactor
-      * styleAttackFactor
-      * (helper ? BALANCE.helperAttackFactor : 1);
+      * finiteNumber(definition.attackFactor, 1, 0.05, 5);
     const maxHp = BALANCE.baseCatHp
       * Math.pow(BALANCE.mugiHpLevelFactor, state.mugiLevel - 1)
       * permanent
-      * (helper ? BALANCE.helperHpFactor : 1);
-    const travelMs = BALANCE.unitTravelBaseMs * (helper ? 1.04 : 1);
+      * finiteNumber(definition.hpFactor, 1, 0.05, 5);
+    const travelMs = BALANCE.unitTravelBaseMs
+      * finiteNumber(definition.travelFactor, 1, 0.2, 4);
     return {
-      kind,
+      kind: definition.id,
+      name: definition.name,
+      role: definition.role,
+      named: definition.named,
+      appearance: definition.appearance,
       attack,
       maxHp,
       travelMs,
-      attackIntervalMs: BALANCE.unitAttackIntervalMs * styleSpeedFactor,
+      attackIntervalMs: BALANCE.unitAttackIntervalMs
+        * finiteNumber(definition.attackIntervalFactor, 1, 0.2, 4),
+      supportHealFactor: finiteNumber(definition.supportHealFactor, 0, 0, 0.5),
+      supportCooldownReductionMs: finiteNumber(
+        definition.supportCooldownReductionMs,
+        0,
+        0,
+        2000,
+      ),
     };
+  }
+
+  function computeRestaurantDeliveryInterval(state) {
+    const level = Math.max(1, integer(state.restaurantLevel, 1, 1, MAX_LEVEL));
+    return Math.max(
+      BALANCE.restaurantDeliveryMinimumMs,
+      BALANCE.restaurantDeliveryBaseMs
+        * Math.pow(BALANCE.restaurantDeliveryLevelFactor, level - 1),
+    );
+  }
+
+  function computeRoomRecoveryMs(state, kind = 'helper') {
+    const definition = catDefinition(kind);
+    const unlockedFactor = state.roomUnlocked ? BALANCE.roomUnlockedRecoveryFactor : 1;
+    const levelFactor = Math.pow(
+      BALANCE.roomRecoveryLevelFactor,
+      Math.max(0, integer(state.roomLevel, 0, 0, MAX_LEVEL) - 1),
+    );
+    const namedFactor = definition.named ? 1 : 0.82;
+    return Math.max(
+      BALANCE.roomRecoveryMinimumMs,
+      BALANCE.roomRecoveryBaseMs * unlockedFactor * levelFactor * namedFactor,
+    );
   }
 
   function coinsPerHit(state, floor) {
@@ -383,9 +498,13 @@
       totalElapsedMs: 0,
       totalAutoDispatches: 0,
       totalManualDispatches: 0,
+      totalRallies: 0,
       totalAttacks: 0,
+      totalSupportPulses: 0,
       totalEnemyAttacks: 0,
       totalUnitsDefeated: 0,
+      totalUnitsRecovered: 0,
+      totalRestaurantDeliveries: 0,
       totalKills: 0,
       totalFloorsCleared: 0,
       totalCoinsEarned: 0,
@@ -401,15 +520,28 @@
     const state = Number(stateInput?.gameplaySchema) === Data.GAMEPLAY_SCHEMA
       ? stateInput
       : normalizeState(stateInput);
+    const restoredTransition = !state.completed
+      && state.pendingFloor === state.currentFloor + 1
+      && state.floorTransitionRemainingMs > 0;
     const runtime = {
       elapsedMs: 0,
       carryMs: 0,
       nextUnitId: 1,
+      nextHelperIndex: 0,
       units: [],
       enemy: createEnemy(state),
+      recoveryQueue: [],
       autoDispatchCooldownMs: 0,
       manualDispatchCooldownMs: 0,
-      transitionRemainingMs: 0,
+      transitionRemainingMs: restoredTransition ? state.floorTransitionRemainingMs : 0,
+      transitionStage: restoredTransition ? state.floorTransitionStage : null,
+      pendingFloor: restoredTransition ? state.pendingFloor : null,
+      rallyRemainingMs: 0,
+      rallyCooldownMs: 0,
+      restaurantDeliveryCooldownMs: state.restaurantUnlocked
+        ? Math.min(3500, computeRestaurantDeliveryInterval(state))
+        : 0,
+      restaurantBuffRemainingMs: 0,
       enemyElapsedMs: state.currentFloor === BALANCE.wallFloor
         ? finiteNumber(state.wallElapsedMs, 0, 0, BALANCE.wallObserveMs)
         : 0,
@@ -417,10 +549,43 @@
       manualDispatches: 0,
       kills: 0,
       atWall: false,
-      phase: 'climbing',
+      phase: state.completed
+        ? 'completed'
+        : restoredTransition
+          ? state.floorTransitionStage
+          : 'climbing',
       events: [],
       metrics: createMetrics(),
     };
+    if (state.completed) {
+      runtime.units = VICTORY_ROSTER.map((kind, index) => {
+        const stats = computeCatStats(state, kind);
+        const id = index + 1;
+        return {
+          id,
+          kind: stats.kind,
+          name: stats.name,
+          role: stats.role,
+          named: stats.named,
+          appearance: stats.appearance,
+          source: 'completion-restore',
+          lane: UNIT_LANES[index % UNIT_LANES.length],
+          phase: 'celebrating',
+          progress: 1,
+          hp: stats.maxHp,
+          maxHp: stats.maxHp,
+          attack: stats.attack,
+          travelMs: stats.travelMs,
+          attackIntervalMs: stats.attackIntervalMs,
+          attackCooldownMs: 0,
+          supportHealFactor: stats.supportHealFactor,
+          supportCooldownReductionMs: stats.supportCooldownReductionMs,
+          bornAtMs: 0,
+        };
+      });
+      runtime.nextUnitId = runtime.units.length + 1;
+      runtime.metrics.peakUnits = runtime.units.length;
+    }
     syncEnemyState(state, runtime);
     updateWallAndPhase(state, runtime);
     return runtime;
@@ -429,6 +594,9 @@
   function syncEnemyState(state, runtime) {
     state.enemyFloor = state.currentFloor;
     state.enemyHp = runtime.enemy ? runtime.enemy.hp : null;
+    state.pendingFloor = runtime.pendingFloor;
+    state.floorTransitionRemainingMs = runtime.transitionRemainingMs;
+    state.floorTransitionStage = runtime.transitionStage;
     state.wallElapsedMs = state.currentFloor === BALANCE.wallFloor
       ? Math.min(BALANCE.wallObserveMs, Math.max(0, runtime.enemyElapsedMs))
       : 0;
@@ -445,24 +613,53 @@
     return events;
   }
 
-  function hasMugi(runtime) {
-    return runtime.units.some(unit => unit.kind === 'mugi');
+  function catKindReserved(runtime, kind) {
+    return runtime.units.some(unit => unit.kind === kind)
+      || runtime.recoveryQueue.some(entry => entry.kind === kind);
   }
 
-  function spawnCat(state, runtime, source = 'auto') {
+  function chooseNextCatKind(state, runtime) {
+    const missingNamed = unlockedNamedCats(state)
+      .find(kind => !catKindReserved(runtime, kind));
+    if (missingNamed) return missingNamed;
+    for (let offset = 0; offset < HELPER_ROTATION.length; offset += 1) {
+      const index = (runtime.nextHelperIndex + offset) % HELPER_ROTATION.length;
+      const kind = HELPER_ROTATION[index];
+      if (catKindReserved(runtime, kind)) continue;
+      runtime.nextHelperIndex = (index + 1) % HELPER_ROTATION.length;
+      return kind;
+    }
+    return null;
+  }
+
+  function spawnSpecificCat(state, runtime, kind, source = 'auto') {
     if (!runtime || !Array.isArray(runtime.units)) {
       return { ok: false, reason: 'invalid-runtime' };
     }
-    if (runtime.units.length >= BALANCE.unitCap) {
+    if (state.completed || runtime.phase === 'completed') {
+      return { ok: false, reason: 'completed' };
+    }
+    const partyCapacity = computePartyCapacity(state);
+    if (runtime.units.length >= partyCapacity) {
       return { ok: false, reason: 'unit-cap' };
     }
-
-    const kind = hasMugi(runtime) ? 'helper' : 'mugi';
+    const definition = catDefinition(kind);
+    if (catKindReserved(runtime, definition.id)) {
+      return {
+        ok: false,
+        reason: definition.named ? 'named-cat-present' : 'cat-kind-present',
+        kind: definition.id,
+      };
+    }
     const stats = computeCatStats(state, kind);
     const id = runtime.nextUnitId++;
     const unit = {
       id,
-      kind,
+      kind: stats.kind,
+      name: stats.name,
+      role: stats.role,
+      named: stats.named,
+      appearance: stats.appearance,
       source,
       lane: UNIT_LANES[(id - 1) % UNIT_LANES.length],
       phase: 'moving',
@@ -473,19 +670,45 @@
       travelMs: stats.travelMs,
       attackIntervalMs: stats.attackIntervalMs,
       attackCooldownMs: 0,
+      supportHealFactor: stats.supportHealFactor,
+      supportCooldownReductionMs: stats.supportCooldownReductionMs,
       bornAtMs: runtime.elapsedMs,
     };
     runtime.units.push(unit);
     if (source === 'manual') {
       runtime.manualDispatches += 1;
       runtime.metrics.totalManualDispatches += 1;
-    } else {
+    } else if (source === 'auto') {
       runtime.autoDispatches += 1;
       runtime.metrics.totalAutoDispatches += 1;
     }
     runtime.metrics.peakUnits = Math.max(runtime.metrics.peakUnits, runtime.units.length);
-    pushEvent(runtime, 'unit-spawned', { unitId: id, kind, source, lane: unit.lane });
-    return { ok: true, unit: clone(unit) };
+    pushEvent(runtime, 'unit-spawned', {
+      unitId: id,
+      kind: unit.kind,
+      role: unit.role,
+      named: unit.named,
+      appearance: unit.appearance,
+      source,
+      lane: unit.lane,
+    });
+    return { ok: true, action: 'dispatch', directDamage: 0, unit: clone(unit) };
+  }
+
+  function spawnCat(state, runtime, source = 'auto') {
+    if (!runtime || !Array.isArray(runtime.units)) {
+      return { ok: false, reason: 'invalid-runtime' };
+    }
+    if (state.completed || runtime.phase === 'completed') {
+      return { ok: false, reason: 'completed' };
+    }
+    const partyCapacity = computePartyCapacity(state);
+    if (runtime.units.length >= partyCapacity) {
+      return { ok: false, reason: 'unit-cap' };
+    }
+    const kind = chooseNextCatKind(state, runtime);
+    if (!kind) return { ok: false, reason: 'roster-recovering' };
+    return spawnSpecificCat(state, runtime, kind, source);
   }
 
   function dispatchCat(state, runtime) {
@@ -496,12 +719,56 @@
         remainingMs: runtime.manualDispatchCooldownMs,
       };
     }
+    if (state.completed || runtime.phase === 'completed') {
+      return { ok: false, reason: 'completed', directDamage: 0 };
+    }
+    const partyCapacity = computePartyCapacity(state);
+    if (runtime.units.length >= partyCapacity) {
+      if (runtime.rallyRemainingMs > 0) {
+        return {
+          ok: false,
+          reason: 'rally-active',
+          action: 'rally',
+          remainingMs: runtime.rallyRemainingMs,
+          directDamage: 0,
+        };
+      }
+      if (runtime.rallyCooldownMs > 0) {
+        return {
+          ok: false,
+          reason: 'rally-charging',
+          action: 'rally',
+          remainingMs: runtime.rallyCooldownMs,
+          charge: Math.max(0, 1 - runtime.rallyCooldownMs / BALANCE.rallyCooldownMs),
+          directDamage: 0,
+        };
+      }
+      runtime.rallyRemainingMs = BALANCE.rallyDurationMs;
+      runtime.rallyCooldownMs = BALANCE.rallyCooldownMs;
+      runtime.manualDispatchCooldownMs = BALANCE.manualDispatchCooldownMs;
+      runtime.metrics.totalRallies += 1;
+      state.totalTaps += 1;
+      if (state.tutorialStep === 'dispatch') state.tutorialStep = 'upgrade';
+      pushEvent(runtime, 'rally-started', {
+        durationMs: BALANCE.rallyDurationMs,
+        cooldownMs: BALANCE.rallyCooldownMs,
+        attackSpeedFactor: BALANCE.rallyAttackSpeedFactor,
+        directDamage: 0,
+      });
+      return {
+        ok: true,
+        action: 'rally',
+        durationMs: BALANCE.rallyDurationMs,
+        cooldownMs: BALANCE.rallyCooldownMs,
+        directDamage: 0,
+      };
+    }
     const result = spawnCat(state, runtime, 'manual');
     if (!result.ok) return result;
     runtime.manualDispatchCooldownMs = BALANCE.manualDispatchCooldownMs;
     state.totalTaps += 1;
     if (state.tutorialStep === 'dispatch') state.tutorialStep = 'upgrade';
-    return result;
+    return { ...result, directDamage: 0 };
   }
 
   function getUpgradeCost(state, id) {
@@ -521,10 +788,16 @@
       const healthRatio = Math.max(0, Math.min(1, unit.hp / previousMax));
       const stats = computeCatStats(state, unit.kind);
       unit.attack = stats.attack;
+      unit.name = stats.name;
+      unit.role = stats.role;
+      unit.named = stats.named;
+      unit.appearance = stats.appearance;
       unit.maxHp = stats.maxHp;
       unit.hp = Math.max(1, stats.maxHp * healthRatio);
       unit.travelMs = stats.travelMs;
       unit.attackIntervalMs = stats.attackIntervalMs;
+      unit.supportHealFactor = stats.supportHealFactor;
+      unit.supportCooldownReductionMs = stats.supportCooldownReductionMs;
       unit.attackCooldownMs = Math.min(unit.attackCooldownMs, unit.attackIntervalMs);
     }
   }
@@ -547,6 +820,7 @@
     }
 
     const before = integer(state[definition.stateField], definition.minimumLevel, 0, MAX_LEVEL);
+    const recoveryBeforeMs = id === 'room' ? computeRoomRecoveryMs(state) : null;
     state[definition.currency] = balance - cost;
     state[definition.stateField] = Math.min(MAX_LEVEL, before + 1);
     runtime.metrics.totalUpgradesBought += 1;
@@ -555,6 +829,24 @@
         runtime.autoDispatchCooldownMs,
         computeDispatchInterval(state),
       );
+    }
+    if (id === 'restaurant') {
+      runtime.restaurantDeliveryCooldownMs = Math.min(
+        runtime.restaurantDeliveryCooldownMs || computeRestaurantDeliveryInterval(state),
+        computeRestaurantDeliveryInterval(state),
+      );
+    }
+    if (id === 'room' && recoveryBeforeMs > 0) {
+      const recoveryAfterMs = computeRoomRecoveryMs(state);
+      const ratio = recoveryAfterMs / recoveryBeforeMs;
+      for (const entry of runtime.recoveryQueue) {
+        entry.remainingMs = Math.max(0, entry.remainingMs * ratio);
+      }
+      pushEvent(runtime, 'room-recovery-accelerated', {
+        level: state.roomLevel,
+        beforeMs: recoveryBeforeMs,
+        afterMs: recoveryAfterMs,
+      });
     }
     refreshUnitStats(state, runtime);
     pushEvent(runtime, 'upgrade-bought', {
@@ -605,6 +897,10 @@
       state.restaurantUnlocked = true;
       state.restaurantLevel = Math.max(1, state.restaurantLevel);
       addMemory(state, 'restaurant-open');
+      runtime.restaurantDeliveryCooldownMs = Math.min(
+        3500,
+        computeRestaurantDeliveryInterval(state),
+      );
       pushEvent(runtime, 'support-unlocked', {
         id: 'restaurant',
         floor: BALANCE.restaurantUnlockFloor,
@@ -622,6 +918,19 @@
     }
   }
 
+  function announceNamedCatUnlocks(state, runtime, enteredFloor) {
+    for (const id of NAMED_CAT_ORDER) {
+      const definition = CATS[id];
+      if (definition.unlockFloor !== enteredFloor || id === 'mugi') continue;
+      pushEvent(runtime, 'named-cat-unlocked', {
+        id,
+        name: definition.name,
+        role: definition.role,
+        floor: enteredFloor,
+      });
+    }
+  }
+
   function defeatEnemy(state, runtime) {
     const defeated = runtime.enemy;
     const clearedFloor = state.currentFloor;
@@ -635,43 +944,130 @@
     runtime.metrics.totalFloorsCleared += 1;
     runtime.metrics.lastFloorClearMs = runtime.elapsedMs;
     state.totalKills += 1;
-    state.currentFloor = Math.min(MAX_FLOOR, state.currentFloor + 1);
-    state.bestFloor = Math.max(state.bestFloor, state.currentFloor);
-    state.runFloorPeak = Math.max(state.runFloorPeak, state.currentFloor);
-    runtime.metrics.floorReachTimes[state.currentFloor] = runtime.elapsedMs;
 
-    if (clearedFloor === BALANCE.firstBossFloor) {
-      state.firstNightCleared = true;
-      addCoins(state, runtime, BALANCE.firstNightRewardCoins, 'first-boss');
-      addMemory(state, 'first-night');
-    }
-
-    unlockFloorNodes(state, runtime);
-    pushEvent(runtime, 'floor-cleared', {
+    pushEvent(runtime, 'enemy-defeated', {
       floor: clearedFloor,
-      nextFloor: state.currentFloor,
       enemyId: defeated.id,
       reward,
       boss: defeated.isBoss,
+      wall: defeated.isWall,
     });
 
+    if (clearedFloor === BALANCE.firstBossFloor) {
+      state.firstNightCleared = true;
+      state.bestFloor = FINAL_FLOOR;
+      state.runFloorPeak = FINAL_FLOOR;
+      addCoins(state, runtime, BALANCE.firstNightRewardCoins, 'first-boss');
+      addMemory(state, 'first-night');
+      // Completion is a reunion, not a frozen combat snapshot. Remove recovery
+      // reservations, collapse any impossible duplicate kind, and restore every
+      // member before the completed guard disables further room processing.
+      runtime.recoveryQueue.length = 0;
+      const retainedKinds = new Set();
+      runtime.units = runtime.units.filter(unit => {
+        if (!VICTORY_ROSTER.includes(unit.kind) || retainedKinds.has(unit.kind)) return false;
+        retainedKinds.add(unit.kind);
+        return true;
+      });
+      for (const kind of VICTORY_ROSTER) {
+        if (retainedKinds.has(kind)) continue;
+        const result = spawnSpecificCat(state, runtime, kind, 'completion');
+        if (result.ok) retainedKinds.add(kind);
+      }
+      state.completed = true;
+      runtime.pendingFloor = null;
+      runtime.transitionRemainingMs = 0;
+      runtime.transitionStage = null;
+      runtime.atWall = false;
+      runtime.phase = 'completed';
+      for (const unit of runtime.units) {
+        unit.phase = 'celebrating';
+        unit.progress = 1;
+        unit.hp = unit.maxHp;
+        unit.attackCooldownMs = 0;
+      }
+      pushEvent(runtime, 'floor-cleared', {
+        floor: clearedFloor,
+        nextFloor: null,
+        enemyId: defeated.id,
+        reward,
+        boss: true,
+        completed: true,
+      });
+      pushEvent(runtime, 'first-night-completed', {
+        floor: clearedFloor,
+        enemyId: defeated.id,
+        reward: reward + BALANCE.firstNightRewardCoins,
+      });
+      syncEnemyState(state, runtime);
+      return;
+    }
+
+    const nextFloor = Math.min(FINAL_FLOOR, clearedFloor + 1);
+    runtime.pendingFloor = nextFloor;
+    runtime.transitionRemainingMs = BALANCE.floorTransitionMs;
+    runtime.transitionStage = 'victory';
+    runtime.atWall = false;
+    runtime.phase = 'victory';
+    for (const unit of runtime.units) {
+      unit.phase = 'celebrating';
+      unit.attackCooldownMs = 0;
+    }
+    pushEvent(runtime, 'floor-cleared', {
+      floor: clearedFloor,
+      nextFloor,
+      enemyId: defeated.id,
+      reward,
+      boss: false,
+      completed: false,
+    });
+    pushEvent(runtime, 'floor-transition-started', {
+      fromFloor: clearedFloor,
+      toFloor: nextFloor,
+      stage: 'victory',
+      durationMs: BALANCE.floorTransitionMs,
+    });
+    syncEnemyState(state, runtime);
+  }
+
+  function enterPendingFloor(state, runtime) {
+    const nextFloor = runtime.pendingFloor;
+    if (!nextFloor || state.completed) return false;
+    const previousFloor = state.currentFloor;
+    state.currentFloor = Math.min(FINAL_FLOOR, nextFloor);
+    state.bestFloor = Math.max(state.bestFloor, state.currentFloor);
+    state.runFloorPeak = Math.max(state.runFloorPeak, state.currentFloor);
+    runtime.metrics.floorReachTimes[state.currentFloor] = runtime.elapsedMs;
+    runtime.pendingFloor = null;
+    runtime.transitionRemainingMs = 0;
+    runtime.transitionStage = null;
     runtime.enemy = createEnemy(state);
     runtime.enemyElapsedMs = 0;
     runtime.atWall = false;
-    runtime.transitionRemainingMs = BALANCE.floorTransitionMs;
-    runtime.phase = 'transition';
     for (const unit of runtime.units) {
       unit.phase = 'moving';
       unit.progress = Math.min(0.18, unit.progress * 0.16);
       unit.attackCooldownMs = 0;
     }
+    unlockFloorNodes(state, runtime);
+    announceNamedCatUnlocks(state, runtime, state.currentFloor);
+    pushEvent(runtime, 'floor-entered', {
+      fromFloor: previousFloor,
+      floor: state.currentFloor,
+      enemyId: runtime.enemy.id,
+      enemyKind: runtime.enemy.kind,
+    });
     syncEnemyState(state, runtime);
+    updateWallAndPhase(state, runtime);
+    return true;
   }
 
   function chooseEnemyTarget(runtime) {
+    const attacking = runtime.units.filter(unit => unit.phase === 'attacking' && unit.hp > 0);
+    const frontlines = attacking.filter(unit => unit.role === 'frontline');
+    const candidates = frontlines.length ? frontlines : attacking;
     let target = null;
-    for (const unit of runtime.units) {
-      if (unit.phase !== 'attacking') continue;
+    for (const unit of candidates) {
       if (!target || unit.progress > target.progress || (
         unit.progress === target.progress && unit.id < target.id
       )) {
@@ -681,7 +1077,7 @@
     return target;
   }
 
-  function removeDefeatedUnits(runtime) {
+  function removeDefeatedUnits(state, runtime) {
     const survivors = [];
     for (const unit of runtime.units) {
       if (unit.hp > 0) {
@@ -689,7 +1085,31 @@
         continue;
       }
       runtime.metrics.totalUnitsDefeated += 1;
-      pushEvent(runtime, 'unit-defeated', { unitId: unit.id, kind: unit.kind });
+      const recoveryMs = computeRoomRecoveryMs(state, unit.kind);
+      runtime.recoveryQueue.push({
+        originalUnitId: unit.id,
+        kind: unit.kind,
+        name: unit.name,
+        role: unit.role,
+        named: unit.named,
+        appearance: unit.appearance,
+        remainingMs: recoveryMs,
+        totalMs: recoveryMs,
+        readyEventSent: false,
+      });
+      pushEvent(runtime, 'unit-defeated', {
+        unitId: unit.id,
+        kind: unit.kind,
+        role: unit.role,
+      });
+      pushEvent(runtime, 'room-recovery-started', {
+        unitId: unit.id,
+        kind: unit.kind,
+        role: unit.role,
+        durationMs: recoveryMs,
+        roomActive: state.roomUnlocked,
+        roomLevel: state.roomLevel,
+      });
     }
     runtime.units = survivors;
   }
@@ -701,11 +1121,146 @@
     }, 0);
   }
 
+  function applySupportPulse(runtime, sourceUnit) {
+    if (sourceUnit.role !== 'support') return null;
+    let healed = 0;
+    let cooldownReducedMs = 0;
+    for (const unit of runtime.units) {
+      if (unit.hp <= 0) continue;
+      const heal = Math.min(
+        unit.maxHp - unit.hp,
+        unit.maxHp * sourceUnit.supportHealFactor,
+      );
+      if (heal > 0) {
+        unit.hp += heal;
+        healed += heal;
+      }
+      if (unit.id !== sourceUnit.id && unit.phase === 'attacking') {
+        const reduction = Math.min(
+          Math.max(0, unit.attackCooldownMs),
+          sourceUnit.supportCooldownReductionMs,
+        );
+        unit.attackCooldownMs -= reduction;
+        cooldownReducedMs += reduction;
+      }
+    }
+    runtime.metrics.totalSupportPulses += 1;
+    pushEvent(runtime, 'support-pulse', {
+      unitId: sourceUnit.id,
+      kind: sourceUnit.kind,
+      healed,
+      cooldownReducedMs,
+    });
+    return { healed, cooldownReducedMs };
+  }
+
+  function updateRally(runtime, stepMs) {
+    const wasActive = runtime.rallyRemainingMs > 0;
+    const wasCharging = runtime.rallyCooldownMs > 0;
+    runtime.rallyRemainingMs = Math.max(0, runtime.rallyRemainingMs - stepMs);
+    runtime.rallyCooldownMs = Math.max(0, runtime.rallyCooldownMs - stepMs);
+    if (wasActive && runtime.rallyRemainingMs === 0) {
+      pushEvent(runtime, 'rally-ended', {
+        cooldownRemainingMs: runtime.rallyCooldownMs,
+      });
+      if (runtime.rallyCooldownMs > 0) {
+        pushEvent(runtime, 'rally-charging', {
+          remainingMs: runtime.rallyCooldownMs,
+        });
+      }
+    }
+    if (wasCharging && runtime.rallyCooldownMs === 0) {
+      pushEvent(runtime, 'rally-ready', {});
+    }
+  }
+
+  function updateRestaurantSupport(state, runtime, stepMs) {
+    runtime.restaurantBuffRemainingMs = Math.max(
+      0,
+      runtime.restaurantBuffRemainingMs - stepMs,
+    );
+    if (!state.restaurantUnlocked || state.completed) return;
+    if (runtime.restaurantDeliveryCooldownMs <= 0) {
+      runtime.restaurantDeliveryCooldownMs = computeRestaurantDeliveryInterval(state);
+    }
+    runtime.restaurantDeliveryCooldownMs -= stepMs;
+    while (runtime.restaurantDeliveryCooldownMs <= 0) {
+      runtime.restaurantDeliveryCooldownMs += computeRestaurantDeliveryInterval(state);
+      runtime.restaurantBuffRemainingMs = BALANCE.restaurantBuffDurationMs;
+      const coinAmount = Math.max(
+        1,
+        Math.floor(BALANCE.restaurantDeliveryCoinBase * Math.max(1, state.restaurantLevel)),
+      );
+      addCoins(state, runtime, coinAmount, 'restaurant-delivery');
+      runtime.metrics.totalRestaurantDeliveries += 1;
+      pushEvent(runtime, 'restaurant-delivery', {
+        floor: BALANCE.restaurantUnlockFloor,
+        level: state.restaurantLevel,
+        durationMs: BALANCE.restaurantBuffDurationMs,
+        attackSpeedFactor: BALANCE.restaurantAttackSpeedFactor,
+        coins: coinAmount,
+      });
+    }
+  }
+
+  function updateRecoveryQueue(state, runtime, stepMs) {
+    if (state.completed || runtime.recoveryQueue.length === 0) return;
+    const partyCapacity = computePartyCapacity(state);
+    for (const entry of runtime.recoveryQueue) {
+      entry.remainingMs = Math.max(0, entry.remainingMs - stepMs);
+    }
+    for (let index = runtime.recoveryQueue.length - 1; index >= 0; index -= 1) {
+      const entry = runtime.recoveryQueue[index];
+      if (entry.remainingMs > 0) continue;
+      if (runtime.units.length >= partyCapacity && entry.named) {
+        const helperIndex = runtime.units.map(unit => unit.named).lastIndexOf(false);
+        if (helperIndex >= 0) {
+          const [relieved] = runtime.units.splice(helperIndex, 1);
+          pushEvent(runtime, 'unit-relieved', {
+            unitId: relieved.id,
+            kind: relieved.kind,
+            reason: 'named-cat-return',
+          });
+        }
+      }
+      if (runtime.units.length >= partyCapacity) {
+        if (!entry.readyEventSent) {
+          entry.readyEventSent = true;
+          pushEvent(runtime, 'room-recovery-ready', {
+            unitId: entry.originalUnitId,
+            kind: entry.kind,
+          });
+        }
+        continue;
+      }
+      runtime.recoveryQueue.splice(index, 1);
+      const result = spawnSpecificCat(state, runtime, entry.kind, 'recovery');
+      if (!result.ok) {
+        runtime.recoveryQueue.splice(index, 0, entry);
+        continue;
+      }
+      runtime.metrics.totalUnitsRecovered += 1;
+      pushEvent(runtime, 'room-recovery-completed', {
+        previousUnitId: entry.originalUnitId,
+        unitId: result.unit.id,
+        kind: entry.kind,
+        durationMs: entry.totalMs,
+        roomActive: state.roomUnlocked,
+        roomLevel: state.roomLevel,
+      });
+    }
+  }
+
   function updateWallAndPhase(state, runtime) {
+    if (state.completed) {
+      runtime.atWall = false;
+      runtime.phase = 'completed';
+      return;
+    }
     runtime.atWall = state.currentFloor === BALANCE.wallFloor
       && runtime.enemyElapsedMs >= BALANCE.wallObserveMs
       && runtime.enemy.hp > 0;
-    if (runtime.transitionRemainingMs > 0) runtime.phase = 'transition';
+    if (runtime.transitionRemainingMs > 0) runtime.phase = runtime.transitionStage || 'victory';
     else if (runtime.atWall) runtime.phase = 'wall';
     else if (runtime.units.some(unit => unit.phase === 'attacking')) runtime.phase = 'fighting';
     else runtime.phase = 'climbing';
@@ -716,9 +1271,37 @@
     runtime.metrics.totalElapsedMs += stepMs;
     state.playTimeMs = Math.min(Number.MAX_SAFE_INTEGER, state.playTimeMs + stepMs);
     runtime.manualDispatchCooldownMs = Math.max(0, runtime.manualDispatchCooldownMs - stepMs);
+    updateRally(runtime, stepMs);
+    updateRestaurantSupport(state, runtime, stepMs);
+    updateRecoveryQueue(state, runtime, stepMs);
+
+    if (state.completed) {
+      syncEnemyState(state, runtime);
+      updateWallAndPhase(state, runtime);
+      return;
+    }
 
     if (runtime.transitionRemainingMs > 0) {
+      const previousRemainingMs = runtime.transitionRemainingMs;
       runtime.transitionRemainingMs = Math.max(0, runtime.transitionRemainingMs - stepMs);
+      if (
+        runtime.transitionStage === 'victory'
+        && previousRemainingMs > BALANCE.floorAscentMs
+        && runtime.transitionRemainingMs <= BALANCE.floorAscentMs
+      ) {
+        runtime.transitionStage = 'ascending';
+        for (const unit of runtime.units) unit.phase = 'ascending';
+        pushEvent(runtime, 'floor-transition-stage', {
+          fromFloor: state.currentFloor,
+          toFloor: runtime.pendingFloor,
+          stage: 'ascending',
+          durationMs: BALANCE.floorAscentMs,
+        });
+      }
+      if (runtime.transitionRemainingMs === 0) {
+        enterPendingFloor(state, runtime);
+      }
+      syncEnemyState(state, runtime);
       updateWallAndPhase(state, runtime);
       return;
     }
@@ -726,9 +1309,9 @@
     runtime.autoDispatchCooldownMs -= stepMs;
     if (runtime.autoDispatchCooldownMs <= 0) {
       const interval = computeDispatchInterval(state);
-      if (runtime.units.length < BALANCE.unitCap) {
-        spawnCat(state, runtime, 'auto');
-        runtime.autoDispatchCooldownMs += interval;
+      if (runtime.units.length < computePartyCapacity(state)) {
+        const result = spawnCat(state, runtime, 'auto');
+        runtime.autoDispatchCooldownMs += result.ok ? interval : Math.min(250, interval);
       } else {
         runtime.autoDispatchCooldownMs = Math.min(250, interval);
       }
@@ -739,7 +1322,10 @@
 
     for (const unit of runtime.units) {
       if (unit.phase === 'moving') {
-        unit.progress = Math.min(1, unit.progress + stepMs / unit.travelMs);
+        const rallyTravelFactor = runtime.rallyRemainingMs > 0
+          ? BALANCE.rallyTravelSpeedFactor
+          : 1;
+        unit.progress = Math.min(1, unit.progress + stepMs / (unit.travelMs * rallyTravelFactor));
         if (unit.progress >= 1) {
           unit.phase = 'attacking';
           unit.attackCooldownMs = 0;
@@ -750,7 +1336,13 @@
 
     for (const unit of runtime.units) {
       if (unit.phase !== 'attacking' || runtime.enemy.hp <= 0) continue;
-      unit.attackCooldownMs -= stepMs;
+      const rallySpeedFactor = runtime.rallyRemainingMs > 0
+        ? BALANCE.rallyAttackSpeedFactor
+        : 1;
+      const restaurantSpeedFactor = runtime.restaurantBuffRemainingMs > 0
+        ? BALANCE.restaurantAttackSpeedFactor
+        : 1;
+      unit.attackCooldownMs -= stepMs / (rallySpeedFactor * restaurantSpeedFactor);
       while (unit.attackCooldownMs <= 0 && runtime.enemy.hp > 0) {
         const damage = Math.min(runtime.enemy.hp, unit.attack);
         runtime.enemy.hp = Math.max(0, runtime.enemy.hp - unit.attack);
@@ -766,6 +1358,7 @@
           coins: hitCoins,
           enemyHp: runtime.enemy.hp,
         });
+        applySupportPulse(runtime, unit);
         if (runtime.enemy.hp <= 0) {
           defeatEnemy(state, runtime);
           updateWallAndPhase(state, runtime);
@@ -796,7 +1389,7 @@
           unitHp: target.hp,
         });
       }
-      if (target.hp <= 0) removeDefeatedUnits(runtime);
+      if (target.hp <= 0) removeDefeatedUnits(state, runtime);
     } else {
       runtime.enemy.attackCooldownMs = Math.min(
         runtime.enemy.attackCooldownMs,
@@ -814,6 +1407,12 @@
       dispatchIntervalMs: computeDispatchInterval(state),
       permanentMultiplier: permanentMultiplier(state),
       enemyRegenPerSecond: runtime.enemy.regenPerSecond,
+      partyCapacity: computePartyCapacity(state),
+      visibleUnitCap: BALANCE.unitCap,
+      rallyActive: runtime.rallyRemainingMs > 0,
+      restaurantBuffActive: runtime.restaurantBuffRemainingMs > 0,
+      recoveryCount: runtime.recoveryQueue.length,
+      completed: state.completed,
       currentFloor: state.currentFloor,
       bestFloor: state.bestFloor,
       runElapsedMs: runtime.elapsedMs,
@@ -823,20 +1422,36 @@
   }
 
   function summarizeRuntime(state, runtime) {
+    const partyCapacity = computePartyCapacity(state);
     return {
       elapsedMs: runtime.elapsedMs,
       unitCount: runtime.units.length,
+      partyCapacity,
+      partyFull: runtime.units.length >= partyCapacity,
+      visibleUnitCap: BALANCE.unitCap,
       autoDispatches: runtime.autoDispatches,
       manualDispatches: runtime.manualDispatches,
       kills: runtime.kills,
       enemyHp: runtime.enemy.hp,
       enemyMaxHp: runtime.enemy.maxHp,
       atWall: runtime.atWall,
+      completed: state.completed,
       phase: runtime.phase,
       currentFloor: state.currentFloor,
       floorTransitionMs: runtime.transitionRemainingMs,
+      transitionStage: runtime.transitionStage,
+      pendingFloor: runtime.pendingFloor,
       autoDispatchCooldownMs: runtime.autoDispatchCooldownMs,
       manualDispatchCooldownMs: runtime.manualDispatchCooldownMs,
+      rallyRemainingMs: runtime.rallyRemainingMs,
+      rallyCooldownMs: runtime.rallyCooldownMs,
+      rallyReady: runtime.rallyCooldownMs <= 0,
+      rallyCharge: runtime.rallyCooldownMs <= 0
+        ? 1
+        : Math.max(0, 1 - runtime.rallyCooldownMs / BALANCE.rallyCooldownMs),
+      restaurantBuffRemainingMs: runtime.restaurantBuffRemainingMs,
+      restaurantDeliveryCooldownMs: runtime.restaurantDeliveryCooldownMs,
+      recoveryCount: runtime.recoveryQueue.length,
     };
   }
 
@@ -844,7 +1459,24 @@
     return {
       ...summarizeRuntime(state, runtime),
       units: runtime.units.map(unit => ({ ...unit })),
+      recoveryQueue: runtime.recoveryQueue.map(entry => ({ ...entry })),
       enemy: { ...runtime.enemy },
+      support: {
+        restaurant: {
+          unlocked: state.restaurantUnlocked,
+          level: state.restaurantLevel,
+          deliveryCooldownMs: runtime.restaurantDeliveryCooldownMs,
+          buffRemainingMs: runtime.restaurantBuffRemainingMs,
+          buffActive: runtime.restaurantBuffRemainingMs > 0,
+          attackSpeedFactor: BALANCE.restaurantAttackSpeedFactor,
+        },
+        room: {
+          unlocked: state.roomUnlocked,
+          level: state.roomLevel,
+          recoveryMs: computeRoomRecoveryMs(state),
+          recovering: runtime.recoveryQueue.map(entry => ({ ...entry })),
+        },
+      },
       metrics: getMetrics(state, runtime),
       events: runtime.events.map(event => ({ ...event })),
     };
@@ -893,7 +1525,6 @@
       lost: [
         { id: 'floor', label: '現在階', value: state.currentFloor, nextValue: 1 },
         { id: 'coins', label: '所持コイン', value: state.coins, nextValue: BALANCE.startingCoins },
-        { id: 'fish', label: 'ラン内の魚', value: state.fish, nextValue: BALANCE.startingFish },
         { id: 'mugi-level', label: 'ムギの特訓', value: state.mugiLevel, nextValue: 1 },
         { id: 'weapon-level', label: '猫パンチ', value: state.weaponLevel, nextValue: 1 },
         { id: 'dispatch-level', label: '出撃口', value: state.dispatchLevel, nextValue: 1 },
@@ -904,7 +1535,6 @@
         { id: 'best-floor', label: '最高階', value: state.bestFloor },
         { id: 'room-level', label: '共同部屋', value: state.roomLevel },
         { id: 'memories', label: '思い出', value: state.memories.length },
-        { id: 'specialization', label: '食堂の方向', value: state.specialization },
       ],
       gained: [
         { id: 'dawn-shards', label: '夜明けのかけら', value: reward },
@@ -946,6 +1576,10 @@
     state.coins = BALANCE.startingCoins;
     state.fish = BALANCE.startingFish;
     state.currentFloor = 1;
+    state.completed = false;
+    state.pendingFloor = null;
+    state.floorTransitionRemainingMs = 0;
+    state.floorTransitionStage = null;
     state.checkpointFloor = 1;
     state.runFloorPeak = 1;
     state.enemyFloor = 1;
@@ -1104,7 +1738,12 @@
     createEnemy,
     permanentMultiplier,
     computeDispatchInterval,
+    catDefinition,
+    unlockedNamedCats,
+    computePartyCapacity,
     computeCatStats,
+    computeRestaurantDeliveryInterval,
+    computeRoomRecoveryMs,
     coinsPerHit,
     createRuntime,
     summarizeRuntime,
@@ -1112,6 +1751,7 @@
     getMetrics,
     drainEvents,
     spawnCat,
+    spawnSpecificCat,
     dispatchCat,
     getUpgradeCost,
     buyUpgrade,

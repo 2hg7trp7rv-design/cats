@@ -313,12 +313,23 @@
   position:absolute;
   left:var(--x,50%);
   top:var(--y,68%);
-  transform:translate3d(-50%,-50%,0);
-  transform-origin:50% 88%;
   transition:left .16s linear,top .16s linear,opacity .18s ease,filter .12s ease;
   contain:layout paint;
   will-change:transform;
   pointer-events:none;
+}
+
+.catUnit{
+  --foot-y:88%;
+  transform:translate3d(-50%,calc(0% - var(--foot-y)),0);
+  transform-origin:50% var(--foot-y);
+}
+
+.enemyUnit{
+  --foot-y:88%;
+  --hover-y:6px;
+  transform:translate3d(-50%,calc(0% - var(--foot-y) - var(--hover-y)),0);
+  transform-origin:50% var(--foot-y);
 }
 
 .catUnit>img,.enemyUnit>img,.unitSprite{
@@ -347,10 +358,10 @@
 }
 
 .enemyUnit[data-enemy="boss"]{width:clamp(70px,21vw,92px);aspect-ratio:443.5/887}
-.enemyUnit[data-facing="left"],.catUnit[data-facing="left"]{
-  scale:none;
-  transform:translate3d(-50%,-50%,0) scaleX(-1);
+.enemyUnit[data-facing="left"]{
+  transform:translate3d(-50%,calc(0% - var(--foot-y) - var(--hover-y)),0) scaleX(-1);
 }
+.catUnit[data-facing="left"]{transform:translate3d(-50%,calc(0% - var(--foot-y)),0) scaleX(-1)}
 
 .catUnit[data-phase="attacking"] .spriteSheet,.catUnit[data-phase="attacking"]>img{animation:unitPounce .28s ease-out}
 .enemyUnit[data-phase="attacking"] .spriteSheet,.enemyUnit[data-phase="attacking"]>img{animation:enemyPeck .34s ease-in-out}
@@ -892,7 +903,7 @@
 }
 
 @keyframes unitDefeat{
-  to{opacity:0;transform:translate3d(-50%,-38%,0) scale(.55) rotate(8deg)}
+  to{opacity:0;translate:0 -12px;scale:.55;rotate:8deg}
 }
 
 @keyframes battleFxRise{
@@ -902,8 +913,8 @@
 }
 
 @keyframes towerFloorShift{
-  0%{filter:brightness(1.35);transform:translateY(10px) scale(1.015)}
-  100%{filter:saturate(1.035) contrast(1.025);transform:translateY(0) scale(1)}
+  0%{filter:brightness(1.35) saturate(1.04) contrast(1.05);transform:translateY(10px)}
+  100%{filter:saturate(1.04) contrast(1.05);transform:translateY(0)}
 }
 
 @keyframes floorCallout{
@@ -977,4 +988,672 @@
 @media(prefers-reduced-motion:reduce){
   .towerScene,.catUnit,.enemyUnit{transition:none!important;will-change:auto}
   .spriteSheet,.catUnit .spriteSheet,.enemyUnit .spriteSheet,.catUnit>img,.enemyUnit>img{animation:none!important}
+}
+
+/* 2026-08 vertical-board redesign: the tower is the board, not a backdrop behind cards. */
+:root{
+  --ink:#05070d;
+  --midnight:#071326;
+  --slate:#10233a;
+  --wood-dark:#342116;
+  --wood:#654126;
+  --parchment:#f2d7a0;
+  --lamp:#ffc86a;
+  --mint:#71d3c2;
+}
+
+.app{max-width:430px;background:#040914}
+.game{display:block;background:#040914}
+
+/* The title keeps the accepted moonlit tower, while removing build/development copy. */
+.splashShade{background:linear-gradient(180deg,#0206100d 14%,#0206103b 49%,#020610f4 85%)}
+.splashCopy{left:20px;right:20px;bottom:calc(18px + var(--safeB))}
+.splashCopy .kicker{color:#f7d889;font-size:9px;letter-spacing:.1em;text-shadow:0 2px #25170f}
+.splashCopy>small{margin-top:18px;color:#ead8b78f;font-size:8px;letter-spacing:.08em}
+.primaryButton{
+  min-height:58px;
+  border:3px solid #493018;
+  border-radius:7px;
+  color:#2f2717;
+  background:linear-gradient(180deg,#f2eca5,#c8dc5f);
+  box-shadow:0 5px 0 #52651f,0 14px 30px #000a,inset 0 2px #fff9;
+}
+.primaryButton:active{transform:translateY(4px);box-shadow:0 1px 0 #52651f,0 8px 18px #0009,inset 0 2px #fff8}
+
+/* Compact status rail: floor, two currencies and settings only. */
+.compactTopbar{
+  position:absolute;
+  z-index:80;
+  top:0;
+  right:0;
+  left:0;
+  height:calc(56px + var(--safeT));
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:4px;
+  padding:calc(5px + var(--safeT)) 5px 5px;
+  border:0;
+  border-bottom:3px solid #28170f;
+  background:linear-gradient(180deg,#122a45,#09182b);
+  box-shadow:0 4px 0 #05080e,0 8px 18px #0008;
+}
+.floorStamp{
+  flex:0 0 74px;
+  min-width:74px;
+  height:46px;
+  display:grid;
+  grid-template-columns:22px 1fr;
+  align-items:center;
+  gap:4px;
+  padding:3px 6px;
+  border:2px solid #76502f;
+  border-radius:4px;
+  color:#332114;
+  background:linear-gradient(180deg,#f1d8a5,#c49a60);
+  box-shadow:0 3px 0 #2d1b10,inset 0 1px #fff7;
+  text-align:left;
+}
+.floorStamp>span:first-child{color:#7a3d24;font-size:15px;text-align:center}
+.floorStamp small{display:block;color:#78573b;font-size:7px;line-height:1}
+.floorStamp strong{display:block;margin-top:2px;color:#2c1c12;font-size:16px;line-height:1;font-variant-numeric:tabular-nums}
+.compactTopbar .topActions{flex:1 1 auto;display:flex;justify-content:flex-end;gap:4px}
+.compactTopbar .resource{
+  flex:0 1 82px;
+  min-width:67px;
+  max-width:86px;
+  height:46px;
+  gap:5px;
+  padding:3px 5px;
+  border:2px solid #2b4054;
+  border-radius:4px;
+  background:#091422;
+  box-shadow:0 3px 0 #03070c,inset 0 1px #ffffff1a;
+}
+.compactTopbar .resource>i{
+  flex:0 0 25px;
+  width:25px;
+  height:25px;
+  border:2px solid #674419;
+  border-radius:50%;
+  color:#4b3218;
+  background:#efc568;
+  box-shadow:inset 0 -3px #a86f2f;
+  font-size:12px;
+}
+.compactTopbar .resource span{min-width:0}
+.compactTopbar .resource small{display:block;color:#8ca1b6;font-size:6px;line-height:1}
+.compactTopbar .resource b{display:block;overflow:hidden;margin-top:3px;color:#fff0ca;font-size:11px;line-height:1;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.compactTopbar .shardResource>i{border-color:#285c59;color:#eaffdf;background:#3da69e;box-shadow:inset 0 -3px #1b6763}
+.compactTopbar .iconButton{
+  flex:0 0 44px;
+  width:44px;
+  height:46px;
+  border:2px solid #2b4054;
+  border-radius:4px;
+  color:#f4dca9;
+  background:#091422;
+  box-shadow:0 3px 0 #03070c,inset 0 1px #ffffff17;
+  font-size:20px;
+}
+.floorStamp:focus-visible,.compactTopbar .resource:focus-visible,.compactTopbar .iconButton:focus-visible,
+.dispatchButton:focus-visible,.upgradeButton:focus-visible,.bottomNav button:focus-visible{
+  outline:3px solid #fff3ad;
+  outline-offset:1px;
+}
+
+/* Best floor and live unit count stay in the DOM for accessibility/QA, not as permanent cards. */
+.runHud{
+  position:absolute;
+  z-index:82;
+  top:calc(56px + var(--safeT));
+  right:0;
+  left:0;
+  min-height:5px;
+  height:5px;
+  display:block;
+  padding:0;
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  background:#101018;
+  box-shadow:0 2px 0 #03060b;
+}
+.runHudMeta{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  clip:rect(0 0 0 0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+.dispatchGauge{
+  width:100%;
+  height:5px!important;
+  min-height:5px!important;
+  display:block!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#17131b!important;
+  box-shadow:inset 0 1px #000!important;
+}
+.dispatchGauge>i{display:block;height:100%;background:linear-gradient(90deg,#2d9f96,#d7e96e);box-shadow:0 0 5px #7fe0c6;transition:width .12s linear}
+
+/* The battlefield fills almost all usable height; controls sit on top of its conquered floor. */
+.towerBattlefield{
+  position:absolute;
+  z-index:10;
+  top:calc(61px + var(--safeT));
+  right:0;
+  bottom:calc(47px + var(--safeB));
+  left:0;
+  min-height:0;
+  overflow:hidden;
+  isolation:isolate;
+  contain:layout paint;
+  border:0;
+  border-radius:0;
+  background:#06101d;
+  box-shadow:none;
+  touch-action:manipulation;
+}
+.towerBattlefield:before,.towerBattlefield:after{display:none}
+.towerScene{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-rows:17% 58% 25%;
+  overflow:hidden;
+  background:#050b14;
+  transform:none;
+  transition:filter .22s ease;
+  will-change:filter;
+}
+.towerSlice{position:relative;min-height:0;overflow:hidden;border-bottom:4px solid #1f130d;background:#07111f;isolation:isolate}
+.towerSlice:after{content:"";position:absolute;z-index:4;inset:0;pointer-events:none}
+.towerSlice--next{border-top:2px solid #50351f;filter:saturate(.68) brightness(.66)}
+.towerSlice--next:after{background:linear-gradient(180deg,#04101d6e,#03101d9f),repeating-linear-gradient(90deg,transparent 0 31px,#08101b22 31px 33px)}
+.towerSlice--battle{z-index:3;border-top:3px solid #a86d35;border-bottom-color:#6f4528;box-shadow:0 -4px 15px #0009,0 7px 20px #000a}
+.towerSlice--battle:after{z-index:3;box-shadow:inset 0 0 0 3px #cf8c4357,inset 0 -22px 28px #02060d99}
+.towerSlice--support{border-bottom:0;filter:saturate(.9) brightness(.82)}
+.towerSlice--support:after{background:linear-gradient(0deg,#03070dd4 0 35%,transparent 72%),linear-gradient(90deg,#07101b3b,transparent 25%,transparent 75%,#07101b3b)}
+.sliceBackdrop,.towerBackdrop{
+  position:absolute;
+  z-index:0;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  pointer-events:none;
+}
+.towerSlice--next .sliceBackdrop{object-position:center var(--floor-focus,18%);transform:scale(2.2)}
+.towerSlice--support .sliceBackdrop{object-position:center var(--floor-focus,78%);transform:scale(2.15)}
+.towerBackdrop{
+  inset:auto;
+  left:50%;
+  top:88%;
+  width:405%;
+  max-width:none;
+  height:auto;
+  object-fit:contain;
+  object-position:center;
+  translate:-50% calc(0% - var(--floor-source-ground,95.10%));
+  transform:none;
+  transform-origin:center;
+  filter:saturate(1.04) contrast(1.05);
+}
+.battleVignette{position:absolute;z-index:2;inset:0;background:linear-gradient(180deg,#02091479 0%,transparent 23%,transparent 70%,#02060e8f 100%),radial-gradient(ellipse at center,transparent 53%,#02050c75 100%);pointer-events:none}
+.sliceFlag{
+  position:absolute;
+  z-index:7;
+  top:5px;
+  left:6px;
+  min-height:24px;
+  display:inline-flex;
+  align-items:center;
+  padding:3px 7px;
+  border:2px solid #2a1a11;
+  border-radius:3px;
+  color:#392417;
+  background:#d5b379;
+  box-shadow:0 3px 0 #1d120c;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.05em;
+}
+.currentFlag{color:#2f1d12;background:#f0c86d}
+.supportFlag{top:auto;bottom:76px;color:#2c2118;background:#bca980}
+.lockedDoor{position:absolute;z-index:7;right:7px;bottom:5px;padding:3px 6px;border:1px solid #725d4a;color:#d6c4aa;background:#080d15d9;font-size:7px;font-weight:950;letter-spacing:.08em}
+
+/* Enemy information belongs to the active floor instead of becoming another HUD row. */
+.enemyHud{
+  position:absolute;
+  z-index:35;
+  top:6px;
+  right:7px;
+  left:74px;
+  min-height:45px;
+  padding:5px 7px 6px;
+  overflow:hidden;
+  border:2px solid #5c3320;
+  border-radius:4px;
+  color:#fff1cf;
+  background:#1d1110e8;
+  box-shadow:0 3px 0 #090606,0 7px 13px #0009,inset 0 1px #ffc9872b;
+  font-variant-numeric:tabular-nums;
+  pointer-events:none;
+}
+.enemyHud>div:first-child{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:5px}
+.enemyHud>div:first-child>span{padding:2px 4px;border-radius:2px;color:#461c12;background:#ec8b58;font-size:6px}
+.enemyHud>div:first-child>strong{margin:0;font-size:11px;line-height:1}
+.enemyHud>div:first-child>small{color:#f7ddbd;font-size:7px;line-height:1;text-align:right;letter-spacing:0}
+.enemyHpTrack{height:8px;margin-top:5px;border:2px solid #090606;border-radius:1px;background:#09080c}
+.enemyHpTrack>i{border-radius:0;background:linear-gradient(90deg,#db4f40,#f4b04f)}
+
+.unitLayer,.effectLayer{position:absolute;z-index:12;inset:0;overflow:hidden;pointer-events:none}
+.effectLayer{z-index:30}
+.catUnit{width:clamp(52px,15.5vw,64px)}
+.catUnit--mugi{--foot-y:79.56%;width:clamp(50px,15.5vw,62px)}
+.catUnit--mugi[data-phase="moving"],.catUnit--mugi[data-phase="attacking"],
+.catUnit--mugi[data-phase="celebrating"]{--foot-y:80.25%}
+.catUnit--helper{width:clamp(43px,12.8vw,53px)}
+.enemyUnit{width:clamp(68px,20.5vw,88px)}
+.enemyUnit[data-enemy="boss"]{width:clamp(86px,25vw,108px)}
+
+/* Visible conquered-floor activity remains behind the command dock. */
+.facilityActivity{position:absolute;z-index:6;inset:0;pointer-events:none}
+.facilityLamp{position:absolute;top:21%;left:44%;width:7px;height:9px;border:2px solid #5b361d;background:#ffd477;box-shadow:0 0 12px #ffc76f;animation:lampBreathe 1.8s steps(2,end) infinite}
+.supplyCrate{position:absolute;bottom:83px;left:24px;width:28px;height:20px;border:3px solid #4c2e1a;background:repeating-linear-gradient(135deg,#9a6335 0 5px,#77502f 5px 10px);box-shadow:0 3px #1d120b}
+.supplyRoute{position:absolute;right:23%;bottom:86px;width:62px;border-top:3px dashed #e0bd7391;animation:supplyMove 1.2s steps(4,end) infinite}
+@keyframes lampBreathe{50%{filter:brightness(1.32);box-shadow:0 0 17px #ffd57e}}
+@keyframes supplyMove{to{transform:translateX(8px)}}
+
+.supportNode{
+  position:absolute;
+  z-index:21;
+  left:var(--x,76%);
+  top:var(--y,40%);
+  min-width:88px;
+  min-height:44px;
+  padding:6px 8px;
+  transform:translate(-50%,-50%);
+  border:2px solid #51301c;
+  border-radius:4px;
+  color:#392316;
+  background:#e7c58a;
+  box-shadow:0 3px 0 #4c2d1a,0 8px 14px #0008,inset 0 1px #fff8;
+  font-size:8px;
+}
+.supportNode span{font-size:13px}.supportNode strong{font-size:8px}
+.supportNode--food{background:#e5a05f}.supportNode--home{background:#dfb69e}
+
+/* One compact command dock: three distinct upgrades and a persistent 56pt call bell. */
+.battleDock{
+  position:absolute;
+  z-index:60;
+  right:5px;
+  bottom:5px;
+  left:5px;
+  height:68px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 58px;
+  gap:5px;
+  padding:4px;
+  border:3px solid #3f2717;
+  border-radius:5px;
+  background:linear-gradient(180deg,#8f5c32,#54351f);
+  box-shadow:0 4px 0 #160d08,0 -8px 20px #000a,inset 0 1px #d99c5b;
+}
+.upgradeDock{
+  position:static;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:3px;
+  padding:0;
+  overflow:visible;
+  border:0;
+  border-radius:0;
+  color:inherit;
+  background:none;
+  box-shadow:none;
+}
+.upgradeButton{
+  min-width:0;
+  min-height:54px;
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr);
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  overflow:hidden;
+  border:2px solid #1b3d3a;
+  border-radius:3px;
+  color:#e9f8ed;
+  background:linear-gradient(180deg,#1d625c,#123f3b);
+  box-shadow:0 2px 0 #172419,inset 0 1px #8de4d441;
+  text-align:left;
+}
+.upgradeIcon{
+  display:grid!important;
+  width:25px!important;
+  height:32px;
+  place-items:center;
+  overflow:visible!important;
+  border:2px solid #103330;
+  border-radius:2px;
+  color:#21351c!important;
+  background:#d4df75;
+  font-size:10px!important;
+  line-height:1!important;
+}
+.upgradeCopy{display:grid!important;grid-template-columns:1fr auto;align-items:end;gap:1px 3px;min-width:0;color:inherit!important}
+.upgradeCopy b{grid-column:1/-1;overflow:hidden;color:#aee3d6;font-size:7px;line-height:1.1;text-overflow:ellipsis;white-space:nowrap}
+.upgradeCopy strong{width:auto;margin:0;color:#fff8e9;font-size:9px;line-height:1}
+.upgradeCopy small{width:auto;color:#cbe9d8;font-size:7px;line-height:1;text-align:right}
+.upgradeButton:active{transform:translateY(2px);box-shadow:none}
+.upgradeButton:disabled{opacity:.5;filter:grayscale(.15) saturate(.6)}
+.dispatchButton{
+  position:static;
+  width:58px;
+  min-width:58px;
+  min-height:54px;
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr);
+  align-items:center;
+  gap:2px;
+  padding:4px;
+  transform:none;
+  border:2px solid #58662a;
+  border-radius:3px;
+  color:#303218;
+  background:linear-gradient(180deg,#f0eda0,#c6d95c);
+  box-shadow:0 2px 0 #39451b,inset 0 1px #fff9;
+  text-shadow:none;
+}
+.dispatchIcon{width:25px;height:32px;min-width:25px;border:2px solid #536026;border-radius:2px;background:#52682d;box-shadow:inset 0 1px #dff39b80;font-size:14px}
+.dispatchButton>span:last-child{text-align:left}
+.dispatchButton>span:last-child>strong{font-size:9px;line-height:1}
+.dispatchButton small{margin-top:3px;color:#525d29;font-size:6px;line-height:1}
+.dispatchButton:active{transform:translateY(2px);box-shadow:none}
+.dispatchButton:disabled{opacity:.5;filter:saturate(.45);transform:none}
+
+.game>.dawnButton{
+  position:absolute;
+  z-index:75;
+  top:calc(67px + var(--safeT));
+  right:7px;
+  bottom:auto;
+  min-width:145px;
+  max-width:calc(100% - 14px);
+  min-height:44px;
+  padding:5px 9px;
+  border:2px solid #6b3f20;
+  border-radius:4px;
+  background:linear-gradient(180deg,#ffd578,#e89447);
+  box-shadow:0 3px 0 #713a1b,0 7px 13px #0009,inset 0 1px #fff8;
+}
+.game>.dawnButton>span{font-size:10px}.game>.dawnButton>small{font-size:7px}
+
+/* Navigation is a thin tool rail, not a second app-sized panel. */
+.game>.bottomNav{
+  position:absolute;
+  z-index:70;
+  right:0;
+  bottom:0;
+  left:0;
+  height:calc(47px + var(--safeB));
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:0 3px var(--safeB);
+  border:0;
+  border-top:3px solid #28170f;
+  background:#091626;
+  box-shadow:0 -4px 0 #05080e,0 -9px 18px #0008;
+  backdrop-filter:none;
+}
+.game>.bottomNav button{
+  min-height:44px;
+  gap:0;
+  border:0;
+  border-radius:0;
+  color:#8192a3;
+  background:transparent;
+  box-shadow:none;
+  font-size:7px;
+}
+.game>.bottomNav button+button{border-left:1px solid #26384b}
+.game>.bottomNav button i{width:24px;height:20px;color:inherit;font-size:13px}
+.game>.bottomNav button.active{color:#f5e5b8;background:#142942;box-shadow:inset 0 3px #e4b458}
+.game>.bottomNav button.active i{color:#f0c66d}
+.badge{top:2px;right:17px;min-width:17px;height:17px;padding:0 3px;border:2px solid #091626;border-radius:2px;font-size:7px}
+
+/* Sheets cover only the lower part so the paused tower remains spatially present. */
+.modalShade{
+  align-items:flex-end;
+  padding-top:40dvh;
+  background:linear-gradient(180deg,transparent 0 28%,#02071175 39%,#020711d4 100%);
+  backdrop-filter:none;
+}
+.sheet{
+  width:100%;
+  max-height:60dvh;
+  border:3px solid #56371f;
+  border-bottom:0;
+  border-radius:8px 8px 0 0;
+  background:linear-gradient(180deg,#17304d,#0a1728 55%,#07111f);
+  box-shadow:0 -5px 0 #1d110a,0 -18px 45px #000c;
+}
+.sheetHandle{width:42px;height:4px;margin:7px auto 2px;border-radius:1px;background:#9a8166}
+.sheet header{padding:7px 11px 9px;border-bottom:2px solid #4e321e}
+.sheet header small{font-size:7px}.sheet h2{font-size:18px}
+.sheet header button{width:44px;height:44px;border:2px solid #40566c;border-radius:4px;background:#0b1929;font-size:21px}
+.sheetBody{max-height:calc(60dvh - 67px - var(--safeB));padding:10px 10px calc(18px + var(--safeB))}
+.card,.info,.stat,.sceneHero,.choice,.button,.dawnLead,[data-dawn-list],.supportCard,.pixelMemory,.settingsCard{
+  border-radius:5px;
+  backdrop-filter:none;
+}
+.card{border-width:2px}.info{border-width:2px}.stat{border-radius:4px}.button{min-height:48px;border-radius:4px}
+.sceneHero{min-height:180px;border:2px solid #4a3222}
+.sheet .actions{position:relative;z-index:3}
+
+/* Opening a sheet visually arrests CSS motion. The engine pause is handled by app state. */
+body:has(#modal:not(:empty)) .towerScene,
+body:has(#modal:not(:empty)) .towerScene *,
+body:has(#modal:not(:empty)) .battleFx{animation-play-state:paused!important}
+
+.toastArea{bottom:calc(126px + var(--safeB))}
+
+@media(max-height:740px){
+  .compactTopbar{height:calc(53px + var(--safeT));padding:calc(4px + var(--safeT)) 4px 4px}
+  .floorStamp,.compactTopbar .resource,.compactTopbar .iconButton{height:44px}
+  .runHud{top:calc(53px + var(--safeT))}
+  .towerBattlefield{top:calc(58px + var(--safeT));bottom:calc(45px + var(--safeB))}
+  .towerScene{grid-template-rows:16% 59% 25%}
+  .battleDock{right:4px;bottom:4px;left:4px;height:64px;padding:3px;grid-template-columns:minmax(0,1fr) 56px}
+  .upgradeButton,.dispatchButton{min-height:52px}
+  .dispatchButton{width:56px;min-width:56px}
+  .supportFlag{bottom:71px}
+  .supplyCrate{bottom:77px}
+  .supplyRoute{bottom:80px}
+  .game>.bottomNav{height:calc(45px + var(--safeB))}
+  .game>.dawnButton{top:calc(63px + var(--safeT))}
+  .sheet{max-height:62dvh}.sheetBody{max-height:calc(62dvh - 67px - var(--safeB))}
+}
+
+@media(max-width:380px){
+  .floorStamp{flex-basis:69px;min-width:69px;padding-right:4px;padding-left:4px}
+  .compactTopbar .resource{min-width:62px;padding-right:3px;padding-left:3px}
+  .compactTopbar .resource>i{flex-basis:23px;width:23px;height:23px}
+  .upgradeButton{grid-template-columns:23px minmax(0,1fr);gap:2px;padding-right:3px;padding-left:3px}
+  .upgradeIcon{width:23px!important}
+  .upgradeCopy b{font-size:6px}.upgradeCopy strong{font-size:8px}.upgradeCopy small{font-size:6px}
+  .enemyHud{left:69px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .facilityLamp,.supplyRoute{animation:none!important}
+  .towerBackdrop,.sliceBackdrop{transition:none!important}
+}
+
+/* R3 cast atlas: one square frame, four actions across, three distinct cast rows. */
+.spriteSheet--cast{
+  --sprite-sheet:url('/assets/v082/pixel-r3/cats-cast-r3.png');
+  --sprite-row:0%;
+  aspect-ratio:1;
+  background-size:400% 300%;
+  background-position:var(--sprite-position,0%) var(--sprite-row);
+}
+.spriteSheet--cast[data-character="luna"]{--sprite-row:0%}
+.spriteSheet--cast[data-character="toto"]{--sprite-row:50%}
+.spriteSheet--cast[data-character="helper"]{--sprite-row:100%}
+
+/* R3 enemy atlas uses the same 4-action by 3-character contract. */
+.spriteSheet--enemies{
+  --sprite-sheet:url('/assets/v082/pixel-r3/enemies-r3.png');
+  --sprite-row:0%;
+  aspect-ratio:1;
+  background-size:400% 300%;
+  background-position:var(--sprite-position,0%) var(--sprite-row);
+}
+.spriteSheet--enemies[data-character="owl"]{--sprite-row:0%}
+.spriteSheet--enemies[data-character="barrier"]{--sprite-row:50%}
+.spriteSheet--enemies[data-character="boss"]{--sprite-row:100%}
+.enemyUnit[data-enemy="owl"],.enemyUnit[data-enemy="black-feather-barrier"],.enemyUnit[data-enemy="boss"]{aspect-ratio:1}
+.enemyUnit[data-enemy="crow"]{--foot-y:66.40%}
+.enemyUnit[data-enemy="crow"][data-phase="moving"]{--foot-y:66.40%}
+.enemyUnit[data-enemy="crow"][data-phase="attacking"]{--foot-y:65.73%}
+.enemyUnit[data-enemy="crow"][data-phase="defeated"]{--foot-y:64.26%}
+.enemyUnit[data-enemy="owl"]{--foot-y:85.64%;width:clamp(72px,21.5vw,92px)}
+.enemyUnit[data-enemy="owl"][data-phase="moving"]{--foot-y:83.15%}
+.enemyUnit[data-enemy="owl"][data-phase="attacking"]{--foot-y:89.50%}
+.enemyUnit[data-enemy="owl"][data-phase="defeated"]{--foot-y:83.98%}
+.enemyUnit[data-enemy="black-feather-barrier"]{--foot-y:86.46%;--hover-y:4px;width:clamp(92px,27vw,116px);filter:drop-shadow(0 0 10px #7d6eb3)}
+.enemyUnit[data-enemy="boss"]{--foot-y:83.43%;width:clamp(98px,29vw,124px)}
+.enemyUnit[data-enemy="boss"][data-phase="moving"]{--foot-y:77.07%}
+.enemyUnit[data-enemy="boss"][data-phase="attacking"]{--foot-y:83.98%}
+.enemyUnit[data-enemy="boss"][data-phase="defeated"]{--foot-y:83.43%}
+.catUnit--luna,.catUnit--toto,
+.catUnit--helper-tabby,.catUnit--helper-gray,.catUnit--helper-calico{aspect-ratio:1}
+.catUnit--luna{--foot-y:88.12%;z-index:5;width:clamp(52px,15.5vw,64px);filter:drop-shadow(0 5px 3px #100b13c7)}
+.catUnit--luna[data-phase="moving"],.catUnit--luna[data-phase="attacking"],
+.catUnit--luna[data-phase="celebrating"]{--foot-y:88.95%}
+.catUnit--toto{--foot-y:80.66%;z-index:4;width:clamp(52px,15.8vw,65px);filter:drop-shadow(0 5px 3px #100d09c7)}
+.catUnit--toto[data-phase="moving"],.catUnit--toto[data-phase="attacking"]{--foot-y:81.49%}
+.catUnit--toto[data-phase="celebrating"]{--foot-y:81.22%}
+.catUnit--helper-tabby,.catUnit--helper-gray,.catUnit--helper-calico{
+  --foot-y:82.32%;
+  width:clamp(43px,12.8vw,53px);
+  filter:drop-shadow(0 4px 2px #120b08b8) hue-rotate(var(--helper-hue,0deg)) saturate(.92);
+}
+.catUnit--helper-tabby{--helper-hue:42deg}
+.catUnit--helper-gray{--helper-hue:84deg}
+.catUnit--helper-calico{--helper-hue:0deg}
+.catUnit--helper-tabby[data-phase="moving"],.catUnit--helper-gray[data-phase="moving"],.catUnit--helper-calico[data-phase="moving"]{--foot-y:82.60%}
+.catUnit--helper-tabby[data-phase="attacking"],.catUnit--helper-gray[data-phase="attacking"],.catUnit--helper-calico[data-phase="attacking"]{--foot-y:80.39%}
+.catUnit--helper-tabby[data-phase="celebrating"],.catUnit--helper-gray[data-phase="celebrating"],.catUnit--helper-calico[data-phase="celebrating"]{--foot-y:82.87%}
+.catUnit[data-phase="moving"] .spriteSheet--cast{animation:castWalkFrames .42s steps(1,end) infinite}
+@keyframes castWalkFrames{
+  0%,49.99%{background-position:0% var(--sprite-row)}
+  50%,100%{background-position:33.333% var(--sprite-row)}
+}
+
+/* Short causal beats emitted by app.js. */
+.catUnit.unitStrike{animation:unitStrikeR3 .18s steps(3,end)}
+.catUnit.catHit{animation:catHitR3 .21s steps(2,end)}
+.catUnit.supportPulse{animation:supportPulseR3 .42s steps(4,end)}
+.enemyUnit.enemyHit{animation:enemyHitR3 .17s steps(2,end)}
+.enemyUnit.enemyDefeated{animation:enemyDefeatedR3 .52s steps(5,end) forwards}
+@keyframes unitStrikeR3{0%{translate:0 0}45%{translate:12px -2px;filter:brightness(1.25)}100%{translate:0 0}}
+@keyframes catHitR3{0%,100%{translate:0 0}33%{translate:-4px 0;filter:brightness(1.7) saturate(.45)}66%{translate:3px 0}}
+@keyframes supportPulseR3{0%{filter:brightness(1)}40%{filter:brightness(1.45) drop-shadow(0 0 9px #8ff4d3)}100%{filter:brightness(1)}}
+@keyframes enemyHitR3{0%,100%{translate:0 0}45%{translate:5px 0;filter:brightness(1.8) saturate(.4) drop-shadow(0 0 8px #ffefaa)}}
+@keyframes enemyDefeatedR3{0%{opacity:1;translate:0 0}55%{opacity:.9;translate:9px -8px;rotate:9deg}100%{opacity:0;translate:18px 18px;rotate:22deg;scale:.68}}
+
+.towerBattlefield.victoryHold .towerSlice--battle{box-shadow:0 -4px 15px #0009,0 7px 20px #000a,inset 0 0 0 4px #f5d3718f}
+.towerBattlefield.victoryHold .currentFlag{background:#ddea82}
+.towerBattlefield.towerAscending .towerScene{animation:towerBoardAscend .95s cubic-bezier(.24,.72,.2,1)}
+@keyframes towerBoardAscend{
+  0%{transform:translateY(0);filter:brightness(1)}
+  42%{transform:translateY(8%);filter:brightness(1.24)}
+  100%{transform:translateY(0);filter:brightness(1)}
+}
+.towerBattlefield.rallying .towerSlice--battle{box-shadow:0 -4px 16px #0009,0 7px 22px #000a,inset 0 0 0 4px #d8ef7878}
+.towerBattlefield.rallying .catUnit{filter:brightness(1.16) drop-shadow(0 0 7px #d8ef78)}
+.towerBattlefield.rallying .catUnit--helper-tabby,
+.towerBattlefield.rallying .catUnit--helper-gray,
+.towerBattlefield.rallying .catUnit--helper-calico{
+  filter:hue-rotate(var(--helper-hue,0deg)) saturate(.92) brightness(1.16) drop-shadow(0 4px 2px #120b08b8) drop-shadow(0 0 7px #d8ef78);
+}
+.towerBattlefield.restaurantBuff .towerSlice--battle:before{
+  content:"夜食支援";
+  position:absolute;
+  z-index:34;
+  right:8px;
+  bottom:8px;
+  padding:4px 6px;
+  border:2px solid #5e431f;
+  color:#3b2916;
+  background:#f0d079;
+  box-shadow:0 3px #26170d;
+  font-size:7px;
+  font-weight:950;
+}
+.facilityActivity.facilityDelivering .supplyCrate{animation:crateDelivery .7s steps(5,end)}
+.facilityActivity.facilityDelivering .supplyRoute{border-top-color:#f5dc8c;filter:drop-shadow(0 0 5px #ffd77a)}
+@keyframes crateDelivery{0%{transform:translateX(0)}70%{transform:translateX(80px) translateY(-22px)}100%{transform:translateX(105px) translateY(-46px);opacity:0}}
+
+.supportNode{flex-wrap:wrap}
+.supportNode strong{line-height:1.05}.supportNode small{flex-basis:100%;display:block;color:#63452b;font-size:6px;line-height:1.1}
+.dispatchButton[data-mode="rally"]{border-color:#8b722e;background:linear-gradient(180deg,#fff1a0,#e4b64c);box-shadow:0 2px 0 #5b3c16,0 0 10px #f2cf617d}
+.dispatchButton[data-mode="active"]{border-color:#8b4927;color:#4a2416;background:linear-gradient(180deg,#ffba68,#e4773d);box-shadow:0 2px 0 #632d17,0 0 12px #ff9c537a;animation:rallyButton .55s steps(2,end) infinite}
+.dispatchButton[data-mode="charging"]{color:#b9ae87;background:linear-gradient(180deg,#485541,#303c2d);box-shadow:0 2px 0 #172016}
+.dispatchButton[data-mode="completed"]{color:#d9d4bd;background:linear-gradient(180deg,#52606a,#333e47);border-color:#27323a;box-shadow:0 2px #151b20}
+@keyframes rallyButton{50%{filter:brightness(1.18);transform:translateY(-1px)}}
+
+.game.sheetOpen .towerScene{filter:brightness(.7) saturate(.75)}
+.settingsFacts{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px 12px;
+  margin-top:10px;
+  padding:12px 14px;
+  border:2px solid #4f3925;
+  border-radius:4px;
+  color:#f3dfb8;
+  background:#09121e;
+  box-shadow:0 3px #03060a,inset 0 1px #ffffff0c;
+}
+.settingsFacts span{color:#c9b994;font-size:9px;font-weight:850}
+.settingsFacts strong{color:#f2d777;font-size:9px;text-align:right}
+.game[data-paused="true"] .towerBattlefield:after{
+  content:"夜番停止中";
+  position:absolute;
+  z-index:69;
+  top:8px;
+  right:8px;
+  left:auto;
+  bottom:auto;
+  width:auto;
+  height:auto;
+  display:block;
+  padding:5px 7px;
+  border:2px solid #4f3925;
+  color:#f3dfb8;
+  background:#09121ee8;
+  box-shadow:0 3px #03060a;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.06em;
+  pointer-events:none;
+}
+
+@media(prefers-reduced-motion:reduce){
+  .catUnit.unitStrike,.catUnit.catHit,.catUnit.supportPulse,.enemyUnit.enemyHit,.enemyUnit.enemyDefeated,
+  .towerBattlefield.towerAscending .towerScene,.facilityActivity.facilityDelivering .supplyCrate,
+  .dispatchButton[data-mode="active"]{animation:none!important}
 }

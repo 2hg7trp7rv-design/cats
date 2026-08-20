@@ -1,124 +1,371 @@
 {
   "schemaVersion": 2,
-  "updatedDate": "2026-08-18",
+  "updatedDate": "2026-08-20",
   "project": "Cat's tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
-  "canonicalVersion": "0.8.1",
-  "productionBuild": "v081-pixel-tower-r2-p3",
-  "sourceSnapshotCommit": "0c4c191624b6ffca45c9da91f065d5b9fe49c36a",
-  "featureIntegrationCommit": "3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19",
-  "webkitViewportFixCommit": "5d16682e51b974e4b3f72a3ceb7a58c229e827f7",
-  "productionRuntimeCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
-  "productionRuntimeCommitStatus": "integrated-to-main-and-production-verified",
-  "workingBranch": "main",
-  "workingTreeStartCommit": "6c3adac7a31cff3864f55028e77719c54471c84a",
   "productionUrl": "https://cats-tau-dusky.vercel.app/",
+  "stateSeparation": {
+    "releaseSource": "v0.8.2-canonical-source-at-this-main-commit",
+    "githubMain": "v0.8.2-canonical-source-at-this-main-commit",
+    "fixedProduction": "vercel-auto-deploy-target-live-state-requires-external-verification",
+    "doNotConflate": true
+  },
+  "canonicalReleaseVersion": "0.8.2",
+  "canonicalReleaseBuild": "v082-pixel-tower-gameplay-redesign",
+  "v082DevelopmentBaseCommit": "7d486189cccbdb58aeb209432f1782d5393915ef",
+  "v082SourceQaStatus": "chromium-two-viewport-qa-and-visual-audit-passed-webkit-and-device-qa-pending",
+  "githubMainContainsV082": true,
+  "v082ProductionReady": false,
+  "productionDeliveryMode": "vercel-production-auto-deploy-from-main",
+  "productionVerificationPolicy": "verify-live-version-build-service-worker-r3-assets-and-github-commit-after-each-deploy",
+  "dynamicDeploymentIdsStoredInReleaseCommit": false,
   "vercelProjectId": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
   "vercelTeamId": "team_6odZCZQ1QxjzhPdC9sgEtoCM",
-  "lastComparedMainCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
-  "lastVerifiedProductionCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
-  "vercelProductionDeploymentId": "dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm",
-  "lastVisuallyAuditedActionsRunId": 32091801556,
-  "lastVisuallyAuditedActionsJobId": 95575301315,
-  "lastVisuallyAuditedActionsArtifactId": 9308695207,
-  "lastVisuallyAuditedActionsArtifactDigest": "sha256:9aeae35d058572a4b4edc9d56c42b566f7a9e59781819aebd1748328e1845737",
-  "productionStatus": "v0.8.1-pixel-tower-vertical-slice-live-and-hash-verified",
-  "productionMatchesRuntimeCommit": true,
-  "status": "v0.8.1-production-vertical-slice-live-not-full-game",
   "gameplaySchema": 2,
   "save": {
     "key": "cats-tower-v080",
     "legacyKey": "cats-tower-v01",
     "schema1BackupKey": "cats-tower-v080-schema1-backup",
-    "corruptJsonRecovery": "fresh-schema2-state"
+    "schemaContinuesInV082": true,
+    "corruptJsonRecovery": "fresh-schema2-state",
+    "futureSchemaHandling": "protect-and-do-not-overwrite",
+    "legacyMigration": {
+      "coins": "coins",
+      "stock": "fish",
+      "specialization": "specialization",
+      "mugiMood": "mugiMood",
+      "memories": "memories",
+      "hasPlayed": "hasPlayed",
+      "sound": "sound",
+      "firstNightDone": "legacyFirstNightDone-and-history-memory"
+    },
+    "v082NormalizedFields": [
+      "completed",
+      "pendingFloor",
+      "floorTransitionRemainingMs",
+      "floorTransitionStage"
+    ],
+    "legacyPostBossNormalization": "active-current-floor-above-10-clamps-to-completed-floor-10-historical-best-only-clamps-without-rewinding-post-dawn-run"
   },
-  "productDefinition": {
+  "v082ProductDefinition": {
     "genre": "mobile-portrait-vertical-idle-incremental-rpg",
     "artDirection": "warm-retro-pixel-art-night-tower",
-    "tapMeaning": "dispatch-one-reinforcement-with-zero-direct-damage",
+    "towerBoard": [
+      "next-unconquered-floor",
+      "current-battle-floor",
+      "conquered-support-floor"
+    ],
+    "floorCausality": [
+      "enemy-defeated",
+      "victory-hold",
+      "cats-ascending",
+      "next-floor-entered"
+    ],
+    "tapMeaning": "dispatch-reinforcement-or-rally-with-zero-direct-damage",
+    "partyCapacityProgression": [
+      4,
+      5,
+      6
+    ],
+    "visibleUnitCap": 6,
+    "rallyDurationMs": 6000,
+    "rallyCooldownMs": 14000,
+    "restaurantFloor": 3,
+    "roomFloor": 5,
     "wallFloor": 8,
     "dawnFloor": 8,
     "firstNightBossFloor": 10,
-    "requiredReplayTimeRatio": 0.75
+    "maximumPlayableFloor": 10,
+    "sheetsPauseSimulation": true,
+    "uniqueRosterKinds": 6,
+    "recoveryQueueReservesKindSlot": true
   },
-  "implementedVerticalSlice": [
-    "automatic cat dispatch and automatic combat",
-    "tap reinforcement with no direct tap damage",
-    "attack and defeat coin income",
-    "immediate Mugi weapon and dispatch upgrades",
-    "continuous vertical tower battlefield",
-    "floor 3 fish restaurant support unlock",
-    "floor 5 shared room permanent support unlock",
-    "floor 8 intentional progression wall",
-    "dawn prestige with lost kept and gained preview",
-    "at least 25 percent faster replay to floor 8",
-    "floor 10 first-night crow boss and memory",
-    "deterministic fixed-step DOM-free simulation",
-    "offline coin progress capped at eight hours without floor clears",
-    "schema2 normalization migration backup and corrupt-save recovery"
+  "v082Cast": {
+    "namedCats": [
+      {
+        "id": "mugi",
+        "role": "frontline",
+        "unlockFloor": 1
+      },
+      {
+        "id": "luna",
+        "role": "ranged",
+        "unlockFloor": 2
+      },
+      {
+        "id": "toto",
+        "role": "support",
+        "unlockFloor": 5
+      }
+    ],
+    "helpers": [
+      {
+        "id": "helper-tabby",
+        "role": "frontline"
+      },
+      {
+        "id": "helper-gray",
+        "role": "ranged"
+      },
+      {
+        "id": "helper-calico",
+        "role": "support"
+      }
+    ],
+    "helperArtLimitation": "three-kinds-share-one-r3-helper-row-with-hue-variation"
+  },
+  "v082Enemies": [
+    {
+      "id": "crow",
+      "name": "夜ガラス",
+      "use": "normal-rotation",
+      "art": "pixel-r2"
+    },
+    {
+      "id": "owl",
+      "name": "夜フクロウ",
+      "use": "normal-rotation",
+      "art": "pixel-r3"
+    },
+    {
+      "id": "black-feather-barrier",
+      "name": "黒羽の結界",
+      "use": "floor-8-wall",
+      "art": "pixel-r3"
+    },
+    {
+      "id": "great-crow",
+      "name": "クロバネ",
+      "use": "floor-10-boss",
+      "art": "pixel-r3"
+    }
   ],
-  "canonicalRuntimeArt": {
-    "directory": "assets/v080/pixel-r2",
-    "tower": "tower-night-r2.png",
-    "mugiSpriteSheet": "mugi-sprites-r2.png",
-    "crowSpriteSheet": "crow-sprites-r2.png",
-    "pwaIcons": "Pixel R2 Mugi icon in 192px and 512px maskable PNG",
-    "japaneseWebfont": "assets/fonts/noto-sans-jp-700-ja.woff2",
-    "legacyR1Plush": "history-only; not a runtime cache or QA dependency"
+  "v082ImplementedFeatures": [
+    "three-layer vertical tower board",
+    "automatic role-based cat dispatch and combat",
+    "Mugi Luna Toto and three helper definitions",
+    "crow and owl normal-enemy rotation",
+    "floor-8 black-feather barrier",
+    "floor-10 dedicated Kurobane boss",
+    "tap reinforcement with zero direct damage",
+    "six-second rally when the party is full",
+    "floor-3 restaurant delivery with temporary attack-speed support and coins",
+    "floor-5 shared-room recovery and same-kind redeployment",
+    "defeat victory ascent and floor-entry transition stages",
+    "all modal sheets pause the live simulation",
+    "floor-10 completion state that prevents floor-11 progression",
+    "r3 cast and enemy atlases connected to runtime",
+    "six unique formation kinds with recovery-slot reservation and fixed helper colors",
+    "frontline-priority enemy targeting with ranged-support fallback only when no frontline is attacking",
+    "six-kind celebrating roster reunion immediately at completion and after completed-save reload",
+    "defeated-enemy continuity through victory and ascent with transient animation-class preservation",
+    "stable public spawn result reasons for completed and full-roster states",
+    "source-atlas-independent body-foot alignment across every cat and enemy phase",
+    "schema2 save-key continuity and legacy post-boss normalization"
+  ],
+  "v082RuntimeArt": {
+    "legacyPixelR2Directory": "assets/v080/pixel-r2",
+    "tower": "assets/v080/pixel-r2/tower-night-r2.png",
+    "mugiSpriteSheet": "assets/v080/pixel-r2/mugi-sprites-r2.png",
+    "crowSpriteSheet": "assets/v080/pixel-r2/crow-sprites-r2.png",
+    "pixelR3Directory": "assets/v082/pixel-r3",
+    "castAtlas": {
+      "path": "assets/v082/pixel-r3/cats-cast-r3.png",
+      "dimensions": "1448x1086",
+      "format": "RGBA PNG",
+      "grid": "4x3",
+      "cell": "362x362",
+      "rows": [
+        "luna",
+        "toto",
+        "helper"
+      ]
+    },
+    "enemyAtlas": {
+      "path": "assets/v082/pixel-r3/enemies-r3.png",
+      "dimensions": "1448x1086",
+      "format": "RGBA PNG",
+      "grid": "4x3",
+      "cell": "362x362",
+      "rows": [
+        "owl",
+        "barrier",
+        "great-crow"
+      ]
+    },
+    "legacyR1Plush": "history-only-not-runtime-not-fallback-not-cache"
   },
   "verification": {
-    "gameCoreSyntax": true,
-    "deterministicCoreSmoke": true,
-    "tapDirectDamageIsZero": true,
-    "floor8WallCoreSmoke": true,
-    "coreReplayTimeSecondsBeforeDawn": 61.3,
-    "coreReplayTimeSecondsAfterDawn": 44.6,
-    "coreReplayTimeRatio": 0.728,
-    "localChromium390x844": "passed-16-evidence-images-visually-audited",
-    "localChromium375x667": "passed-16-evidence-images-visually-audited",
-    "browserReplayTimeMsBeforeDawn": 60700,
-    "browserReplayTimeMsAfterDawn": 43900,
-    "browserReplayTimeRatio": 0.7232289950576606,
-    "productionChromium390x844": "passed-16-evidence-images-visually-audited",
-    "productionChromium375x667": "passed-16-evidence-images-visually-audited",
-    "fullChromiumAndWebKitMatrix": "passed-chromium-and-webkit-at-390x844-and-375x667",
-    "evidenceVisualAudit": "64 of 64 fixed-run images visually audited",
-    "productionRuntimeCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
-    "mainIntegration": "passed-fast-forward",
-    "productionDeployment": "ready-and-runtime-hash-matched",
-    "productionRuntimeFiles": "13-of-13-http-200-and-etag-matched",
-    "productionExcludedPaths": "tests handover documents R1 and Living Tower art return HTTP 404"
+    "publishedV081": {
+      "gameCoreSyntax": true,
+      "deterministicCoreSmoke": true,
+      "tapDirectDamageIsZero": true,
+      "floor8WallCoreSmoke": true,
+      "coreReplayTimeSecondsBeforeDawn": 61.3,
+      "coreReplayTimeSecondsAfterDawn": 44.6,
+      "coreReplayTimeRatio": 0.728,
+      "browserReplayTimeMsBeforeDawn": 60700,
+      "browserReplayTimeMsAfterDawn": 43900,
+      "browserReplayTimeRatio": 0.7232289950576606,
+      "chromiumAndWebKitMatrix": "passed-at-390x844-and-375x667",
+      "evidenceVisualAudit": "64-of-64-images-visually-audited",
+      "productionRuntimeFiles": "13-of-13-http-200-and-etag-matched",
+      "productionExcludedPaths": "tests-handover-documents-r1-and-living-tower-art-returned-http-404"
+    },
+    "v082SourceQa": {
+      "sourceImplementationInspected": true,
+      "documentationUpdated": true,
+      "projectStatusJsonParse": true,
+      "sourceSyntax": "passed-for-app-game-data-game-core-service-worker-and-e2e",
+      "r3AtlasDimensionsAndAlpha": "generated-and-inspected-before-runtime-placement",
+      "precisionBalanceSimulation": "deferred-until-after-webkit-and-normal-motion-validation",
+      "chromium390x844": "passed-all-e2e-with-18-evidence-images-visually-audited",
+      "webkit390x844": "not-run-for-v0.8.2",
+      "chromium375x667": "passed-all-e2e-with-18-evidence-images-visually-audited",
+      "webkit375x667": "not-run-for-v0.8.2",
+      "chromiumEvidenceImagesTotal": 36,
+      "evidenceVisualAudit": "36-of-36-chromium-images-audited-webkit-pending",
+      "integratedVisualQa": {
+        "http": "passed",
+        "console": "passed",
+        "overflow": "passed",
+        "tapTargets": "passed",
+        "sheetPause": "passed"
+      },
+      "sixUnitOverlapFix": "fixed-formation-recovery-slot-reservation-and-kind-fixed-helper-colors-re-audited-passed",
+      "recoveryRosterRegression": {
+        "waitingUnitCount": 5,
+        "maximumSameKindCountWhileWaiting": 1,
+        "recoveredUnitCount": 6,
+        "allSixKindsExactlyOnceAfterRecovery": true,
+        "recoveryQueueCountAfterReturn": 0
+      },
+      "roleTargetRegression": "frontline-priority-passed-and-non-frontline-fallback-passed",
+      "spawnApiReasonRegression": "unit-cap-and-completed-public-reasons-preserved",
+      "transitionEnemyPhaseRegression": "defeated-through-victory-and-ascent-moving-only-after-floor-entry",
+      "normalMotionTransientClassProbe": "enemy-hit-and-defeat-animation-classes-preserved-across-render",
+      "completedSaveVictoryRoster": "six-unique-celebrating-kinds-reunited-immediately-with-recovery-zero-and-restored-after-reload",
+      "floorCharacterAlignment": {
+        "sourceFloorAnchorPercents": [95.1, 80.62, 66.99, 53.77, 40.43, 27.21],
+        "partyGroundPercent": 88,
+        "partyBodyFootSpreadCssPx": {
+          "390x844": 0.002706201,
+          "375x667": 0.002586744
+        },
+        "partyBodyFootGroundRatio": {
+          "390x844": 0.87998473,
+          "375x667": 0.879986106
+        },
+        "minimumVisibleAlphaBoundingBoxGapCssPx": {
+          "390x844": 2.99836,
+          "375x667": 2.872583
+        },
+        "sampledEnemyHoverGapCssPx": {
+          "390x844": {
+            "crow": 5.99985,
+            "owl": 6.006306,
+            "barrier": 4.001315,
+            "boss": 6.00358
+          },
+          "375x667": {
+            "crow": 5.9982,
+            "owl": 6.004404,
+            "barrier": 3.999601,
+            "boss": 6.001771
+          }
+        },
+        "atlasPhaseAnchorMatrix": {
+          "catCharacterPhasePairs": 24,
+          "enemyCharacterPhasePairs": 16,
+          "maximumCatGroundErrorCssPx": {
+            "390x844": 0.008405304,
+            "375x667": 0.006448024
+          },
+          "maximumEnemyHoverErrorCssPx": {
+            "390x844": 0.010821419,
+            "375x667": 0.008744936
+          }
+        },
+        "totoAttackBodyFootExcludesShieldEffect": true,
+        "totoAttackEffectIncludedInClippingAndGapChecks": true,
+        "bossFloorEntryFormationSweep": {
+          "sampleIntervalMs": 100,
+          "samplesPerViewport": 12,
+          "minimumGapCssPx": {
+            "390x844": 2.99836,
+            "375x667": 2.872583
+          },
+          "allSixKindsUniqueAndContained": true
+        },
+        "floorMatrixVisualAudit": "floors-1-through-10-passed-at-390x844-and-375x667"
+      },
+      "settingsFactsFix": "fixed-and-re-audited-passed",
+      "floor10CompletionSheetRestore": "confirmed",
+      "normalMotionVideo": "not-run-for-v0.8.2",
+      "physicalIPhone": "not-verified",
+      "githubMain": "canonical-source-in-this-main-commit",
+      "productionDeployment": "external-verification-required-after-main-push",
+      "productionRuntimeHash": "verify-current-vercel-githubCommitSha-against-current-main-head"
+    }
   },
   "physicalIPhoneVerified": false,
-  "productionDeploymentReady": true,
-  "verticalSliceArtDirectionApproved": true,
-  "verticalSliceProductionReady": true,
-  "fullContentArtProductionReady": false,
+  "publishedV081ProductionReady": true,
+  "precisionBalanceSimulationCompleted": false,
   "notCompleted": [
-    "distinct production sprite sheets and abilities for Luna Toto and Mimi",
-    "additional natural enemies and bosses",
-    "additional castles and tower themes",
-    "long-term balance and content progression",
-    "production sound and haptics",
-    "physical iPhone visual and interaction validation",
-    "strict multi-tab revision or writer-lock arbitration before the first competing save",
+    "precision balance simulation for v0.8.2",
+    "WebKit QA and visual audit at 390x844 and 375x667",
+    "normal-speed transition video review",
+    "physical iPhone Safari ChatGPT in-app browser and PWA validation",
+    "distinct production atlas rows for every helper variant",
+    "strict multi-tab writer-lock or revision arbitration before the first competing save",
     "cloud save monetization and live events"
   ],
   "nextPriority": [
-    "verify title battle support wall dawn and first-night flows on a physical iPhone",
-    "create distinct production sprite sheets and abilities for Luna Toto and Mimi",
-    "add natural enemies bosses and the next castle",
-    "tune long-term progression sound and haptics",
-    "add strict writer-lock or revision arbitration before the first competing multi-tab save"
+    "verify current GitHub Actions and Vercel deployment metadata for the current main commit",
+    "run WebKit QA at 390x844 and 375x667",
+    "visually audit the WebKit evidence",
+    "validate normal-speed flows on a physical iPhone",
+    "run precision balance simulation later as a separate tuning stage",
+    "declare Production Ready only after the remaining production gates pass"
   ],
+  "history": {
+    "v081": {
+      "definition": "published pixel-tower vertical-slice baseline",
+      "sourceSnapshot": "0c4c191624b6ffca45c9da91f065d5b9fe49c36a",
+      "featureIntegration": "3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19",
+      "webkitViewportFix": "5d16682e51b974e4b3f72a3ceb7a58c229e827f7",
+      "documentationBaseline": "7d486189cccbdb58aeb209432f1782d5393915ef",
+      "production": {
+        "build": "v081-pixel-tower-r2-p3",
+        "runtimeCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
+        "deploymentId": "dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm",
+        "actionsRunId": 32091801556,
+        "actionsJobId": 95575301315,
+        "actionsArtifactId": 9308695207,
+        "actionsArtifactDigest": "sha256:9aeae35d058572a4b4edc9d56c42b566f7a9e59781819aebd1748328e1845737"
+      }
+    },
+    "v082": {
+      "definition": "tower-board and gameplay redesign based on v0.8.1 device-video findings",
+      "publicStatus": "github-main-release-source-vercel-live-state-external-production-ready-gates-remain"
+    }
+  },
   "doNotReturnTo": [
     "old v0.9.x",
     "v0.8.0 Living Tower management loop as the main game",
     "R1 plush dollhouse art as canonical runtime art",
     "fish bell box three-choice night shift",
-    "restaurant inventory or cat mood management as mandatory progression",
+    "restaurant inventory service or fish-slide minigames as mandatory progression",
+    "cat mood management as mandatory progression",
     "direct tap damage",
-    "static room cards presented as a vertical tower"
+    "static room cards presented as a vertical tower",
+    "twelve identical Mugi sprites piled into one lane",
+    "a disabled main action while the party is full",
+    "instant enemy replacement without victory and ascent beats",
+    "important progression behind an open sheet",
+    "floor-11 progression after the first-night boss",
+    "claiming physical iPhone verification without evidence",
+    "claiming v0.8.2 is Production Ready without WebKit normal-motion device PWA and balance evidence"
   ]
 }

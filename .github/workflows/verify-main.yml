@@ -1,4 +1,4 @@
-name: Verify Cat's tower V0.8 vertical tower
+name: Verify Cat's tower V0.8.2 redesigned vertical tower
 
 on:
   push:
@@ -17,6 +17,7 @@ on:
       - sw.js
       - manifest.webmanifest
       - assets/v080/**
+      - assets/v082/**
       - assets/fonts/**
       - assets/icons/**
       - tests/living-tower-v080.mjs
@@ -28,7 +29,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cats-v080-main-qa
+  group: cats-v082-main-qa
   cancel-in-progress: true
 
 jobs:
@@ -72,10 +73,14 @@ jobs:
           import json
           from pathlib import Path
           status=json.loads(Path('PROJECT_STATUS.json').read_text())
-          assert str(status['canonicalVersion']).startswith('0.8')
+          assert status['canonicalReleaseVersion']=='0.8.2'
+          assert status['canonicalReleaseBuild']=='v082-pixel-tower-gameplay-redesign'
+          assert status['githubMainContainsV082'] is True
+          assert status['v082ProductionReady'] is False
           assert status['canonicalBranch']=='main'
           assert status['physicalIPhoneVerified'] is False
           assert status['productionUrl']=='https://cats-tau-dusky.vercel.app/'
+          assert status['history']['v081']['production']['runtimeCommit']=='ebe26884f9e4500d8e755f0b4fae328ef208c6b6'
           print('handover contracts passed')
           PY
 
@@ -88,9 +93,16 @@ jobs:
           node --check app.js
           node --check sw.js
           node --check tests/living-tower-v080.mjs
-          grep -Eq "const VERSION = '0\.8(\.[0-9]+)?'" game-data.js
+          grep -q "const VERSION = '0.8.2'" game-data.js
           grep -q "GAMEPLAY_SCHEMA = 2" game-data.js
           grep -q "cats-tower-v080" game-data.js
+          grep -q "unitCap: 6" game-data.js
+          grep -q "floorTransitionMs: 2000" game-data.js
+          grep -q "rallyDurationMs: 6000" game-data.js
+          grep -q "luna: Object.freeze" game-data.js
+          grep -q "toto: Object.freeze" game-data.js
+          grep -q "owl: Object.freeze" game-data.js
+          grep -q "barrier: Object.freeze" game-data.js
           grep -q "dispatch-cat" index.html
           grep -q "upgrade-mugi" index.html
           grep -q "open-dawn" index.html
@@ -102,12 +114,19 @@ jobs:
           grep -q "/assets/v080/pixel-r2/tower-night-r2.png" index.html
           grep -q "/assets/v080/pixel-r2/mugi-sprites-r2.png" sw.js
           grep -q "/assets/v080/pixel-r2/crow-sprites-r2.png" sw.js
-          grep -q "serviceWorker.register('/sw.js?v=081p3')" app.js
-          grep -q "cats-tower-v081-pixel-tower-r2-p3" sw.js
+          grep -q "/assets/v082/pixel-r3/cats-cast-r3.png" sw.js
+          grep -q "/assets/v082/pixel-r3/enemies-r3.png" sw.js
+          grep -q "/assets/v082/pixel-r3/cats-cast-r3.png" styles.css
+          grep -q "/assets/v082/pixel-r3/enemies-r3.png" styles.css
+          grep -q "serviceWorker.register('/sw.js?v=082r3')" app.js
+          grep -q "cats-tower-v082-pixel-tower-r3" sw.js
+          grep -q "/assets/v082/pixel-r3/cats-cast-r3.png" index.html
+          grep -q "/assets/v082/pixel-r3/enemies-r3.png" index.html
           grep -q 'font-family:"CatsTowerJP"' styles.css
           grep -q "/assets/fonts/noto-sans-jp-700-ja.woff2" styles.css
           ! grep -Eiq 'assets/(living|v0?9)|V0\.9' index.html game-data.js game-core.js app.js styles.css sw.js manifest.webmanifest
           ! grep -Eiq 'battle-fish|battle-bell|battle-box|魚を投げる|ベルを鳴らす|箱で止める' index.html game-data.js game-core.js app.js
+          ! grep -Eiq '屋台型|ビストロ型|速度型|一撃型|皿を滑らせる|魚スライド' index.html app.js
           ! grep -q "RASTER_ART_V03_START" styles.css
           ! grep -q "V04_MOBILE_VISUAL_FIX_START" styles.css
           ! grep -q "V05_CHARACTER_ART_START" styles.css
@@ -136,6 +155,20 @@ jobs:
               if mode=='RGBA':
                 lo,hi=image.getchannel('A').getextrema()
                 assert lo==0 and hi>200,(name,'invalid alpha',lo,hi)
+          v082_expected={
+            'cats-cast-r3.png':((1448,1086),'RGBA'),
+            'enemies-r3.png':((1448,1086),'RGBA'),
+          }
+          for name,(size,mode) in v082_expected.items():
+            path=Path('assets/v082/pixel-r3')/name
+            assert path.is_file() and path.stat().st_size>500_000,(name,'missing or too small')
+            with Image.open(path) as image:
+              image.load()
+              assert image.format=='PNG',(name,image.format)
+              assert image.size==size,(name,image.size,size)
+              assert image.mode==mode,(name,image.mode,mode)
+              lo,hi=image.getchannel('A').getextrema()
+              assert lo==0 and hi>200,(name,'invalid alpha',lo,hi)
           for name,size in {'icon-192.png':(192,192),'icon-512.png':(512,512)}.items():
             path=Path('assets/icons')/name
             assert path.is_file() and path.stat().st_size>5000,(name,'missing or too small')
@@ -143,7 +176,7 @@ jobs:
               image.load()
               assert image.format=='PNG',(name,image.format)
               assert image.size==size,(name,image.size,size)
-          print('V0.8.1 Pixel R2 raster, font, and icon contracts passed')
+          print('V0.8.2 Pixel R2/R3 raster, font, and icon contracts passed')
           PY
 
       - name: Install mobile browser QA runtime
@@ -154,19 +187,19 @@ jobs:
       - name: Chromium and WebKit vertical tower loop QA
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 >/tmp/cats-v080-http.log 2>&1 &
+          python3 -m http.server 4173 >/tmp/cats-v082-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           for VIEWPORT in 390x844 375x667; do
-            CATS_BROWSER=chromium CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v080-chromium-$VIEWPORT node tests/living-tower-v080.mjs
-            CATS_BROWSER=webkit CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v080-webkit-$VIEWPORT node tests/living-tower-v080.mjs
+            CATS_BROWSER=chromium CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v082-chromium-$VIEWPORT node tests/living-tower-v080.mjs
+            CATS_BROWSER=webkit CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v082-webkit-$VIEWPORT node tests/living-tower-v080.mjs
           done
           python - <<'PY'
           import json
           from pathlib import Path
           expected={
-            '00-title.png','01-auto-climb.png','02-tap-dispatch.png',
+            '00-title.png','00-settings-paused.png','01-auto-climb.png','02-tap-dispatch.png','02-full-party-rally.png',
             '03-upgrade-panel.png','04-floor-conquered.png',
             '05-food-support-full.png','05-food-support-sheet.png',
             '06-shared-room-full.png','06-shared-room-sheet.png',
@@ -177,10 +210,10 @@ jobs:
           viewports={'390x844':(390,844),'375x667':(375,667)}
           for browser in ('chromium','webkit'):
             for label,(width,height) in viewports.items():
-              root=Path('test-results')/f'v080-{browser}-{label}'
+              root=Path('test-results')/f'v082-{browser}-{label}'
               report=json.loads((root/'report.json').read_text())
               assert report['passed'] is True
-              assert str(report['version']).startswith('0.8')
+              assert report['version']=='0.8.2'
               assert report['gameplaySchema']==2
               assert report['viewport']=={'width':width,'height':height,'deviceScaleFactor':3,'reducedMotion':'reduce'}
               font=report['japaneseFont']
@@ -190,37 +223,93 @@ jobs:
               assert font['fontHttpStatus']==200 and font['fontByteLength']>500_000 and font['fontSignature']=='wOF2'
               assert font['customFingerprint']['ink']>0
               assert font['customFingerprint']['hash']!=font['fallbackFingerprint']['hash']
+              assets={item['path']:item for item in report['v082Assets']}
+              assert set(assets)=={'/assets/v082/pixel-r3/cats-cast-r3.png','/assets/v082/pixel-r3/enemies-r3.png'}
+              assert all(item['status']==200 and item['bytes']>500_000 and (item['width'],item['height'])==(1448,1086) for item in assets.values())
+              assert report['modalPause']=={'playTimeMs':0,'enemyDamage':0,'floorBefore':1,'floorAfter':1}
+              roster=report['recoveryRosterContract']
+              assert roster['waitingUnitCount']==5 and max(roster['waitingCounts'].values())<=1
+              assert roster['recoveredUnitCount']==6 and set(roster['recoveredCounts'].values())=={1}
+              assert roster['recoveryCount']==0 and roster['totalUnitsRecovered']==1
+              targets=report['roleTargetContract']
+              assert targets['withFrontline']=={'kind':'mugi','role':'frontline'}
+              assert targets['withoutFrontline']['role'] in {'ranged','support'}
               loop=report['loop']
               assert loop['autoDispatches']>=1
               assert loop['tapDispatches']>=1
               assert loop['tapDirectDamage']==0
+              assert loop['rally']['directDamage']==0
+              assert loop['rally']['durationMs']==6000
+              assert loop['rally']['unitCount']==6
+              assert loop['rally']['namedKinds']==['luna','mugi','toto']
+              assert set(loop['rally']['castVisual']['characters'])>={'luna','toto','helper'}
+              assert all('cats-cast-r3.png' in value for value in loop['rally']['castVisual']['backgrounds'])
+              assert loop['rally']['helperHueVisual']=={'helper-tabby':'42deg','helper-gray':'84deg','helper-calico':'0deg'}
+              filters=loop['rally']['rallyHelperFilters']
+              assert 'hue-rotate(42deg)' in filters['helper-tabby']
+              assert 'hue-rotate(84deg)' in filters['helper-gray']
+              assert 'hue-rotate(0deg)' in filters['helper-calico']
+              party=loop['rally']['partyGeometry']
+              assert party['footSpread']<=1.5
+              assert 0.875<=party['groundRatio']<=0.885
+              assert party['minimumGap']>=2 and party['contained'] is True
+              matrix=loop['rally']['alignmentPhaseMatrix']
+              assert len(matrix['cats'])==24 and len(matrix['enemies'])==16
+              assert matrix['maximumCatGroundError']<=0.05
+              assert matrix['maximumEnemyHoverError']<=0.05
               assert loop['firstKillReward']>0
               assert loop['upgrade']['levelAfter']==loop['upgrade']['levelBefore']+1
               assert loop['upgrade']['dpsAfter']>loop['upgrade']['dpsBefore']
-              assert loop['wall']=={'floor':report['rules']['wallFloor'],'heldMs':12000}
+              assert loop['wall']['floor']==report['rules']['wallFloor'] and loop['wall']['heldMs']==12000
+              assert loop['wall']['visual']['enemy']=='black-feather-barrier'
+              assert loop['wall']['visual']['character']=='barrier'
+              assert 'enemies-r3.png' in loop['wall']['visual']['spriteBackground']
+              assert 3<=loop['wall']['ground']['hoverGap']<=7.5
               assert loop['dawn']['bestFloorAfter']>=loop['dawn']['bestFloorBefore']
               assert loop['dawn']['shardsAfter']>loop['dawn']['shardsBefore']
               assert loop['replay']['replayMs']<loop['replay']['baselineMs']
               assert loop['replay']['speedupRatio']<=0.75
+              assert loop['firstEnemy']['ground']['enemy']=='crow'
+              assert 3<=loop['firstEnemy']['ground']['hoverGap']<=7.5
+              assert loop['normalEnemy']['enemy']=='owl' and loop['normalEnemy']['character']=='owl'
+              assert 'enemies-r3.png' in loop['normalEnemy']['spriteBackground']
+              assert 3<=loop['normalEnemy']['ground']['hoverGap']<=7.5
               assert loop['firstNightBoss']['enemy']=='boss'
+              assert loop['firstNightBoss']['character']=='boss'
               assert loop['firstNightBoss']['phase']!='defeated'
               assert loop['firstNightBoss']['opacity']>0 and loop['firstNightBoss']['intersectsViewport'] is True
               assert loop['firstNightBoss']['width']>0 and loop['firstNightBoss']['height']>0
-              assert 'crow-sprites-r2.png' in loop['firstNightBoss']['spriteBackground']
+              assert 'enemies-r3.png' in loop['firstNightBoss']['spriteBackground']
+              assert 3<=loop['firstNightBoss']['ground']['hoverGap']<=7.5
+              entry=loop['firstNightBoss']['entryFormation']
+              assert entry['count']==6 and len(set(entry['kinds']))==6
+              assert entry['minimumGap']>=2 and entry['contained'] is True
+              sweep=loop['firstNightBoss']['entryFormationSweep']
+              assert sweep['samples']>=2 and sweep['minimumGap']>=2 and sweep['allContained'] is True
+              immediate=loop['completedImmediateRoster']
+              assert immediate['unitCount']==6 and len(set(immediate['kinds']))==6
+              assert immediate['recoveryCount']==0
+              assert immediate['geometry']['minimumGap']>=2 and immediate['geometry']['contained'] is True
               assert loop['firstNightCleared'] is True
+              assert loop['firstNightCompleted'] is True
+              assert loop['completedFloor']==report['rules']['firstBossFloor']==10
               assert report['save']['newSchemaReload'] is True
-              assert {item['name'] for item in report['save']['migrations']}=={'living-v080','legacy-v01','corrupt-v080','future-schema'}
+              restored=report['save']['completedReloadRuntime']
+              assert restored['unitCount']==6 and len(set(restored['kinds']))==6
+              assert restored['phases']==['celebrating']
+              assert restored['geometry']['minimumGap']>=2 and restored['geometry']['contained'] is True
+              assert {item['name'] for item in report['save']['migrations']}=={'living-v080','legacy-v01','corrupt-v080','v081-post-dawn','v081-boss-clear','future-schema'}
               assert all(item['passed'] for item in report['save']['migrations'])
               assert {item['name'] for item in report['evidence']}==expected
               assert {path.name for path in root.glob('*.png')}==expected
           print('deterministic vertical tower and visual evidence contracts passed')
           PY
 
-      - name: Upload V0.8 vertical tower evidence
+      - name: Upload V0.8.2 vertical tower evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-v080-vertical-tower-evidence
+          name: cats-v082-vertical-tower-evidence
           path: test-results
           if-no-files-found: warn
           retention-days: 30
