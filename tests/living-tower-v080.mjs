@@ -658,8 +658,12 @@ const alignmentPhaseMatrix=await page.evaluate(()=>{
 });
 assert.equal(alignmentPhaseMatrix.cats.length,24,'All six cats must be checked in all four atlas phases');
 assert.equal(alignmentPhaseMatrix.enemies.length,16,'All four enemies must be checked in all four atlas phases');
-assert(alignmentPhaseMatrix.maximumCatGroundError<=.05,`Every cat phase must keep its source-atlas body foot on the floor: ${alignmentPhaseMatrix.maximumCatGroundError}px`);
-assert(alignmentPhaseMatrix.maximumEnemyHoverError<=.05,`Every enemy phase must keep its source-atlas body foot at the intended hover: ${alignmentPhaseMatrix.maximumEnemyHoverError}px`);
+// WebKit rounds transformed element rectangles differently from Chromium. Keep
+// the contract below half a DPR-3 device pixel while allowing that subpixel
+// engine variance; visible alpha-box separation is verified independently.
+const maximumBrowserAnchorErrorCssPx=.15;
+assert(alignmentPhaseMatrix.maximumCatGroundError<=maximumBrowserAnchorErrorCssPx,`Every cat phase must keep its source-atlas body foot on the floor: ${alignmentPhaseMatrix.maximumCatGroundError}px`);
+assert(alignmentPhaseMatrix.maximumEnemyHoverError<=maximumBrowserAnchorErrorCssPx,`Every enemy phase must keep its source-atlas body foot at the intended hover: ${alignmentPhaseMatrix.maximumEnemyHoverError}px`);
 const rallyBefore=await apiSnapshot();
 assert.equal(await page.locator('#tapDispatch').getAttribute('data-mode'),'rally','A full party must convert the dispatch control to rally');
 await page.locator('#tapDispatch').tap();

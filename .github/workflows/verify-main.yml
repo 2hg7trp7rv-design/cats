@@ -255,8 +255,8 @@ jobs:
               assert party['minimumGap']>=2 and party['contained'] is True
               matrix=loop['rally']['alignmentPhaseMatrix']
               assert len(matrix['cats'])==24 and len(matrix['enemies'])==16
-              assert matrix['maximumCatGroundError']<=0.05
-              assert matrix['maximumEnemyHoverError']<=0.05
+              assert matrix['maximumCatGroundError']<=0.15
+              assert matrix['maximumEnemyHoverError']<=0.15
               assert loop['firstKillReward']>0
               assert loop['upgrade']['levelAfter']==loop['upgrade']['levelBefore']+1
               assert loop['upgrade']['dpsAfter']>loop['upgrade']['dpsBefore']
