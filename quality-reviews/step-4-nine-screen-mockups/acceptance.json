@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-4-nine-screen-mockups",
+  "artifactType": "static-game-screen-set",
+  "lockedAt": "2026-08-22T07:38:44Z",
+  "lockedForBuildRound": 2,
+  "retrospectiveForRound1": true,
+  "prospectiveLockRequiredFromRound": 2,
+  "userExpectation": "制作しただけで完成報告せず、最終成果物を人間の期待品質と強い参考対象に照らして自己検収し、不合格なら失敗を反映して再構成する。本番用の9画面完成見本は、商人サーガと比較しても猫、塔、店、戦闘、報酬の魅力が一目で伝わる品質へ到達させる。",
+  "approvedProductPromise": "猫を呼んで塔を奪還し、制圧した部屋で猫が暮らし、選んだ店と配送が上階の戦闘を支える100F放置インクリメンタルRPG",
+  "referenceTargets": [
+    {
+      "name": "商人サーガ 魔王城でお店開けって言われた",
+      "comparisonScope": "塔、戦闘、店舗、キャラクター、進捗が同じ世界で連続して見えること。コード、素材、文章、固有UIは複製しない"
+    },
+    {
+      "name": "ユーザー提供の現行版画面録画2本",
+      "comparisonScope": "既知の階層とキャラクターの高低ずれ、画面密度、動き不足を再発させない"
+    }
+  ],
+  "requiredArtifacts": {
+    "heroScreens": 9,
+    "stateVariants": 4,
+    "canonicalViewport": "390x844",
+    "responsiveViewports": [
+      "320x568",
+      "375x667",
+      "390x844",
+      "430x932"
+    ]
+  },
+  "requiredArtifactPaths": [
+    "FLOORS_1_10_DESIGN.md",
+    "MASTER_SPEC.md",
+    "NINE_SCREEN_MOCKUPS.md",
+    "NINE_SCREEN_MOCKUPS.html",
+    "NINE_SCREEN_MOCKUPS.css",
+    "NINE_SCREEN_VARIANTS.html",
+    "NINE_SCREEN_MOCKUP_01.png",
+    "NINE_SCREEN_MOCKUP_02.png",
+    "NINE_SCREEN_MOCKUP_03.png",
+    "NINE_SCREEN_MOCKUP_04.png",
+    "NINE_SCREEN_MOCKUP_05.png",
+    "NINE_SCREEN_MOCKUP_06.png",
+    "NINE_SCREEN_MOCKUP_07.png",
+    "NINE_SCREEN_MOCKUP_08.png",
+    "NINE_SCREEN_MOCKUP_09.png",
+    "NINE_SCREEN_VARIANT_TUTORIAL.png",
+    "NINE_SCREEN_VARIANT_DEFEAT.png",
+    "NINE_SCREEN_VARIANT_BOSS.png",
+    "NINE_SCREEN_VARIANT_FINAL.png",
+    "tests/nine-screen-mockups.mjs"
+  ],
+  "ownedPaths": [
+    "FLOORS_1_10_DESIGN.md",
+    "MASTER_SPEC.md",
+    "NINE_SCREEN_MOCKUPS.md",
+    "NINE_SCREEN_MOCKUPS.html",
+    "NINE_SCREEN_MOCKUPS.css",
+    "NINE_SCREEN_VARIANTS.html",
+    "NINE_SCREEN_MOCKUP_*.png",
+    "NINE_SCREEN_VARIANT_*.png",
+    "step4-assets/**",
+    "tests/nine-screen-mockups.mjs"
+  ],
+  "statusPointers": [
+    "preparation[3].status",
+    "nineScreenMockups.status"
+  ],
+  "comparisonAxes": [
+    "instantAppeal",
+    "gameScreenDensity",
+    "characterPresence",
+    "towerContinuity",
+    "rewardImpact",
+    "shopOperationVisibility",
+    "desireToPlay"
+  ],
+  "qualityThresholds": {
+    "placeholderVisuals": 0,
+    "minimumIndependentCritics": 2,
+    "minimumFreshFiveSecondReviews": 3,
+    "comparisonScoreOutOf10MinimumPerAxis": 6,
+    "comparisonScoreOutOf10MinimumAverage": 7,
+    "criticalFindingsAllowed": 0,
+    "majorFindingsAllowed": 0
+  },
+  "visualAcceptance": [
+    "5秒で猫が塔を奪還し、制圧階の店が上階戦闘を支えるゲームだと説明できる",
+    "タイトル画面だけで主要猫、塔、敵、店舗、上昇目標が伝わる",
+    "主要ゲーム画面の55〜70%を塔の断面世界が占め、UIカードが世界より主役にならない",
+    "現在の戦闘階と制圧済み店舗階が同じ連続した塔として見える",
+    "100F閲覧がカード台帳ではなく、生活する部屋が連続する縦長の塔として見える",
+    "ショップ選択で空室、店舗完成像、店員猫、商品、配送、前線効果が視覚的に比較できる",
+    "猫名簿で猫の顔、体、性格、役割、解放時の感情が読める",
+    "通常制圧、敗北、10Fボス、地区制覇、100F制覇が固有の色、構図、演出、感情を持つ",
+    "猫、敵、背景、店舗、UI、アイコンの画風、輪郭密度、陰影、材質、解像感が統一される",
+    "猫と敵の足裏、接地影、床天面、遠近、体格が同じ空間として自然に見える",
+    "文字を隠しても各画面の主役、状態、結果、次の目的が伝わる",
+    "全9画面が同じ濃紺カードの差し替えに見えず、感情温度と世界の変化が区別できる"
+  ],
+  "gateApplicability": {
+    "G1": "9画面、4状態、100F、ショップ、猫解放、塔閲覧、接地など承認済み要件との一致",
+    "G2": "個別PNG、全画面コンタクトシート、最終サイズ、全viewport、仮素材0の目視",
+    "G3": "5秒理解、猫への愛着、触りたさ、報酬期待、塔を見返したさ",
+    "G4": "商人サーガとの横並び比較と、代替構成より弱い理由の探索",
+    "G5": "静止成果物としての画面遷移理解、主要状態、対象viewport、通常閲覧。motion、音、保存、物理端末性能は工程5、8、9で別判定"
+  },
+  "notApplicableInStep4": [
+    {
+      "item": "motion-and-tactile-feel",
+      "reason": "工程5で入力、時間、キャンセル、音、振動、通常motion、reduced-motionを判定する"
+    },
+    {
+      "item": "save-and-migration-runtime",
+      "reason": "工程8と10でschemaとruntimeを実装・判定する"
+    },
+    {
+      "item": "physical-device-performance",
+      "reason": "工程9と10で物理iPhone runtimeを判定する"
+    }
+  ],
+  "automaticFailureConditions": [
+    "猫、塔、店舗、敵のいずれかが文章または一文字アイコンだけで代用される",
+    "空の円、黒い四角、仮シルエット、欠損画像が残る",
+    "100F閲覧が階数カード一覧のままである",
+    "ショップ選択後の部屋変化と前線への因果が絵で見えない",
+    "足裏座標が数値上合っても同じ空間へ接地して見えない",
+    "技術QAだけを根拠に総合PASSとする",
+    "独立批評または反証roundなしに完成報告する"
+  ]
+}

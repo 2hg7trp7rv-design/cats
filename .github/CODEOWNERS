@@ -1,0 +1,7 @@
+# Quality-gate governance must be reviewed by the repository owner.
+/.github/CODEOWNERS @2hg7trp7rv-design
+/.github/workflows/verify-main.yml @2hg7trp7rv-design
+/tests/quality-gate.mjs @2hg7trp7rv-design
+/QUALITY_GATE.md @2hg7trp7rv-design
+/PROJECT_STATUS.json @2hg7trp7rv-design
+/quality-reviews/ @2hg7trp7rv-design

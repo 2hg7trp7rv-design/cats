@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-4-nine-screen-mockups",
+  "round": 1,
+  "reviewer": "quality-decision-judge",
+  "role": "quality-decision-reviewer",
+  "independent": true,
+  "reviewedAt": "2026-08-22T08:00:00Z",
+  "acceptanceMatrixSha256": "aae9505c464e347a01c4bc31c6eb3ddd5e83a69e406d08a4a51f9b08205ec9c5",
+  "artifactSetSha256": "3ce451ef7eea69b8c3b0a50667264eeb1b226860eb66065c9b3f2926996b18d1",
+  "verdict": "IN_PROGRESS",
+  "criticAttestationSha256s": [
+    "24604c8dedbc196e7f0c5fb3c9e24799654185ca911cbb6c97913d3e7be87078",
+    "50e738baabd487b8b546bfae6c80479493f9459781ed8b4f72848760f79b17a5",
+    "55dc1c7d884027ce07c7f4a6228423ef52b5df2f07ceee1fbd2bfbddee85af4c"
+  ],
+  "gateVerdicts": {
+    "G1": "FAIL",
+    "G2": "FAIL",
+    "G3": "FAIL",
+    "G4": "FAIL",
+    "G5": "PASS"
+  },
+  "findings": [
+    "画面種類と基本導線の技術構造だけは再利用できる",
+    "全可視美術、塔とUIの占有率、店舗実景、接地、報酬演出は再構築が必要",
+    "工程4をPASSにせず工程5へ進めない"
+  ]
+}

@@ -6,6 +6,7 @@
   "canonicalBranch": "main",
   "documentationBranch": "codex/nine-screen-mockups",
   "productSourceOfTruth": "MASTER_SPEC.md",
+  "completionQualityGate": "QUALITY_GATE.md",
   "projectStage": "preproduction",
   "codeChangesStarted": false,
   "firstTenPreviewReady": false,
@@ -30,7 +31,34 @@
     {
       "order": 4,
       "name": "nine-screen-final-mockups",
-      "status": "PASS"
+      "status": "IN_PROGRESS",
+      "subgates": [
+        {
+          "id": "4A",
+          "name": "functional-structural-wireframes",
+          "status": "PASS"
+        },
+        {
+          "id": "4B",
+          "name": "mini-art-direction",
+          "status": "NOT_STARTED"
+        },
+        {
+          "id": "4C",
+          "name": "small-pilot-assets-for-mockups",
+          "status": "NOT_STARTED"
+        },
+        {
+          "id": "4D",
+          "name": "three-golden-screens",
+          "status": "NOT_STARTED"
+        },
+        {
+          "id": "4E",
+          "name": "nine-final-screens-and-four-variants",
+          "status": "NOT_STARTED"
+        }
+      ]
     },
     {
       "order": 5,
@@ -295,7 +323,11 @@
     "district-clear-and-hundred-floor-completion"
   ],
   "nineScreenMockups": {
-    "status": "PASS",
+    "status": "IN_PROGRESS",
+    "structureAndTechnicalQaStatus": "PASS",
+    "humanExpectationAndFinalArtVerdict": "FAIL",
+    "artifactClassification": "functional-structural-wireframes-not-final-mockups",
+    "previousPassWithdrawn": true,
     "baseCommit": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
     "sourceOfTruth": "NINE_SCREEN_MOCKUPS.md",
     "heroBoard": "NINE_SCREEN_MOCKUPS.html",
@@ -315,7 +347,70 @@
     "touchTargetsBelow44CssPx": 0,
     "gameplayFilesChanged": false,
     "physicalDeviceVerificationDeferredToPreparationOrder": 9,
-    "provisionalAssets": true
+    "provisionalAssets": true,
+    "draftPullRequestMustRemainUnmerged": 3,
+    "reworkStartsWith": [
+      "mini-art-direction",
+      "small-pilot-assets",
+      "battle-golden-screen",
+      "tower-browse-golden-screen",
+      "floor-to-shop-transformation-golden-screen"
+    ]
+  },
+  "qualityGate": {
+    "status": "ACTIVE",
+    "activeArtifactId": "step-4-nine-screen-mockups",
+    "artifacts": [
+      {
+        "artifactId": "step-4-nine-screen-mockups",
+        "acceptanceMatrix": "quality-reviews/step-4-nine-screen-mockups/acceptance.json",
+        "acceptanceMatrixSha256": "aae9505c464e347a01c4bc31c6eb3ddd5e83a69e406d08a4a51f9b08205ec9c5",
+        "activeReview": "quality-reviews/step-4-nine-screen-mockups/round-001.json",
+        "activeReviewSha256": "70299dac4168d4eee4804153af420601bd5002c0a33447efe908f31307511ae9",
+        "activeReviewRound": 1,
+        "activeReviewOverallStatus": "IN_PROGRESS",
+        "pullRequestReadyAllowed": false,
+        "pullRequestMergeAllowed": false
+      }
+    ],
+    "infrastructurePaths": [
+      ".github/CODEOWNERS",
+      ".github/pull_request_template.md",
+      ".github/workflows/verify-main.yml",
+      "AGENTS.md",
+      "PROJECT_HANDOVER.md",
+      "PROJECT_STATUS.json",
+      "QUALITY_GATE.md",
+      "README.md",
+      "quality-reviews/**",
+      "tests/quality-gate.mjs"
+    ],
+    "requiredSequence": [
+      "define-human-expectation",
+      "build",
+      "inspect-final-artifact",
+      "adversarially-compare-and-disprove",
+      "pass-or-reconstruct",
+      "report"
+    ],
+    "gates": [
+      "requirements",
+      "artifact-quality",
+      "human-expectation",
+      "comparison-and-disproof",
+      "normal-use"
+    ],
+    "automatedQaAloneCanPass": false,
+    "deploymentReadyAloneCanPass": false,
+    "repositoryProtection": {
+      "requiredCheckName": "vertical-tower-qa",
+      "codeOwnersDeclared": true,
+      "requiredStatusCheckVerified": false,
+      "pullRequestRequiredVerified": false,
+      "directPushBlockedVerified": false,
+      "tamperResistantMergeEnforcementVerified": false,
+      "note": "Repository ruleset or branch protection is not exposed by the connected GitHub tool; Draft state and failing Actions check currently block normal flow but administrator bypass remains possible"
+    }
   },
   "saveDirection": {
     "currentKey": "cats-tower-v080",
@@ -459,7 +554,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "create-motion-storyboards-without-changing-gameplay-code",
+  "nextAction": "reconstruct-step-4-golden-screens-before-motion-storyboards",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",

@@ -1,35 +1,17 @@
-name: Verify Cat's tower V0.8.2 redesigned vertical tower
+name: Verify Cat's Tower quality gate and runtime
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths:
-      - README.md
-      - AGENTS.md
-      - PROJECT_HANDOVER.md
-      - PROJECT_STATUS.json
-      - .vercelignore
-      - index.html
-      - styles.css
-      - game-data.js
-      - game-core.js
-      - app.js
-      - sw.js
-      - manifest.webmanifest
-      - assets/v080/**
-      - assets/v082/**
-      - assets/fonts/**
-      - assets/icons/**
-      - tests/living-tower-v080.mjs
-      - scripts/build_v080_art.py
-      - .github/workflows/verify-main.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: cats-v082-main-qa
+  group: cats-quality-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -38,6 +20,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -51,6 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           test -s AGENTS.md
+          test -s QUALITY_GATE.md
           test -s PROJECT_HANDOVER.md
           test -s PROJECT_STATUS.json
           test -s README.md
@@ -67,7 +52,7 @@ jobs:
           grep -qx 'assets/v080/r1/' .vercelignore
           grep -qx 'assets/v080/\*.webp' .vercelignore
           test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
-          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort)" = "living-tower-v080.mjs"
+          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort)" = "$(printf '%s\n' living-tower-v080.mjs nine-screen-mockups.mjs quality-gate.mjs | sort)"
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
           python - <<'PY'
           import json
@@ -83,6 +68,20 @@ jobs:
           assert status['history']['v081']['production']['runtimeCommit']=='ebe26884f9e4500d8e755f0b4fae328ef208c6b6'
           print('handover contracts passed')
           PY
+
+      - name: Quality evidence integrity
+        run: |
+          set -euo pipefail
+          node --check tests/quality-gate.mjs
+          node tests/quality-gate.mjs
+
+      - name: Changed artifacts must pass before PR merge
+        if: github.event_name == 'pull_request'
+        run: node tests/quality-gate.mjs --changed-from="${{ github.event.pull_request.base.sha }}" --require-changed-pass
+
+      - name: Changed artifacts must pass on main
+        if: github.event_name == 'push'
+        run: node tests/quality-gate.mjs --changed-from="${{ github.event.before }}" --require-changed-pass
 
       - name: Vertical tower source and raster contracts
         run: |
@@ -183,6 +182,9 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
           npx playwright install --with-deps chromium webkit
+
+      - name: Nine-screen structural browser QA
+        run: node tests/nine-screen-mockups.mjs
 
       - name: Chromium and WebKit vertical tower loop QA
         run: |

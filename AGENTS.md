@@ -5,15 +5,16 @@
 ## 作業開始時の必読順
 
 1. `MASTER_SPEC.md`
-2. `FLOORS_1_10_DESIGN.md`
-3. `NINE_SCREEN_MOCKUPS.md`
-4. `AGENTS.md`
-5. `PROJECT_STATUS.json`
-6. `PROJECT_HANDOVER.md`
-7. `README.md`
-8. 現在の`git status`と`git diff`
-9. GitHub `main`
-10. 固定Vercel Production
+2. `QUALITY_GATE.md`
+3. `FLOORS_1_10_DESIGN.md`
+4. `NINE_SCREEN_MOCKUPS.md`
+5. `AGENTS.md`
+6. `PROJECT_STATUS.json`
+7. `PROJECT_HANDOVER.md`
+8. `README.md`
+9. 現在の`git status`と`git diff`
+10. GitHub `main`
+11. 固定Vercel Production
 
 仕様が競合した場合は`MASTER_SPEC.md`を優先し、矛盾を残したまま実装しない。
 
@@ -22,7 +23,8 @@
 2026-08-22時点:
 
 - 100F最終方針: 承認済み
-- 準備工程: 4/10「9画面の完成見本」PASS。次は5/10「動きの絵コンテ」
+- 準備工程: 4/10「9画面の完成見本」`IN_PROGRESS`。構造ワイヤーと技術QAはPASS、本番静止美術・ゲーム内容の可読性・感情設計はFAIL。動きと触り心地は工程5で判定
+- 次作業: 工程4を本番品質へ再構成する。工程5へ進まない
 - コード修正: 未開始
 - 現行公開版: V0.8.2 legacy baseline
 - 保存点: `main@727b8d00c281e7539117da5ded7309ea01c7e516`
@@ -206,6 +208,20 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 
 工程状態は`NOT_STARTED`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使う。
 
+すべての成果物は[`QUALITY_GATE.md`](./QUALITY_GATE.md)の「要求定義 → 制作 → 実物検収 → 反証 → 判定 → 報告」を通す。制作直後の自己申告、自動テスト、build成功、deployment READYのいずれか単独で`PASS`にしない。
+
+完成報告前に必ず次を分離して判定する。
+
+- 要求適合
+- 最終成果物の実物品質
+- 人間が期待する品質と感情価値
+- 強い参考対象との比較と反証
+- 通常利用の一連の体験
+
+一つでも不合格なら完成報告を行わず、状態を`IN_PROGRESS`へ戻し、失敗原因を記録して要求定義または構成からやり直す。
+
+通常の欠陥発見と再制作をユーザーの検品へ戻さない。好みで製品方針が大きく変わる選択、必須素材・権限・実機の不足、公開や破壊的操作など承認が必要な場合だけ判断を求める。それ以外は内部でG1〜G5合格まで検収と再制作を続ける。
+
 次を見つけたら新規機能・階・素材の制作を止める。
 
 - 正本と実装の矛盾
@@ -225,10 +241,12 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 2. 既定branchを直接編集せず、目的が一つの短命feature branchを作る。
 3. 変更を狭いcommitへまとめ、Draft PRで差分と未確認を示す。
 4. 構文、JSON、通常導線、該当QAを完了する。
-5. 合格後だけ`main`へ反映する。
-6. Vercel deploymentの`githubCommitSha`と`main` HEADを照合する。
-7. 固定URLのruntimeを確認する。
-8. deploy成功とProduction Readyを分離して報告する。
+5. `QUALITY_GATE.md`のG1〜G5を実行し、反証で不合格なら制作へ戻る。
+6. `node tests/quality-gate.mjs --require-active-pass`を実行する。PRでは加えてbase commitを指定した`--require-changed-pass`を実行し、不合格ならDraftのままにする。
+7. 全Gate合格後だけ完成報告し、`main`へ反映する。
+8. Vercel deploymentの`githubCommitSha`と`main` HEADを照合する。
+9. 固定URLのruntimeを確認する。
+10. deploy成功とProduction Readyを分離して報告する。
 
 ## 準備工程
 
@@ -237,7 +255,7 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 1. 現行版の保存点 — 完了
 2. 100F正本仕様書 — PASS
 3. 1〜10F完全設計 — PASS（`FLOORS_1_10_DESIGN.md`）
-4. 9画面の完成見本
+4. 9画面の完成見本 — `IN_PROGRESS`（構造ワイヤーPASS／完成品質FAIL）
 5. 動きの絵コンテ
 6. アートバイブル
 7. 少数の試験素材
@@ -277,3 +295,5 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 10. 保存・移行確認
 11. 目視で残る問題
 12. 1〜10F Preview Ready判定と100F Product Production Ready判定
+13. G1〜G5の個別判定と反証で見つけた問題
+14. 制作後にやり直した内容と再検証結果
