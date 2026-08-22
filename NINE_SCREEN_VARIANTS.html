@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>Cat's Tower 必須状態差分</title>
+  <link rel="stylesheet" href="/NINE_SCREEN_MOCKUPS.css">
+</head>
+<body>
+  <header class="boardHeader">
+    <div><span class="eyebrow">PREPRODUCTION · STEP 4 APPENDIX</span><h1>9画面ファミリー <strong>必須状態差分</strong></h1><p>ヒーロー9枚だけでは判断できない入力・敗北・ボス・全塔制覇を、独立した静止状態として固定する。</p></div>
+    <nav aria-label="差分一覧"><a href="#V01">T</a><a href="#V02">D</a><a href="#V03">B</a><a href="#V04">F</a></nav>
+  </header>
+
+  <main class="mockupGrid variantGrid">
+    <article id="V01" class="mockupCard">
+      <header class="mockupMeta"><span>V01</span><div><h2>S02 · 1Fチュートリアル</h2><p>最初の呼び鈴、押下反応、接触前無攻撃</p></div></header>
+      <section class="phone variantPhone variantTutorial" data-variant="V01" aria-label="1階チュートリアル状態">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="gameTopbar"><button class="floorBadge"><small>初戦</small><strong>1F</strong></button><div class="resourceStrip"><span class="resource coin"><i>●</i><b>0</b></span></div><button class="menuSquare" aria-label="設定">•••</button></header>
+        <section class="objectiveBanner"><span class="stepIndex">1</span><div><small>最初の一手</small><strong>呼び鈴を押して、助っ人を呼ぼう</strong></div></section>
+        <section class="battleRoom warmRoom"><div class="roomHeading"><span>灰かぶり入口</span><small>敵は待機中</small></div><div class="entryDoor"><i></i><small>助っ人入口</small></div><div class="unit catSprite catMugi unitMugi"><span class="nameplate ally">ムギ</span></div><div class="unit foeMouse"><i></i><span class="nameplate enemy">灰ネズミ</span></div><div class="enemyMiniHp"><span>灰ネズミ · 接触するまで攻撃しない</span><i><b style="width:100%"></b></i></div><div class="runCue"><i>››</i><span>入口から前線へ走る</span></div><div class="groundRule"><span>床線</span></div></section>
+        <section class="commandDock tutorialDock"><div class="helperPreview"><i class="roleIcon shieldIcon">盾</i><div><small>次に来る助っ人</small><strong>見習いガード</strong></div></div><p class="touchHint"><b>押す</b>：1匹呼ぶ　／　<b>長押し</b>：400ms後に連続予約</p><button class="summonBell pressedState" aria-label="呼び鈴を押す"><i>!</i><strong>呼ぶ</strong><small>押下は2px沈み、100ms以内に光る</small></button><div class="tutorialQueue"><span class="active"></span><span></span><span></span><b>予約列 1 / 3</b></div></section>
+      </section>
+      <footer class="stateLegend"><span>100ms反応</span><span>400ms長押し</span><span>接触前は無攻撃</span></footer>
+    </article>
+
+    <article id="V02" class="mockupCard">
+      <header class="mockupMeta"><span>V02</span><div><h2>S02 · 敗北診断シート</h2><p>戦闘記録を原因と直接修正先に変換</p></div></header>
+      <section class="phone variantPhone variantDefeat" data-variant="V02" aria-label="敗北診断状態">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <section class="defeatHero"><div class="defeatMark">!</div><div><small>戦闘記録を保存済み · 停止中</small><h3>8F 作戦失敗</h3><p>倒された理由から、次に直す場所へ移動できます。</p></div></section>
+        <section class="diagnosisBody"><article class="causeCard primaryCause"><header><span>原因 1 · 戦闘記録 00:41</span><b>最優先</b></header><div class="causeTitle"><i>後</i><div><h4>後列到達不足</h4><p>帳簿係が補充を3回成功し、封鎖門が長期化。</p></div></div><div class="evidenceTrack danger"><span>補充阻止</span><b><i style="width:24%"></i></b><em>1 / 4</em></div><p class="fixSummary">コハクの公開条件を進めるか、後列へ届く役割を編成します。</p><div class="quickActions"><button>編成を直す</button><button>コハク条件へ</button></div></article><article class="causeCard"><header><span>原因 2 · 戦闘記録 00:33</span><b>次点</b></header><div class="causeTitle"><i class="healCause">鈴</i><div><h4>増援回転不足</h4><p>予約列が空の時間が12.4秒続き、前衛が孤立。</p></div></div><div class="evidenceTrack"><span>予約列稼働</span><b><i style="width:43%"></i></b><em>43%</em></div><p class="fixSummary">人材受付所か呼び鈴の予約列を強化します。</p><div class="quickActions"><button>店舗を直す</button><button>強化を見る</button></div></article><button class="inlineAction">8Fの敵と配送経路を見る <i>›</i></button><button class="retryCta"><span><small>変更せず同じ条件</small><strong>すぐ再戦</strong></span><i>›</i></button><button class="dawnLink">夜明けを確認する</button></section>
+      </section>
+      <footer class="stateLegend"><span>動的根拠</span><span>直接修正</span><span>即再戦</span></footer>
+    </article>
+
+    <article id="V03" class="mockupCard">
+      <header class="mockupMeta"><span>V03</span><div><h2>S02 · 10Fボス第2段階</h2><p>飛行高度、予兆、対空役、封鎖時の鈴</p></div></header>
+      <section class="phone variantPhone variantBoss" data-variant="V03" aria-label="10階ボス第2段階状態">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="bossTopbar"><div class="bossIdentity"><span>地区ボス</span><h3>大鴉・クロガネ</h3><small>第1段階 ✓　　第2段階 ●　　第3段階 ○</small></div><button class="menuSquare" aria-label="設定">•••</button></header>
+        <div class="bossHp"><i><b style="width:61%"></b></i><span>HP 61% · PHASE 2</span></div>
+        <section class="battleRoom bossRoom"><div class="phaseCue"><span>落鉄予兆 0.6秒</span><strong>影の外へ移動</strong></div><div class="airLane"><span>飛行レーン</span></div><div class="unit bossSprite bossFlying"><span class="bossTarget">対空優先</span></div><div class="bossGroundShadow" aria-hidden="true"></div><div class="unit crowSprite bossMinionOne"></div><div class="unit crowSprite bossMinionTwo"></div><div class="unit catSprite catMugi bossMugi"><span class="hpPip"><i style="width:64%"></i></span></div><div class="unit catSprite catLuna bossLuna"><span class="rolePulse">対空</span><span class="hpPip"><i style="width:74%"></i></span></div><div class="unit catSprite catToto bossToto"><span class="hpPip"><i style="width:82%"></i></span></div><div class="projectile"><i></i><span>-48</span></div><div class="groundRule"><span>床線</span></div></section>
+        <section class="bossCommand"><div class="nextThreat"><span>次の攻撃</span><b>落鉄雨 · 音＋軌道＋影で予告</b><i style="--progress:72%"></i></div><div class="bossRoster"><button class="ready"><i class="roleIcon aimIcon">対空</i><span>ルナ</span><em>READY</em></button><button><i class="roleIcon shieldIcon">盾</i><span>ムギ</span></button><button><i class="roleIcon healIcon">回</i><span>トト</span></button><button class="summonBoss"><i>!</i><span>封鎖解除</span></button></div></section>
+        <nav class="bottomNav bossNav" aria-label="メインメニュー"><button class="active" aria-current="page"><i>戦</i><small>戦闘</small></button><button><i>塔</i><small>100F</small></button><button><i>猫</i><small>仲間</small></button><button><i>強</i><small>強化</small></button></nav>
+      </section>
+      <footer class="stateLegend"><span>400–800ms予兆</span><span>地面影</span><span>封鎖解除号令</span></footer>
+    </article>
+
+    <article id="V04" class="mockupCard">
+      <header class="mockupMeta"><span>V04</span><div><h2>S09 · 100F全塔制覇</h2><p>101Fを作らず、収集と通常再周回へ戻す</p></div></header>
+      <section class="phone screenComplete variantPhone finalState" data-variant="V04" aria-label="100階全塔制覇状態">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div><div class="completeBackdrop"></div>
+        <header class="completeHeader"><span>ALL TOWER COMPLETE</span><h3>100F・暁天の鐘楼 制覇</h3><p>全10地区 · 100F / 100F</p></header>
+        <section class="districtMedal"><div class="medalCore"><span>10</span><i>章</i></div><div><small>全地区章を獲得</small><strong>猫たちの塔・全塔制覇証</strong><p>店と猫が暮らす100階を取り戻しました。</p></div></section>
+        <section class="completeBody"><div class="completeScroll"><div class="towerProgress"><header><span>100Fへの進行</span><strong>100 / 100F</strong></header><i><b style="width:100%"></b></i><div class="districtDots"><em class="done">1</em><em class="done">2</em><em class="done">3</em><em class="done">4</em><em class="done">5</em><em class="done">6</em><em class="done">7</em><em class="done">8</em><em class="done">9</em><em class="done">10</em></div></div><div class="completeRewards"><article><i>証</i><span>全塔制覇証</span><strong>獲得</strong></article><article><i>録</i><span>全塔図鑑</span><strong>96%</strong></article><article><i>猫</i><span>解放猫</span><strong>11 / 12</strong></article></div><div class="runRecord"><header><span>全塔の記録</span><button>詳細を見る</button></header><p><span>制覇時間</span><b>18:42:16</b></p><p><span>最多配送</span><b>魚食堂 · 1,284回</b></p><p><span>未収集</span><b>猫1・遺物7</b></p></div><div class="completionMode finalPreview"><span>次の遊び</span><p><b>101Fは作らない</b><small>収集を保持した通常再周回・図鑑完成・別ビルドへ</small></p></div></div><div class="completionSticky"><button class="completeCta">1Fから通常再周回する</button><button class="nextDistrict"><span>未収集を確認する</span><small>猫1・遺物7</small></button></div></section>
+      </section>
+      <footer class="stateLegend"><span>100 / 100F</span><span>101Fなし</span><span>通常再周回</span></footer>
+    </article>
+  </main>
+  <footer class="boardFooter"><p><a href="/NINE_SCREEN_MOCKUPS.html">9画面ヒーローへ戻る</a></p><p>動きの時間設計は工程5で絵コンテ化する。</p></footer>
+</body>
+</html>

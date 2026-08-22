@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>Cat's Tower 9画面完成見本</title>
+  <link rel="stylesheet" href="/NINE_SCREEN_MOCKUPS.css">
+</head>
+<body>
+  <header class="boardHeader">
+    <div>
+      <span class="eyebrow">PREPRODUCTION · STEP 4</span>
+      <h1>Cat's Tower <strong>9画面完成見本</strong></h1>
+      <p>390×844 CSS px基準。画面構成とUI階層の正本。掲載中のキャラクター・背景は既存の仮素材であり、工程7の本番素材ではない。</p>
+    </div>
+    <nav aria-label="画面一覧">
+      <a href="#S01">01</a><a href="#S02">02</a><a href="#S03">03</a>
+      <a href="#S04">04</a><a href="#S05">05</a><a href="#S06">06</a>
+      <a href="#S07">07</a><a href="#S08">08</a><a href="#S09">09</a>
+    </nav>
+  </header>
+
+  <main class="mockupGrid">
+    <article id="S01" class="mockupCard">
+      <header class="mockupMeta"><span>S01</span><div><h2>タイトル・再開</h2><p>保存状態と再開地点を判断してから開始</p></div></header>
+      <section class="phone screenTitle" data-screen="S01" aria-label="タイトルと再開の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <div class="titleBackdrop"></div>
+        <div class="titleMoon"></div>
+        <header class="titleBrand"><span>100F LIVING TOWER RPG</span><h2>Cat's<br><strong>Tower</strong></h2><p>猫と店が暮らす塔を、もう一度上へ。</p></header>
+        <section class="resumePanel">
+          <header><div><small>最新の保存</small><strong>8F · 黒羽封鎖門</strong></div><span class="saveOk"><i></i>保存済み</span></header>
+          <div class="resumeFacts"><p><span>前回</span><b>12分前</b></p><p><span>編成</span><b>ムギ・ルナ・トト</b></p><p><span>店舗</span><b>3 / 4枠</b></p></div>
+          <div class="offlineReward"><i>●</i><div><small>留守中の安全な収益</small><strong>+ 1,240 コイン</strong></div><span>受取済み</span></div>
+          <button class="resumeCta"><span><small>戦闘状態を復元</small><strong>8Fから続ける</strong></span><i>›</i></button>
+          <button class="newStartCta">最初から始める</button>
+        </section>
+        <footer class="titleFooter"><button>音・表示設定</button><span>利用規約</span><p><i>Ⅱ</i>この画面では戦闘停止</p></footer>
+      </section>
+      <footer class="stateLegend"><span>保存状態</span><span>シミュレーション停止</span><span>safe-area</span></footer>
+    </article>
+
+    <article id="S02" class="mockupCard">
+      <header class="mockupMeta"><span>S02</span><div><h2>通常戦闘</h2><p>複数敵・配送・編成の因果を同時表示</p></div></header>
+      <section class="phone screenBattle screenStandard" data-screen="S02" aria-label="通常戦闘の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="gameTopbar">
+          <button class="floorBadge hot"><small>攻略中</small><strong>6F</strong></button>
+          <div class="resourceStrip">
+            <span class="resource coin"><i>●</i><b>8.4K</b></span>
+            <span class="resource bellShard"><i>◇</i><b>2</b></span>
+          </div>
+          <button class="menuSquare" aria-label="設定">•••</button>
+        </header>
+        <section class="deliveryBar">
+          <span class="shopMark fish">魚</span><div><small>2F 魚食堂から配送中</small><strong>焼き魚の差し入れ</strong></div><b>2.1秒</b>
+          <i class="deliveryTrack"><em style="width:72%"></em></i>
+        </section>
+        <section class="battleRoom battleBlue">
+          <div class="roomHeading"><span>二度鳴る鐘</span><small>WAVE 2 / 2</small></div>
+          <div class="waveMarks"><b class="done"></b><b class="active"></b></div>
+          <div class="unit catSprite catMugi squadMugi"><span class="hpPip"><i style="width:78%"></i></span></div>
+          <div class="unit catSprite catLuna squadLuna"><span class="hpPip"><i style="width:55%"></i></span></div>
+          <div class="unit catSprite catToto squadToto"><span class="hpPip"><i style="width:91%"></i></span></div>
+          <div class="unit crowSprite foeCrow"><span class="targetRing">対空</span></div>
+          <div class="unit foeMole"><i></i><span class="shieldStatus">盾</span></div>
+          <div class="hitFx">-24</div>
+          <div class="enemyGroupHud"><span>敵 2体</span><b>飛行 ×1</b><b>盾 ×1</b></div>
+          <div class="parcelTrail" aria-label="2階の魚食堂から6階前線へ配送中"><span>2F</span><i>箱</i><b>6Fへ上昇中</b></div>
+          <div class="groundRule"><span>共通床線 · 足裏誤差 2px以内</span></div>
+        </section>
+        <section class="battleRoster">
+          <button class="rosterSlot"><i class="miniCat purple"></i><span><b>ムギ</b><small>前衛</small></span><em>78%</em></button>
+          <button class="rosterSlot"><i class="miniCat gray"></i><span><b>ルナ</b><small>対空</small></span><em>55%</em></button>
+          <button class="rosterSlot"><i class="miniCat black"></i><span><b>トト</b><small>回復</small></span><em>91%</em></button>
+          <button class="summonCompact"><i>!</i><span><b>呼ぶ</b><small>増援 1/3</small></span></button>
+          <div class="battleQuick"><button><span>前衛強化</span><b>320C</b></button><button><span>対空強化</span><b>420C</b></button><button><span>回復短縮</span><b>260C</b></button></div>
+        </section>
+        <nav class="bottomNav" aria-label="メインメニュー"><button class="active" aria-current="page"><i>戦</i><small>戦闘</small></button><button><i>塔</i><small>100F</small></button><button><i>猫</i><small>仲間</small></button><button><i>強</i><small>強化</small></button></nav>
+      </section>
+      <footer class="stateLegend"><span>複数敵</span><span>配送可視化</span><span>床線固定</span></footer>
+    </article>
+
+    <article id="S03" class="mockupCard">
+      <header class="mockupMeta"><span>S03</span><div><h2>100F 塔閲覧</h2><p>制圧・戦闘中・未制圧を連続スクロール</p></div></header>
+      <section class="phone screenTower" data-screen="S03" aria-label="100F塔閲覧の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="gameTopbar towerTopbar">
+          <div class="titleStack"><small>TOWER MAP</small><strong>灰かぶり入口市場</strong></div>
+          <div class="resourceStrip"><span class="resource coin"><i>●</i><b>8.4K</b></span></div>
+          <button class="menuSquare" aria-label="塔画面の設定">•••</button>
+        </header>
+        <section class="towerViewport">
+          <div class="towerLiveHud"><span><i></i>戦闘継続中</span><p><b>味方HP 64%</b><em>敵HP 38%</em></p><strong>危険：増援まで2.1秒</strong></div>
+          <div class="scrollDirection top">未制圧階へ</div>
+          <div class="floorRail">
+            <article class="floorCard locked"><span class="floorNumber">10F</span><div><small>地区ボス</small><strong>灰鈴大広間</strong><em>未発見</em></div><i class="lockIcon">?</i></article>
+            <article class="floorCard locked"><span class="floorNumber">9F</span><div><small>エリート・遺物</small><strong>市場の記録係</strong><em>未制圧</em></div><i class="lockIcon">×</i></article>
+            <article class="floorCard current"><span class="floorNumber">8F</span><div><small>戦闘中</small><strong>黒羽封鎖門</strong><em>帳簿係が補充中</em></div><i class="pulseDot"></i></article>
+            <article class="floorCard conquered shopFloor"><span class="floorNumber">7F</span><div><small>支援施設</small><strong>依頼掲示板</strong><em>コハク 2/3</em></div><i class="lifeIcon">依</i></article>
+            <article class="floorCard conquered"><span class="floorNumber">6F</span><div><small>制圧済み</small><strong>魚食堂</strong><em>次の配送 2.1秒</em></div><i class="lifeIcon fish">魚</i></article>
+            <article class="floorCard conquered mutedFloor"><span class="floorNumber">5F</span><div><small>猫部屋</small><strong>トトの診療部屋</strong><em>休息中 1匹</em></div><i class="lifeIcon">猫</i></article>
+          </div>
+          <aside class="districtRail" aria-label="地区レール">
+            <span class="railLabel">100F</span><button>91</button><button>81</button><button>71</button><button>61</button><button>51</button><button>41</button><button>31</button><button>21</button><button>11</button><button class="active">1</button><span class="railLabel">1F</span>
+          </aside>
+        </section>
+        <button class="returnBattle"><span class="livePulse"></span><div><small>戦闘は継続中</small><strong>8Fの戦闘へ戻る</strong></div><i>›</i></button>
+        <nav class="bottomNav" aria-label="メインメニュー"><button><i>戦</i><small>戦闘</small></button><button class="active" aria-current="page"><i>塔</i><small>100F</small></button><button><i>猫</i><small>仲間</small></button><button><i>強</i><small>強化</small></button></nav>
+      </section>
+      <footer class="stateLegend"><span>pan-y</span><span>戦闘継続</span><span>9〜13階描画</span></footer>
+    </article>
+
+    <article id="S04" class="mockupCard">
+      <header class="mockupMeta"><span>S04</span><div><h2>階制圧・枠種確認</h2><p>報酬と制圧後用途を確定してから分岐</p></div></header>
+      <section class="phone screenClear" data-screen="S04" aria-label="階制圧と枠種確認の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <div class="clearBackdrop"></div>
+        <header class="pauseStatus"><i>Ⅱ</i><span>結果確認中 · 戦闘停止</span></header>
+        <section class="clearHero"><span class="clearFloor">4F</span><div><small>FLOOR CLEARED</small><h3 id="clear-title">空の番台を制圧！</h3><p>黒羽軍を追い出し、新しい部屋を取り戻しました。</p></div></section>
+        <section class="clearPanel" role="dialog" aria-modal="true" aria-labelledby="clear-title">
+          <header><span>獲得したもの</span><b>すべて保存済み</b></header>
+          <div class="rewardRow"><p><i class="coinReward">●</i><span>コイン</span><strong>+ 680</strong></p><p><i class="boxReward">箱</i><span>補給箱</span><strong>+ 1</strong></p><p><i class="recordReward">録</i><span>敵図鑑</span><strong>+ 2</strong></p></div>
+          <article class="slotReveal"><span class="slotIcon">店</span><div><small>この階の固定用途</small><h4>商業階 · ショップ枠</h4><p>4種類から店を選び、上階へ物資を届けます。</p></div><b>変更可能</b></article>
+          <div class="unlockNotice"><i>!</i><div><small>新しい候補</small><strong>爪工房・ねこ診療所が選択可能</strong></div></div>
+          <button class="primaryCta clearCta">4Fに置く店を選ぶ</button>
+          <button class="secondaryClearCta">先に塔を確認する</button>
+          <p class="clearRule">空き店舗のまま次へ進めます。選択を取り返し不能にはしません。</p>
+        </section>
+      </section>
+      <footer class="stateLegend"><span>戦闘停止</span><span>用途を先に表示</span><span>取り返し可能</span></footer>
+    </article>
+
+    <article id="S05" class="mockupCard">
+      <header class="mockupMeta"><span>S05</span><div><h2>ショップ選択・再配置</h2><p>現在効果、隣接、配送、変更損失を比較</p></div></header>
+      <section class="phone screenSheet screenShopChoice" data-screen="S05" aria-label="ショップ選択と再配置の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <div class="dimmedWorld" aria-hidden="true"><span>4F · 商業階</span><div class="emptyShop installed"><i>魚</i><b>現在：魚食堂 Lv.3</b></div></div>
+        <section class="bottomSheet tallSheet" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+          <span class="sheetHandle"></span>
+          <header class="sheetHeader"><div><small>配置を比較</small><h3 id="shop-title">4Fのショップを選ぶ</h3></div><button aria-label="ショップ選択を閉じる">×</button></header>
+          <p class="sheetLead"><i>!</i><span>直前は<strong>飛行敵への手数</strong>が不足。現在の魚食堂が有効です。</span></p>
+          <div class="shopScroll">
+            <div class="shopGrid">
+              <button class="shopCard recommended" aria-pressed="false"><span class="recommendFlag">現在・おすすめ</span><i class="shopPixel fish">魚</i><div><strong>魚食堂</strong><small>行動速度・小回復</small></div><p>焼き魚を前線へ配送</p><em>3F昇降機と直結</em></button>
+              <button class="shopCard"><i class="shopPixel guild">人</i><div><strong>人材受付所</strong><small>増援・予約列</small></div><p>募集札を入口へ配送</p><em>前線維持を補助</em></button>
+              <button class="shopCard selected" aria-pressed="true"><i class="shopPixel forge">爪</i><div><strong>爪工房</strong><small>近接・盾破砕</small></div><p>爪カバーを前線へ配送</p><em>盾への対策</em><b class="choiceCheck">✓</b></button>
+              <button class="shopCard"><i class="shopPixel clinic">＋</i><div><strong>ねこ診療所</strong><small>回復・復帰</small></div><p>包帯箱を前線へ配送</p><em>長期戦を補助</em></button>
+            </div>
+            <div class="placementPreview"><span>4F</span><i></i><div><small>変更後の経路</small><strong>爪工房 → 3F昇降機 → 8F</strong></div></div>
+            <div class="swapImpact"><span>変更時</span><p><b>失う</b> 今周Lv.3</p><p><b>残る</b> 設計図・配置履歴</p></div>
+            <div class="shopImpactDetail"><article class="loss"><span>変更前に失う</span><b>魚食堂 Lv.3</b><p>行動支援と小回復</p></article><article class="keep"><span>そのまま残る</span><b>設計図・履歴</b><p>解放・最高Lv.記録</p></article><article class="after"><span>変更後</span><b>爪工房 Lv.1</b><p>盾破砕を配送</p></article><footer><strong>10F制覇後の無料期間</strong><b>費用 0C</b></footer></div>
+          </div>
+          <div class="shopSticky"><button class="primaryCta">この配置を保存する</button><button class="textCta">変更せず戻る</button></div>
+        </section>
+      </section>
+      <footer class="stateLegend"><span>選択と再配置を統合</span><span>配送比較</span><span>損失明示</span></footer>
+    </article>
+
+    <article id="S06" class="mockupCard">
+      <header class="mockupMeta"><span>S06</span><div><h2>猫名簿・公開解放</h2><p>未解放でも条件、役割、進捗を隠さない</p></div></header>
+      <section class="phone screenCats" data-screen="S06" aria-label="猫名簿と公開解放条件の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="sectionTopbar"><div><small>CAT ROSTER</small><strong>仲間の猫</strong></div><span class="partyCount">Ⅱ 停止 · 3 / 4</span><button class="menuSquare" aria-label="猫画面の設定">•••</button></header>
+        <div class="catTabs" role="tablist"><button class="active" role="tab" aria-selected="true">名簿</button><button role="tab" aria-selected="false">編成</button><button role="tab" aria-selected="false">役割</button></div>
+        <section class="catRosterRow">
+          <button class="catPortrait" aria-pressed="false"><i class="catSprite catMugi"></i><span>ムギ</span><em>前衛</em></button>
+          <button class="catPortrait"><i class="catSprite catLuna"></i><span>ルナ</span><em>対空</em></button>
+          <button class="catPortrait"><i class="catSprite catToto"></i><span>トト</span><em>回復</em></button>
+          <button class="catPortrait locked activeLock" aria-pressed="true" aria-label="コハク、未解放、加入条件2件達成、残り1件"><i class="catSilhouette"></i><span>コハク</span><em>2 / 3</em></button>
+        </section>
+        <section class="catDetailCard">
+          <div class="catDetailHero"><div class="largeCatSilhouette"><i>?</i></div><div><span class="lockedLabel">公開条件で加入</span><h3>コハク</h3><p>走者・後列妨害</p></div></div>
+          <p class="roleCopy">前衛をすり抜け、補充や強化を行う後列敵の動きを止める。</p>
+          <div class="unlockProgress"><header><span>加入条件</span><strong>2 / 3</strong></header>
+            <p class="done"><i>✓</i><span>異なるショップを2種類配置</span><b>2 / 2</b></p>
+            <p class="done"><i>✓</i><span>補給箱を5回前線へ届ける</span><b>5 / 5</b></p>
+            <p><i>3</i><span>8Fで帳簿係を最初に倒す</span><b>未達</b></p>
+          </div>
+          <div class="whyUseful"><span>8Fで役立つ理由</span><p>帳簿係の補充を止め、封鎖門の長期化を防ぐ。</p></div>
+          <div class="formationMini"><div><span>現在の編成</span><p><i>ム</i><i>ル</i><i>ト</i><i class="emptySlot">＋</i></p></div><button>編成する</button></div>
+        </section>
+        <nav class="bottomNav" aria-label="メインメニュー"><button><i>戦</i><small>戦闘</small></button><button><i>塔</i><small>100F</small></button><button class="active" aria-current="page"><i>猫</i><small>仲間</small></button><button><i>強</i><small>強化</small></button></nav>
+      </section>
+      <footer class="stateLegend"><span>公開条件</span><span>進捗保持</span><span>目的階へ直行</span></footer>
+    </article>
+
+    <article id="S07" class="mockupCard">
+      <header class="mockupMeta"><span>S07</span><div><h2>強化・ビルド</h2><p>猫・増援・商業の現在構成を一画面で比較</p></div></header>
+      <section class="phone screenBuild" data-screen="S07" aria-label="強化とビルドの完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <header class="sectionTopbar buildTopbar"><div><small>BUILD DESK</small><strong>今周の強化</strong></div><span class="resource coin buildCoins"><i>●</i><b>8.4K</b></span><button class="menuSquare" aria-label="強化画面の設定">•••</button></header>
+        <section class="buildSummary"><div><small>現在の方針</small><h3>配送で支える対空隊</h3><p>ルナの対空と魚食堂の行動支援が中心</p></div><span>総合 Lv.12</span></section>
+        <div class="buildTabs" role="tablist"><button class="active" role="tab" aria-selected="true">今周</button><button role="tab" aria-selected="false">恒久</button><button role="tab" aria-selected="false">効果一覧</button></div>
+        <section class="buildBody">
+          <article class="buildLane combatLane"><header><i>爪</i><div><small>戦闘</small><strong>猫の役割と攻撃</strong></div><span>Lv.5</span></header><div class="buildMeter"><i style="width:64%"></i></div><p>対空は十分。盾破砕は不足しています。</p><div class="upgradeRow"><button><span>ムギ</span><b>Lv.4</b><em>320C</em></button><button class="recommendedUpgrade"><span>爪破砕</span><b>Lv.1</b><em>おすすめ</em></button></div></article>
+          <article class="buildLane summonLane"><header><i>鈴</i><div><small>増援</small><strong>呼び鈴と出撃列</strong></div><span>Lv.3</span></header><div class="buildMeter"><i style="width:41%"></i></div><p>予約列は1枠。満員時は号令へ変換します。</p><div class="upgradeRow"><button><span>出撃列</span><b>1枠</b><em>480C</em></button><button><span>ガード</span><b>Lv.2</b><em>260C</em></button></div></article>
+          <article class="buildLane commerceLane"><header><i>箱</i><div><small>商業</small><strong>店舗と配送</strong></div><span>Lv.4</span></header><div class="buildMeter"><i style="width:55%"></i></div><p>魚食堂から8Fへ配送中。次の到着は2.1秒。</p><div class="commerceLink"><span>4F 魚食堂 Lv.3</span><i>→</i><b>8F 前線</b><button>配置を見る</button></div></article>
+          <div class="buildAdvice"><i>!</i><p><small>8Fに向けた提案</small><strong>爪破砕を強化すると袋モグラを早く突破できます。</strong></p></div>
+        </section>
+        <nav class="bottomNav" aria-label="メインメニュー"><button><i>戦</i><small>戦闘</small></button><button><i>塔</i><small>100F</small></button><button><i>猫</i><small>仲間</small></button><button class="active" aria-current="page"><i>強</i><small>強化</small></button></nav>
+      </section>
+      <footer class="stateLegend"><span>3本柱</span><span>現在効果を表示</span><span>戦闘停止</span></footer>
+    </article>
+
+    <article id="S08" class="mockupCard">
+      <header class="mockupMeta"><span>S08</span><div><h2>夜明け確認・3択</h2><p>失う・残る・得るを実行前に比較</p></div></header>
+      <section class="phone screenDawn" data-screen="S08" role="dialog" aria-modal="true" aria-label="夜明け確認と祝福3択の完成見本">
+        <div class="safeGuide dawnSafe" aria-hidden="true"><span>SAFE</span></div>
+        <header class="dawnHeader"><button class="backButton">‹</button><div><small>DAWN RESET</small><h3>夜明けを迎える</h3></div><span class="dawnCurrency">◇ 3</span></header>
+        <section class="sunriseHero"><div class="sun"></div><div class="towerSilhouette"></div><p>次の朝は、どんな塔にする？</p><small>最高到達 8F → もう一度1Fから</small></section>
+        <section class="dawnBody">
+          <div class="dawnScroll">
+            <div class="keepLoseGrid"><article class="lose"><header><i>−</i><span>今周で失う</span></header><p>現在階・今周コイン</p><p>猫と店舗の今周Lv.</p><p>一時遺物</p></article><article class="keep"><header><i>✓</i><span>残る</span></header><p>解放猫・店舗設計図</p><p>配置図・最高階</p><p>恒久祝福</p></article></div>
+            <header class="blessingHeading"><div><small>恒久祝福を1つ選ぶ</small><strong>次周の最初から効果</strong></div><span>1 / 3</span></header>
+            <div class="blessingCards"><button class="blessing selected" aria-pressed="true"><i class="clawBlessing">爪</i><div><strong>鋭爪の朝</strong><small>戦闘</small><p>開始3分：盾突破が1手早い</p></div><b>✓</b></button><button class="blessing" aria-pressed="false"><i class="bellBlessing">鈴</i><div><strong>にぎやかな朝</strong><small>増援</small><p>開始3分：予約列を1枠確保</p></div></button><button class="blessing" aria-pressed="false"><i class="tradeBlessing">箱</i><div><strong>実りの朝</strong><small>商業</small><p>開始3分：初回配送が早まる</p></div></button></div>
+            <div class="beforeAfter gainForecast"><span><small>得る</small><b>恒久祝福 1つ</b></span><i>›</i><span><small>前回8Fまで</small><b>予想 14分</b></span></div>
+          </div>
+          <div class="dawnSticky"><button class="dawnCta">鋭爪の朝で夜明けを迎える</button><p class="confirmCopy">実行後は元に戻せません。数値倍率はシミュレーション後に確定します。</p></div>
+        </section>
+      </section>
+      <footer class="stateLegend"><span>3方針</span><span>前後比較</span><span>不可逆を明示</span></footer>
+    </article>
+
+    <article id="S09" class="mockupCard">
+      <header class="mockupMeta"><span>S09</span><div><h2>地区制覇・100F完了</h2><p>報酬、記録、収集、通常再周回の共通テンプレート</p></div></header>
+      <section class="phone screenComplete" data-screen="S09" aria-label="地区制覇と100F完了の完成見本">
+        <div class="safeGuide" aria-hidden="true"><span>SAFE</span></div>
+        <div class="completeBackdrop"></div>
+        <header class="completeHeader"><span>DISTRICT COMPLETE</span><h3>灰かぶり入口市場 制覇</h3><p>第1地区 · 10F / 100F</p></header>
+        <section class="districtMedal"><div class="medalCore"><span>1</span><i>章</i></div><div><small>初めての地区章</small><strong>灰鈴の市場章</strong><p>黒羽軍の入口封鎖を破り、市場を再開した。</p></div></section>
+        <section class="completeBody">
+          <div class="completeScroll">
+            <div class="towerProgress"><header><span>100Fへの進行</span><strong>10 / 100F</strong></header><i><b style="width:10%"></b></i><div class="districtDots"><em class="done">1</em><em>2</em><em>3</em><em>4</em><em>5</em><em>6</em><em>7</em><em>8</em><em>9</em><em>10</em></div></div>
+            <div class="completeRewards"><article><i>店</i><span>地区内再配置</span><strong>無料期間</strong></article><article><i>録</i><span>戦闘記録</span><strong>保存済み</strong></article><article><i>猫</i><span>解放猫</span><strong>4 / 4</strong></article></div>
+            <div class="runRecord"><header><span>今回の記録</span><button>詳細を見る</button></header><p><span>到達時間</span><b>24:18</b></p><p><span>最多配送</span><b>魚食堂 · 18回</b></p><p><span>未収集</span><b>遺物 2件</b></p></div>
+            <div class="completionMode finalPreview"><span>100F版</span><p><b>全塔制覇 · 100 / 100F</b><small>地区章10個・全塔図鑑・101Fなし・通常再周回へ</small></p></div>
+          </div>
+          <div class="completionSticky"><button class="completeCta">11F・霧雨の商館へ進む</button><button class="nextDistrict"><span>1〜10Fを通常再周回</span><small>未収集を探す</small></button></div>
+        </section>
+      </section>
+      <footer class="stateLegend"><span>地区／全塔の共通骨格</span><span>記録と収集</span><span>通常再周回</span></footer>
+    </article>
+  </main>
+
+  <footer class="boardFooter">
+    <p>画面構成の正本: <a href="/NINE_SCREEN_MOCKUPS.html">NINE_SCREEN_MOCKUPS.html</a></p>
+    <p>ゲーム本体への組み込みは工程10まで行わない。</p>
+  </footer>
+</body>
+</html>

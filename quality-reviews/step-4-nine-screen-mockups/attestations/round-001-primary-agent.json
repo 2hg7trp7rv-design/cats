@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-4-nine-screen-mockups",
+  "round": 1,
+  "reviewer": "primary-agent",
+  "role": "builder-self-review",
+  "independent": false,
+  "reviewedAt": "2026-08-22T07:38:44Z",
+  "acceptanceMatrixSha256": "aae9505c464e347a01c4bc31c6eb3ddd5e83a69e406d08a4a51f9b08205ec9c5",
+  "artifactSetSha256": "3ce451ef7eea69b8c3b0a50667264eeb1b226860eb66065c9b3f2926996b18d1",
+  "verdict": "IN_PROGRESS",
+  "selfReviewCompleted": true,
+  "findings": [
+    "構造網羅とレスポンシブ技術QAを完成美術の合格へ誤って拡大解釈した",
+    "最終PNGでは塔と猫より説明カードが主役になっていた",
+    "アート方針と試験素材より先に9画面を仕上げる工程順が誤っていた"
+  ]
+}

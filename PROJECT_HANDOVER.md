@@ -6,7 +6,7 @@ Repository: `2hg7trp7rv-design/cats_tower`
 
 Canonical branch: `main`
 
-文書作業branch: `codex/100f-master-spec`
+文書作業branch: `codex/nine-screen-mockups`
 
 固定Vercel URL: <https://cats-tau-dusky.vercel.app/>
 
@@ -23,11 +23,12 @@ Canonical branch: `main`
 仕様の優先順位:
 
 1. `MASTER_SPEC.md`
-2. `AGENTS.md`
-3. `PROJECT_STATUS.json`
-4. `PROJECT_HANDOVER.md`
-5. `README.md`
-6. コード、テスト、コメント
+2. `QUALITY_GATE.md`
+3. `AGENTS.md`
+4. `PROJECT_STATUS.json`
+5. `PROJECT_HANDOVER.md`
+6. `README.md`
+7. コード、テスト、コメント
 
 旧文書、現行コード、古いテストに「10F終了」「11F禁止」「3F食堂・5F共同部屋固定」「ショップ不要」と書かれていても、新製品仕様としては失効している。現行V0.8.2の挙動を説明する履歴としてのみ扱う。
 
@@ -250,18 +251,22 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 
 ## 16. 次に行うこと
 
-工程3「1〜10F完全設計」は[`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)で`PASS`となった。現在の次作業は工程4「9画面の完成見本」である。ゲーム本体コード修正ではない。
+工程4「9画面の完成見本」は、制作後の人間期待品質レビューにより`IN_PROGRESS`へ戻した。390×844基準のヒーロー9枚と必須状態差分4枚は、画面構造、状態網羅、レスポンシブ技術QAには合格しているが、本番静止美術、ゲーム内容の可読性、感情設計には不合格である。動きと触り心地は工程5の判定対象で、まだ未着手である。完成見本ではなく、再制作用の構造ワイヤーフレームとして保存する。ゲーム本体コードは変更していない。
 
-工程4では、1F初回戦闘、通常戦闘、100F塔閲覧、ショップ比較、店舗再配置、猫名簿、敗北診断、10Fボス、夜明けの9画面を390×844 CSS px基準で作る。通常・押下・使用不可・safe-area・スクロール位置を含め、320px幅と430px幅でも破綻しないことを完成見本で確認する。
+主要9画面は`MASTER_SPEC.md` §14に合わせ、タイトル、戦闘、100F塔閲覧、階制圧、ショップ、猫、強化、夜明け、完了で固定した。1F初回戦闘、敗北診断、10FボスをS02の差分、100F全塔制覇をS09の差分として扱う。古い「チュートリアルやボスを主要9画面へ数える一覧」へ戻さない。
 
-工程3で未確定のまま後工程へ送ったのは、最終HP、最終価格、最終DPS、細かな確率、精密クリア時間だけである。構造、役割、因果、表示要件は確定済み。
+現在の次作業は工程4の再構成である。ミニアート方針と少数試験素材を先行し、戦闘、100F塔閲覧、制圧階から店舗への変身の3画面を本番品質で作る。この3画面を[`QUALITY_GATE.md`](./QUALITY_GATE.md)のG1〜G5へ通し、合格後に残り6画面へ展開する。工程4全体の合格前に工程5やゲーム本体コードへ進まない。
+
+工程4のAcceptance Matrixは[`quality-reviews/step-4-nine-screen-mockups/acceptance.json`](./quality-reviews/step-4-nine-screen-mockups/acceptance.json)、最初の不合格記録は[`round-001.json`](./quality-reviews/step-4-nine-screen-mockups/round-001.json)である。reviewはappend-onlyとし、成果物SHA-256が変わった場合は`tests/quality-gate.mjs`が旧判定を失効させる。PRではbase commitからの変更ファイルを成果物へ割り当て、変更された成果物がPASSでなければ`--require-changed-pass`が不合格になる。現PR #3はこの条件により意図どおりDraft・未マージのまま維持する。
+
+工程4で確定したのは、主要9画面ファミリー、必須4状態、構造、役割、因果、最低表示要件である。画面階層、世界とUIの占有率、最終画風、素材、正式アンカー、感情演出は再制作対象であり、無条件に固定しない。
 
 ## 17. コード修正前の全順序
 
 1. 現行版の保存点 — `PASS`
 2. 100F正本仕様書 — `PASS`
 3. 1〜10F完全設計 — `PASS`
-4. 9画面の完成見本 — `NOT_STARTED`
+4. 9画面の完成見本 — `IN_PROGRESS`（構造PASS／完成品質FAIL）
 5. 動きの絵コンテ — `NOT_STARTED`
 6. アートバイブル — `NOT_STARTED`
 7. 少数の試験素材 — `NOT_STARTED`

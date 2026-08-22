@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-4-nine-screen-mockups",
+  "artifactType": "static-game-screen-set",
+  "round": 1,
+  "reviewedAt": "2026-08-22T07:38:44Z",
+  "reviewedSourceCommit": null,
+  "retrospectiveSourceReference": "GitHub commit 3b1de78d4ee57c845bd8ab007ebbea2de8a46ba5 contains the rendered screen artifacts; the corrected status documents and review evidence are recorded in the later governance commit",
+  "acceptanceMatrix": {
+    "path": "quality-reviews/step-4-nine-screen-mockups/acceptance.json",
+    "sha256": "aae9505c464e347a01c4bc31c6eb3ddd5e83a69e406d08a4a51f9b08205ec9c5",
+    "retrospectiveForThisRound": true,
+    "lockedBeforeNextBuildRound": true,
+    "lockedCommit": null
+  },
+  "artifactHashes": [
+    {
+      "path": "FLOORS_1_10_DESIGN.md",
+      "sha256": "57fe941089a3b95899e7632dad0df2e84957411ef832f88364513db508f9b585"
+    },
+    {
+      "path": "MASTER_SPEC.md",
+      "sha256": "1a3cb1fec04465936c4dc01402ac7dd3391beaa5a867d40cac0932bd0563f8d0"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUPS.md",
+      "sha256": "95d2aa2d6803459cb717e8c365b037000ec4db35ffdebccb8009f547d478ece9"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUPS.html",
+      "sha256": "a7379b969d4d7d9ce98cb065eb826f59b7d8e862840d995bac37e17147887e8b"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUPS.css",
+      "sha256": "71f7c3c54db3d01dfee8b5d5fd27e9150af1bd3097464b5a04b2712b6f56cb68"
+    },
+    {
+      "path": "NINE_SCREEN_VARIANTS.html",
+      "sha256": "ebb6bd78205d5f385a4f4045e3d5d7e5db86330dd48d554d1cb0f5dccfbbde0b"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_01.png",
+      "sha256": "9ca9cfaf27272a06819e93378fae38f2ee235e4f0bf2243078f0dec1670c6bf6"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_02.png",
+      "sha256": "5eafd0b05a223cf1c74566460096e1cae96d35428ab4e5f53f41721d876b08f1"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_03.png",
+      "sha256": "aee306065c84bd53f132c225fed764a4b65eddffd05dc3f47f22c78b6875a2c2"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_04.png",
+      "sha256": "5f288b28440c59d15e93df993d00d8d0c197d153d3758e4b2acc47c42f20a7d8"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_05.png",
+      "sha256": "c434e4bc07546999f0409c6c1a26b5dd8ec8b391ba3ce3cf4abb0b551c354bd9"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_06.png",
+      "sha256": "8c534aee6dba637a55c17b4d4aec572ad55782060fac99af6e417830b607e90c"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_07.png",
+      "sha256": "886fcab0421ce9e64aba4291710f3b157bfae37f3d0b36237e27a575d109dbdb"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_08.png",
+      "sha256": "202b60e0788cf9cb196b5302de0566e37928bacce822d3bf1df9889b2ce5d518"
+    },
+    {
+      "path": "NINE_SCREEN_MOCKUP_09.png",
+      "sha256": "88d9d7889d636ec78b7bc470a62d3d5490a8e78a552efcb0d760e70c208520c7"
+    },
+    {
+      "path": "NINE_SCREEN_VARIANT_TUTORIAL.png",
+      "sha256": "e13fcf6c56310c05cf13e2f23f4f3b1be54bed0d2df5a3623b54cb5cf6a56df6"
+    },
+    {
+      "path": "NINE_SCREEN_VARIANT_DEFEAT.png",
+      "sha256": "d413e6294a61239c8293bd0a652483dccb75f0f10f549676f23d8c7be8aacfe8"
+    },
+    {
+      "path": "NINE_SCREEN_VARIANT_BOSS.png",
+      "sha256": "955a8e65cbbab861f21b9c033c6faf6b3760d8f160dad1beedb9aa35efa2b56c"
+    },
+    {
+      "path": "NINE_SCREEN_VARIANT_FINAL.png",
+      "sha256": "712c33a12922fdf98520978b158f47a8c56f84969370139a48996cf03619b30d"
+    },
+    {
+      "path": "tests/nine-screen-mockups.mjs",
+      "sha256": "df859cf87e31384c57891a59d5a667ded3ea7c96841d795360775e8ace9c3e06"
+    }
+  ],
+  "reviewers": [
+    {
+      "role": "builder-self-review",
+      "identity": "primary-agent",
+      "independent": false
+    },
+    {
+      "role": "visual-art-direction-critic",
+      "identity": "artifact-critic-a",
+      "independent": true
+    },
+    {
+      "role": "game-feel-and-ux-critic",
+      "identity": "artifact-critic-b",
+      "independent": true
+    },
+    {
+      "role": "reference-comparison-critic",
+      "identity": "visual-quality-audit",
+      "independent": true
+    },
+    {
+      "role": "quality-decision-reviewer",
+      "identity": "quality-decision-judge",
+      "independent": true
+    }
+  ],
+  "reviewAttestations": [
+    {
+      "reviewer": "primary-agent",
+      "path": "quality-reviews/step-4-nine-screen-mockups/attestations/round-001-primary-agent.json",
+      "sha256": "bde838961ab09e80b49a0d7d7efe1fef71553796c4aecf3e2ebe925f89667533"
+    },
+    {
+      "reviewer": "artifact-critic-a",
+      "path": "quality-reviews/step-4-nine-screen-mockups/attestations/round-001-artifact-critic-a.json",
+      "sha256": "24604c8dedbc196e7f0c5fb3c9e24799654185ca911cbb6c97913d3e7be87078"
+    },
+    {
+      "reviewer": "artifact-critic-b",
+      "path": "quality-reviews/step-4-nine-screen-mockups/attestations/round-001-artifact-critic-b.json",
+      "sha256": "50e738baabd487b8b546bfae6c80479493f9459781ed8b4f72848760f79b17a5"
+    },
+    {
+      "reviewer": "visual-quality-audit",
+      "path": "quality-reviews/step-4-nine-screen-mockups/attestations/round-001-visual-quality-audit.json",
+      "sha256": "55dc1c7d884027ce07c7f4a6228423ef52b5df2f07ceee1fbd2bfbddee85af4c"
+    },
+    {
+      "reviewer": "quality-decision-judge",
+      "path": "quality-reviews/step-4-nine-screen-mockups/attestations/round-001-quality-decision-judge.json",
+      "sha256": "56f841b96ef1468b6f017a523a061a950264abf71a0571e6154c8431530792b4"
+    }
+  ],
+  "fiveSecondReviews": [
+    {
+      "reviewer": "artifact-critic-a",
+      "understoodProductPromise": false,
+      "finding": "猫が塔を戦い上がることは分かるが、制圧部屋が店になり配送が上階を支える約束までは5秒で分からない"
+    },
+    {
+      "reviewer": "artifact-critic-b",
+      "understoodProductPromise": false,
+      "finding": "猫の暗色カード中心の放置RPGメニューに見え、生活する塔と店から前線への因果が画面だけでは読めない"
+    },
+    {
+      "reviewer": "visual-quality-audit",
+      "understoodProductPromise": false,
+      "finding": "管理ダッシュボードが先に見え、100Fの塔、店運営、猫の生活が一つの世界として見えない"
+    }
+  ],
+  "comparisonScoresOutOf10": {
+    "instantAppeal": 3,
+    "gameScreenDensity": 3,
+    "characterPresence": 2,
+    "towerContinuity": 1,
+    "rewardImpact": 2,
+    "shopOperationVisibility": 2,
+    "desireToPlay": 3
+  },
+  "comparisonFindings": {
+    "instantAppeal": {
+      "target": "最初の5秒で猫、塔、敵、店、上昇目標が一つの冒険として見える",
+      "observed": "タイトルは塔の雰囲気と再開カードが中心で、猫、敵、営業中の店が見えない",
+      "disproof": "文字を隠すと固有のゲーム循環を説明できない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_01.png"]
+    },
+    "gameScreenDensity": {
+      "target": "世界、進行、戦闘、経済の情報が同じ塔の中で高密度に読める",
+      "observed": "戦闘画面以外は濃紺カードと説明文が大半を占める",
+      "disproof": "世界描写55〜70%の合格条件を主要画面の多くで満たさない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_02.png", "NINE_SCREEN_MOCKUP_07.png"]
+    },
+    "characterPresence": {
+      "target": "猫の表情、性格、働く姿、戦う姿が画面の感情を担う",
+      "observed": "猫は戦闘と名簿以外で不在または小さく、解放も仮シルエットである",
+      "disproof": "猫を隠しても成立する管理画面が多く、猫への愛着を主役にできていない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_06.png", "NINE_SCREEN_MOCKUP_09.png"]
+    },
+    "towerContinuity": {
+      "target": "制圧済み店舗階、現在戦闘階、未制圧階が同じ縦長の塔として連続する",
+      "observed": "100F閲覧は生活する断面塔ではなく階数カード台帳である",
+      "disproof": "店舗、配送、戦闘の空間的なつながりを追えない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_03.png"]
+    },
+    "rewardImpact": {
+      "target": "通常制圧、地区制覇、100F制覇が異なる世界変化と感情ピークを持つ",
+      "observed": "制圧と完了が結果カード中心で、地区制覇と100F制覇も構図が近い",
+      "disproof": "猫の祝福、部屋の変身、塔全景の変化がなく、最大報酬を一目で区別できない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_04.png", "NINE_SCREEN_MOCKUP_09.png", "NINE_SCREEN_VARIANT_FINAL.png"]
+    },
+    "shopOperationVisibility": {
+      "target": "空室、完成店舗、店員猫、商品、配送、前線効果を絵で追える",
+      "observed": "ショップは一文字アイコンと文章カードで比較し、配置後の部屋と配送を見せない",
+      "disproof": "店を選ぶことが世界を変え、上階を支える因果を文字なしで説明できない",
+      "evidencePaths": ["NINE_SCREEN_MOCKUP_05.png", "NINE_SCREEN_MOCKUP_02.png"]
+    },
+    "desireToPlay": {
+      "target": "次の猫、店、階、報酬を見たいという短期目標が同時に立つ",
+      "observed": "戦闘の骨格は触れそうだが、生活、店舗成長、制覇報酬の期待が弱い",
+      "disproof": "遊びの固有性より管理と説明が先に見え、次の一手への感情的な引力が不足する",
+      "evidencePaths": ["NINE_SCREEN_VARIANT_TUTORIAL.png", "NINE_SCREEN_VARIANT_BOSS.png", "NINE_SCREEN_MOCKUP_09.png"]
+    }
+  },
+  "placeholderVisualCount": 3,
+  "gates": {
+    "G1": {
+      "verdict": "FAIL",
+      "evidence": [
+        {
+          "path": "NINE_SCREEN_MOCKUPS.html",
+          "sha256": "a7379b969d4d7d9ce98cb065eb826f59b7d8e862840d995bac37e17147887e8b",
+          "claim": "ヒーロー9画面の構造は揃うが、店舗、猫、塔、報酬の主要要件を文章とカードで代用している"
+        },
+        {
+          "path": "NINE_SCREEN_VARIANTS.html",
+          "sha256": "ebb6bd78205d5f385a4f4045e3d5d7e5db86330dd48d554d1cb0f5dccfbbde0b",
+          "claim": "4状態は揃うが、ユーザーが要求した本番用完成見本の品質には達していない"
+        }
+      ]
+    },
+    "G2": {
+      "verdict": "FAIL",
+      "evidence": [
+        {
+          "path": "NINE_SCREEN_MOCKUP_01.png",
+          "sha256": "9ca9cfaf27272a06819e93378fae38f2ee235e4f0bf2243078f0dec1670c6bf6",
+          "claim": "タイトルの空の円と主要猫不在により仮画面に見える"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_03.png",
+          "sha256": "aee306065c84bd53f132c225fed764a4b65eddffd05dc3f47f22c78b6875a2c2",
+          "claim": "100F閲覧が塔断面ではなく階数カード台帳に見える"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_08.png",
+          "sha256": "202b60e0788cf9cb196b5302de0566e37928bacce822d3bf1df9889b2ce5d518",
+          "claim": "夜明けの黒いシルエットが仮素材に見える"
+        }
+      ]
+    },
+    "G3": {
+      "verdict": "FAIL",
+      "evidence": [
+        {
+          "path": "NINE_SCREEN_MOCKUP_05.png",
+          "sha256": "c434e4bc07546999f0409c6c1a26b5dd8ec8b391ba3ce3cf4abb0b551c354bd9",
+          "claim": "ショップ選択で店舗実景と店員猫がなく、選択が事務処理に見える"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_06.png",
+          "sha256": "8c534aee6dba637a55c17b4d4aec572ad55782060fac99af6e417830b607e90c",
+          "claim": "猫が小さな一覧アイコン扱いで、表情、性格、愛着が弱い"
+        },
+        {
+          "path": "NINE_SCREEN_VARIANT_FINAL.png",
+          "sha256": "712c33a12922fdf98520978b158f47a8c56f84969370139a48996cf03619b30d",
+          "claim": "100F制覇が感情的報酬ではなく結果表に見える"
+        }
+      ]
+    },
+    "G4": {
+      "verdict": "FAIL",
+      "evidence": [
+        {
+          "path": "FLOORS_1_10_DESIGN.md",
+          "sha256": "57fe941089a3b95899e7632dad0df2e84957411ef832f88364513db508f9b585",
+          "claim": "公式ストア説明から抽出した、仲間、店、商売支援、塔制覇が一文でつながる比較基準と独自化境界を記録している"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_02.png",
+          "sha256": "5eafd0b05a223cf1c74566460096e1cae96d35428ab4e5f53f41721d876b08f1",
+          "claim": "比較対象よりキャラクター存在感と戦闘の瞬間的可読性が弱い"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_03.png",
+          "sha256": "aee306065c84bd53f132c225fed764a4b65eddffd05dc3f47f22c78b6875a2c2",
+          "claim": "比較対象より塔の連続感と生活の可視化が弱い"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUP_09.png",
+          "sha256": "88d9d7889d636ec78b7bc470a62d3d5490a8e78a552efcb0d760e70c208520c7",
+          "claim": "比較対象より制覇報酬の感情ピークが弱い。総合比較は16/70相当"
+        }
+      ]
+    },
+    "G5": {
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "path": "NINE_SCREEN_MOCKUPS.html",
+          "sha256": "a7379b969d4d7d9ce98cb065eb826f59b7d8e862840d995bac37e17147887e8b",
+          "claim": "9画面を対象viewportで通常閲覧できる"
+        },
+        {
+          "path": "NINE_SCREEN_MOCKUPS.css",
+          "sha256": "71f7c3c54db3d01dfee8b5d5fd27e9150af1bd3097464b5a04b2712b6f56cb68",
+          "claim": "320x568、375x667、390x844、430x932で横overflow 0、44px未満操作対象0"
+        },
+        {
+          "path": "NINE_SCREEN_VARIANTS.html",
+          "sha256": "ebb6bd78205d5f385a4f4045e3d5d7e5db86330dd48d554d1cb0f5dccfbbde0b",
+          "claim": "4状態を通常閲覧できる。motion、音、保存、物理端末性能はAcceptance Matrixで別工程へ固定済み"
+        }
+      ]
+    }
+  },
+  "criticalFindings": [
+    "完成見本を技術QAだけでPASSと誤判定した",
+    "ゲーム世界より管理UIカードが主役である",
+    "100F閲覧が塔ではなく階数台帳である",
+    "ショップ配置の世界変化が視覚化されていない",
+    "猫、敵、背景、UIの画風と接地が統一されていない",
+    "制圧、夜明け、100F完了の感情ピークが不足している"
+  ],
+  "majorFindings": [
+    "タイトルに主要猫と冒険の約束がない",
+    "猫名簿で表情、性格、役割実演が小さい",
+    "9画面の色温度とカード構成が均一で状態差が弱い"
+  ],
+  "failureRecord": {
+    "mistakenCompletion": "構造網羅と技術QAの合格を、本番美術完成品質の合格へ拡大解釈した",
+    "skippedChecks": [
+      "最終PNGの本番サイズ批評",
+      "参考対象との横並び反証",
+      "文字を隠した5秒理解",
+      "人間が触りたくなるかの判定",
+      "アート方針と試験素材より先に完成見本を作る工程矛盾"
+    ],
+    "expectationGap": "ユーザーは商人サーガ級に猫、塔、店舗、戦闘、報酬が絵で伝わる完成見本を期待したが、成果物は説明カード中心の構造ワイヤーだった",
+    "rootCause": "合格基準が機能・技術に偏り、制作と判定を同じ視点で連続実行した",
+    "addedAcceptanceConditions": [
+      "制作前Acceptance Matrix",
+      "仮素材0",
+      "独立批評者2名以上と最終判定者",
+      "5秒理解レビュー3件以上",
+      "比較7軸で各6/10以上かつ平均7/10以上",
+      "成果物SHA-256とreviewの一致"
+    ],
+    "reuse": "主要9画面ファミリー、4状態、情報要件、最低レスポンシブ条件",
+    "discardOrRebuild": "画面階層、塔とUIの占有率、全可視美術、店舗実景、感情演出、接地表現"
+  },
+  "reconstructionPlan": {
+    "startFrom": "Acceptance Matrixとミニアート方針",
+    "firstBuild": "戦闘、塔閲覧、店舗変身の3ゴールデン画面",
+    "expansionCondition": "3画面がG1〜G5へ合格した場合だけ残り6画面と4状態へ展開",
+    "nextReviewFile": "quality-reviews/step-4-nine-screen-mockups/round-002.json"
+  },
+  "nextRoundHypothesis": [
+    "ミニアート方針と少数試験素材を制作前に固定する",
+    "戦闘、塔閲覧、店舗変身の3画面を先に本番品質へ到達させる",
+    "3画面を独立批評と比較Gateへ通した後だけ残り6画面へ展開する"
+  ],
+  "overallStatus": "IN_PROGRESS",
+  "passEligible": false,
+  "supersedes": null,
+  "historyIsAppendOnly": true
+}
