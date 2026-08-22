@@ -539,6 +539,8 @@ X8の「地区の壁」は敵種ではなく、既存の地区敵、環境障害
 | 8 | 夜明け | 喪失、保持、恒久3択 | 夜明けを実行 | 停止 |
 | 9 | 地区制覇・100F完了 | 報酬、記録、収集確認、通常再周回 | 再周回を選ぶ | 停止 |
 
+工程4の完成見本、共通座標、必須状態差分、レスポンシブ規則は[`NINE_SCREEN_MOCKUPS.md`](./NINE_SCREEN_MOCKUPS.md)を正本とする。ヒーロー9枚は[`NINE_SCREEN_MOCKUPS.html`](./NINE_SCREEN_MOCKUPS.html)、1Fチュートリアル、敗北診断、10Fボス、100F全塔制覇は[`NINE_SCREEN_VARIANTS.html`](./NINE_SCREEN_VARIANTS.html)で確認する。
+
 設定、図鑑、物語は補助シートとして扱う。補助シートを主要9画面へ無理に混ぜない。
 
 ### 14.1 シミュレーション停止方針

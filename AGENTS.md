@@ -5,13 +5,15 @@
 ## 作業開始時の必読順
 
 1. `MASTER_SPEC.md`
-2. `AGENTS.md`
-3. `PROJECT_STATUS.json`
-4. `PROJECT_HANDOVER.md`
-5. `README.md`
-6. 現在の`git status`と`git diff`
-7. GitHub `main`
-8. 固定Vercel Production
+2. `FLOORS_1_10_DESIGN.md`
+3. `NINE_SCREEN_MOCKUPS.md`
+4. `AGENTS.md`
+5. `PROJECT_STATUS.json`
+6. `PROJECT_HANDOVER.md`
+7. `README.md`
+8. 現在の`git status`と`git diff`
+9. GitHub `main`
+10. 固定Vercel Production
 
 仕様が競合した場合は`MASTER_SPEC.md`を優先し、矛盾を残したまま実装しない。
 
@@ -20,7 +22,7 @@
 2026-08-22時点:
 
 - 100F最終方針: 承認済み
-- 準備工程: 3/10「1〜10F完全設計」PASS。次は4/10「9画面の完成見本」
+- 準備工程: 4/10「9画面の完成見本」PASS。次は5/10「動きの絵コンテ」
 - コード修正: 未開始
 - 現行公開版: V0.8.2 legacy baseline
 - 保存点: `main@727b8d00c281e7539117da5ded7309ea01c7e516`

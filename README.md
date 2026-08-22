@@ -12,12 +12,13 @@
 | 現行版の保存点 | `PASS` |
 | 100F正本仕様書 | `PASS` |
 | 1〜10F完全設計 | `PASS` |
+| 9画面の完成見本 | `PASS` |
 | コード修正 | `NOT_STARTED` |
 | 現行公開版 | V0.8.2 legacy baseline |
 | 1〜10F Preview Ready | `false` |
 | 100F Product Production Ready | `false` |
 
-100Fの最上位仕様は[`MASTER_SPEC.md`](./MASTER_SPEC.md)、1〜10Fの確定詳細は[`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)です。古い10F仕様、現在のコード、テストと矛盾する場合は正本仕様を優先します。
+100Fの最上位仕様は[`MASTER_SPEC.md`](./MASTER_SPEC.md)、1〜10Fの確定詳細は[`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)、主要画面の正本は[`NINE_SCREEN_MOCKUPS.md`](./NINE_SCREEN_MOCKUPS.md)です。古い10F仕様、現在のコード、テストと矛盾する場合は正本仕様を優先します。
 
 ## 保存した現行版
 
@@ -88,8 +89,8 @@
 1. 現行版の保存点 — 完了
 2. 100F正本仕様書 — 完了
 3. 1〜10F完全設計 — 完了
-4. 9画面の完成見本
-5. 動きの絵コンテ
+4. 9画面の完成見本 — 完了
+5. 動きの絵コンテ — 次
 6. アートバイブル
 7. 少数の試験素材
 8. 保存・100Fデータ設計
@@ -102,9 +103,10 @@
 
 1. [`MASTER_SPEC.md`](./MASTER_SPEC.md)
 2. [`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)
-3. [`AGENTS.md`](./AGENTS.md)
-4. [`PROJECT_STATUS.json`](./PROJECT_STATUS.json)
-5. [`PROJECT_HANDOVER.md`](./PROJECT_HANDOVER.md)
-6. 現在の作業ツリー、GitHub `main`、固定Vercel Production
+3. [`NINE_SCREEN_MOCKUPS.md`](./NINE_SCREEN_MOCKUPS.md)
+4. [`AGENTS.md`](./AGENTS.md)
+5. [`PROJECT_STATUS.json`](./PROJECT_STATUS.json)
+6. [`PROJECT_HANDOVER.md`](./PROJECT_HANDOVER.md)
+7. 現在の作業ツリー、GitHub `main`、固定Vercel Production
 
 `main`、Vercel deployment、1〜10F Preview Ready、100F Product Production Readyは別の状態です。ページが開く、buildが通る、deploymentがREADYというだけではProduction Readyにしません。
