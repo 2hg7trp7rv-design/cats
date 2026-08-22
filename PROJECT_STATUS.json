@@ -4,7 +4,7 @@
   "project": "Cat's Tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
-  "documentationBranch": "main",
+  "documentationBranch": "codex/floors-1-10-design",
   "productSourceOfTruth": "MASTER_SPEC.md",
   "projectStage": "preproduction",
   "codeChangesStarted": false,
@@ -25,7 +25,7 @@
     {
       "order": 3,
       "name": "floors-1-through-10-complete-design",
-      "status": "NOT_STARTED"
+      "status": "PASS"
     },
     {
       "order": 4,
@@ -436,7 +436,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "start-floor-1-through-10-complete-design-without-changing-gameplay-code",
+  "nextAction": "create-nine-screen-final-mockups-without-changing-gameplay-code",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",
