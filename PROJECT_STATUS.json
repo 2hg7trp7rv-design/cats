@@ -16,7 +16,7 @@
     {
       "order": 1,
       "name": "legacy-v082-source-runtime-byte-checkpoint",
-      "status": "IN_PROGRESS"
+      "status": "PASS"
     },
     {
       "order": 2,
@@ -111,7 +111,7 @@
     },
     "fixedUrlHttpStatus": 200,
     "role": "step-1a-source-runtime-byte-checkpoint-not-player-save-backup-and-not-the-100f-target",
-    "sourceRuntimeCheckpoint": "IN_PROGRESS",
+    "sourceRuntimeCheckpoint": "PASS",
     "playerSaveBackup": "UNAVAILABLE_IN_V082",
     "physicalIPhoneStandalonePwaApproval": "NOT_VERIFIED",
     "productionReady": false
@@ -146,52 +146,82 @@
   "districts": [
     {
       "id": "district.01",
-      "floors": [1, 10],
+      "floors": [
+        1,
+        10
+      ],
       "name": "灰かぶり入口市場"
     },
     {
       "id": "district.02",
-      "floors": [11, 20],
+      "floors": [
+        11,
+        20
+      ],
       "name": "焔の大厨房"
     },
     {
       "id": "district.03",
-      "floors": [21, 30],
+      "floors": [
+        21,
+        30
+      ],
       "name": "水没貯水区"
     },
     {
       "id": "district.04",
-      "floors": [31, 40],
+      "floors": [
+        31,
+        40
+      ],
       "name": "歯車工房"
     },
     {
       "id": "district.05",
-      "floors": [41, 50],
+      "floors": [
+        41,
+        50
+      ],
       "name": "苔庭温室"
     },
     {
       "id": "district.06",
-      "floors": [51, 60],
+      "floors": [
+        51,
+        60
+      ],
       "name": "亡霊書庫"
     },
     {
       "id": "district.07",
-      "floors": [61, 70],
+      "floors": [
+        61,
+        70
+      ],
       "name": "雷鳴鳥舎"
     },
     {
       "id": "district.08",
-      "floors": [71, 80],
+      "floors": [
+        71,
+        80
+      ],
       "name": "氷結宝物庫"
     },
     {
       "id": "district.09",
-      "floors": [81, 90],
+      "floors": [
+        81,
+        90
+      ],
       "name": "月鏡宮"
     },
     {
       "id": "district.10",
-      "floors": [91, 100],
+      "floors": [
+        91,
+        100
+      ],
       "name": "黒羽王座"
     }
   ],
@@ -240,7 +270,10 @@
   "finalContentTargets": {
     "namedCatsMaximum": 12,
     "activeNamedCatMaximum": 6,
-    "visibleTemporaryHelpersRange": [12, 16],
+    "visibleTemporaryHelpersRange": [
+      12,
+      16
+    ],
     "normalEnemies": 30,
     "eliteEnemies": 10,
     "districtBosses": 9,
@@ -293,11 +326,23 @@
   ],
   "interactionAcceptance": {
     "primaryFeedbackTargetMs": 100,
-    "catTravelBattleWidthPercentRange": [30, 45],
-    "catTravelDurationMsRange": [650, 1000],
+    "catTravelBattleWidthPercentRange": [
+      30,
+      45
+    ],
+    "catTravelDurationMsRange": [
+      650,
+      1000
+    ],
     "impactSynchronizationToleranceMs": 50,
-    "hitStopMsRange": [50, 80],
-    "floorTransitionMsRange": [1600, 2200],
+    "hitStopMsRange": [
+      50,
+      80
+    ],
+    "floorTransitionMsRange": [
+      1600,
+      2200
+    ],
     "mainTouchTargetPtMinimum": 44,
     "groundAnchorToleranceCssPx": 2,
     "stateAnchorToleranceCssPx": 2,
@@ -428,7 +473,10 @@
     "unableToUnderstandGoalDropoutMaximum": 2,
     "saveLossProgressBlockAndRewardDuplicationAllowed": 0,
     "p0AndP1Allowed": 0,
-    "authorizesFloors": [11, 20]
+    "authorizesFloors": [
+      11,
+      20
+    ]
   },
   "audioRequirements": {
     "productionSoundRequiredForGateC": true,
@@ -444,9 +492,9 @@
     "unknownProvenanceAssetsAllowedInProduction": false
   },
   "legacyV082Verification": {
-    "githubActionsRun": 32584243470,
-    "githubActionsHead": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
-    "githubActionsConclusion": "failure-round-4-post-ci-independent-audit",
+    "githubActionsRun": 32587250951,
+    "githubActionsHead": "f5d33f574f4143b844c61f0dfe0d99b398e48d08",
+    "githubActionsConclusion": "success-and-round-5-quality-judgment-passed",
     "chromium390x844": "passed-in-clean-checkout-ci",
     "chromium375x667": "passed-in-clean-checkout-ci",
     "webkit390x844": "passed-in-clean-checkout-ci",
@@ -481,7 +529,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "freeze-round-5-acceptance-run-clean-checkout-ci-and-independent-rejudgment",
+  "nextAction": "revalidate-100f-master-specification",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",

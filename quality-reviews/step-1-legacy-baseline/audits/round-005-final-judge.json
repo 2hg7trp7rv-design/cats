@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "role": "final-judge",
+  "source": "Codex collaboration sub-agent response recorded by the primary agent",
+  "cryptographicReviewerAuthentication": false,
+  "reviewerId": "round5-final-judge-hopper",
+  "taskPath": "/root/step1_final_judge_r5",
+  "assignment": "Round 5 C2のexact commit/tree、C2 exact-head CIとprovider artifact、candidate CI record、三critic record、時系列、lineageを独立再検証し、C3 seal前のmaterial blocker有無を最終判定する。",
+  "reviewedAt": "2026-08-22T17:30:57Z",
+  "reviewTargetCommit": "f5d33f574f4143b844c61f0dfe0d99b398e48d08",
+  "reviewTargetTree": "271ae0313fdd59ac2d71ae4576c9d6b2d1fac1da",
+  "reviewedAcceptanceSha256": "fd99d20bd74ebe0a6e1addc3ecd2c40df85e7825ed5e73c5747c27d14868f14c",
+  "reviewedCiRunId": 32587250951,
+  "reviewedCiJobId": 97065405967,
+  "reviewedCiCheckoutSha": "f5d33f574f4143b844c61f0dfe0d99b398e48d08",
+  "reviewedCiCheckoutTree": "271ae0313fdd59ac2d71ae4576c9d6b2d1fac1da",
+  "reviewedCiArtifactDigest": "sha256:d82a8eac16d3c5f7a878327487efde94ed9f0f8053fa051dac8ff61e89099da6",
+  "reviewedCiRecordPath": "quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json",
+  "reviewedCiRecordSha256": "0269a60c25dbf8d6d09901f83b774395e3c58b432e3b0efb2231e7947a6821b0",
+  "criticReferences": [
+    {
+      "role": "adversarial-critic",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-adversarial-critic.json",
+      "sha256": "273f6f9aa38be4c3a30196501cbb6141efe39c8961f835b7ce67da05d9c3e398",
+      "verbatimResponseSha256": "6deed90a930dca2f80eb8dadc9a15a4700dfbb0bbcbe7f7b4f2501845e2be76a"
+    },
+    {
+      "role": "repository-critic",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-repository-critic.json",
+      "sha256": "7921c68a19efd546674c149ad175b8eba12d581d91b55f6cecc219f08d0a20f9",
+      "verbatimResponseSha256": "e211eea680c6b5b8015c38f013db25cbc246972c425a9086ef8a5e763753b2cb"
+    },
+    {
+      "role": "runtime-critic",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-runtime-critic.json",
+      "sha256": "6d758dee0fa4755b96e108a76f94b1eee144b2cfbcd06c8e5de7eed20715e173",
+      "verbatimResponseSha256": "ae24bb0120998248231b0744b048f200255e3f0a44e7ee84ecc5dbab7b6d5c97"
+    }
+  ],
+  "status": "PASS",
+  "unresolvedMaterialBlockers": [],
+  "method": [
+    "C2を隔離cloneへdetached checkoutし、commit、tree、単一親、C1からの正確な5件の変更種別とパスをGitオブジェクトから照合し、固定validatorを通常モードおよびremote・liveモードで再実行しました。",
+    "GitHubのrun、attempt別job、artifact APIを再照会し、取得済みZIPのサイズとSHA-256、95個の安全で一意なmember、10件のduplicate-key-free reportのpassed=trueを独立検査しました。",
+    "candidate-ci-run.jsonを厳格JSONとして解析し、provider metadata、必須成功step、artifact、raw provenanceの全相互参照とSHA-256を照合しました。",
+    "PR synthetic merge commitをGitHub Git object APIで再取得し、tree、順序付き親、保護workflow blobをC2およびraw provenanceと照合しました。",
+    "三つのcritic recordと埋め込みverbatim responseをvalidator契約に照らして検査し、C2 blob bytesのSHA-256とreview時刻の先行性を確認しました。"
+  ],
+  "findings": [
+    "C2はC1 cfebec0c546478f8dc7a6af9476d795205e52002の単一親direct childであり、Acceptanceが指定する三critic record、acceptance CI evidence、clean-recovery evidenceだけを正しい追加・変更種別で含みます。",
+    "CI run 32587250951 attempt 1とjob 97065405967はC2 exact headで成功し、job開始時刻2026-08-22T17:16:51Zは全critic reviewedAtの最大値2026-08-22T17:07:45Zより後です。",
+    "artifact 9479435996は71,603,935 bytesで未期限切れであり、ZIP SHA-256 d82a8eac16d3c5f7a878327487efde94ed9f0f8053fa051dac8ff61e89099da6がprovider digestと一致しました。95 memberはすべて安全かつ一意で、10件のreportは厳格JSONとしてpassed=trueでした。",
+    "ci-provenance.jsonのraw SHA-256は7d9e2d471cf96b03596e023169a3bc78e9f0610f3cdc140c63fc4b490565f27cでcandidate recordのraw bytesと一致し、C2 checkout、verification kit、immutable baseline runtimeを正しく分離して拘束しています。",
+    "synthetic merge bc33f78465f3416222f71dcfec0f0a8755291eb8は順序付き親76c49e9fca82a4c0f6922de8f93ea3b4e57289f6とC2を持ち、treeはC2と同一で、workflow blob afc95923bddd6209f19585d07a45c9d577dd06beも一致しました。",
+    "三critic recordはいずれもPASSかつmaterial blockerなしで、outer recordとverbatim responseの対象、CI、方法、所見、blockerが一致し、固定validatorは通常・remote・liveの各検証を完了しました。"
+  ],
+  "verbatimResponse": "{\"role\":\"final-judge\",\"reviewTargetCommit\":\"f5d33f574f4143b844c61f0dfe0d99b398e48d08\",\"reviewTargetTree\":\"271ae0313fdd59ac2d71ae4576c9d6b2d1fac1da\",\"reviewedCiRunId\":32587250951,\"reviewedCiJobId\":97065405967,\"verdict\":\"PASS\",\"materialBlockers\":[],\"method\":[\"C2を隔離cloneへdetached checkoutし、commit、tree、単一親、C1からの正確な5件の変更種別とパスをGitオブジェクトから照合し、固定validatorを通常モードおよびremote・liveモードで再実行しました。\",\"GitHubのrun、attempt別job、artifact APIを再照会し、取得済みZIPのサイズとSHA-256、95個の安全で一意なmember、10件のduplicate-key-free reportのpassed=trueを独立検査しました。\",\"candidate-ci-run.jsonを厳格JSONとして解析し、provider metadata、必須成功step、artifact、raw provenanceの全相互参照とSHA-256を照合しました。\",\"PR synthetic merge commitをGitHub Git object APIで再取得し、tree、順序付き親、保護workflow blobをC2およびraw provenanceと照合しました。\",\"三つのcritic recordと埋め込みverbatim responseをvalidator契約に照らして検査し、C2 blob bytesのSHA-256とreview時刻の先行性を確認しました。\"],\"findings\":[\"C2はC1 cfebec0c546478f8dc7a6af9476d795205e52002の単一親direct childであり、Acceptanceが指定する三critic record、acceptance CI evidence、clean-recovery evidenceだけを正しい追加・変更種別で含みます。\",\"CI run 32587250951 attempt 1とjob 97065405967はC2 exact headで成功し、job開始時刻2026-08-22T17:16:51Zは全critic reviewedAtの最大値2026-08-22T17:07:45Zより後です。\",\"artifact 9479435996は71,603,935 bytesで未期限切れであり、ZIP SHA-256 d82a8eac16d3c5f7a878327487efde94ed9f0f8053fa051dac8ff61e89099da6がprovider digestと一致しました。95 memberはすべて安全かつ一意で、10件のreportは厳格JSONとしてpassed=trueでした。\",\"ci-provenance.jsonのraw SHA-256は7d9e2d471cf96b03596e023169a3bc78e9f0610f3cdc140c63fc4b490565f27cでcandidate recordのraw bytesと一致し、C2 checkout、verification kit、immutable baseline runtimeを正しく分離して拘束しています。\",\"synthetic merge bc33f78465f3416222f71dcfec0f0a8755291eb8は順序付き親76c49e9fca82a4c0f6922de8f93ea3b4e57289f6とC2を持ち、treeはC2と同一で、workflow blob afc95923bddd6209f19585d07a45c9d577dd06beも一致しました。\",\"三critic recordはいずれもPASSかつmaterial blockerなしで、outer recordとverbatim responseの対象、CI、方法、所見、blockerが一致し、固定validatorは通常・remote・liveの各検証を完了しました。\"],\"criticRecordHashes\":[{\"role\":\"adversarial-critic\",\"sha256\":\"273f6f9aa38be4c3a30196501cbb6141efe39c8961f835b7ce67da05d9c3e398\"},{\"role\":\"repository-critic\",\"sha256\":\"7921c68a19efd546674c149ad175b8eba12d581d91b55f6cecc219f08d0a20f9\"},{\"role\":\"runtime-critic\",\"sha256\":\"6d758dee0fa4755b96e108a76f94b1eee144b2cfbcd06c8e5de7eed20715e173\"}]}",
+  "verbatimResponseSha256": "9f6aa1d3a3979c8868f1131a38b660f11c49394f899404cf43ddaa21e08b3440"
+}

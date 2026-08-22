@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 5,
+  "reviewedDate": "2026-08-23",
+  "reviewTargetCommit": "f5d33f574f4143b844c61f0dfe0d99b398e48d08",
+  "reviewTargetTree": "271ae0313fdd59ac2d71ae4576c9d6b2d1fac1da",
+  "overallStatus": "PASS",
+  "gates": {
+    "G1": "PASS",
+    "G2": "PASS",
+    "G3": "PASS",
+    "G4": "PASS",
+    "G5": "PASS"
+  },
+  "acceptance": {
+    "file": "quality-reviews/step-1-legacy-baseline/acceptance-round-005.json",
+    "commit": "cfebec0c546478f8dc7a6af9476d795205e52002",
+    "tree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+    "sha256": "fd99d20bd74ebe0a6e1addc3ecd2c40df85e7825ed5e73c5747c27d14868f14c"
+  },
+  "candidateCiEvidence": {
+    "file": "quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json",
+    "sha256": "0269a60c25dbf8d6d09901f83b774395e3c58b432e3b0efb2231e7947a6821b0",
+    "runId": 32587250951,
+    "jobId": 97065405967,
+    "headSha": "f5d33f574f4143b844c61f0dfe0d99b398e48d08",
+    "checkoutTree": "271ae0313fdd59ac2d71ae4576c9d6b2d1fac1da",
+    "artifactDigest": "sha256:d82a8eac16d3c5f7a878327487efde94ed9f0f8053fa051dac8ff61e89099da6"
+  },
+  "requirementResults": {
+    "S1": "PASS",
+    "S2": "PASS",
+    "S3": "PASS",
+    "S4": "PASS",
+    "S5": "PASS",
+    "D1": "PASS",
+    "D2": "PASS",
+    "D3": "PASS",
+    "D4": "PASS",
+    "D5": "PASS",
+    "R1": "PASS",
+    "R2": "PASS",
+    "R3": "PASS",
+    "R4": "PASS",
+    "V1": "PASS",
+    "V2": "PASS",
+    "E1": "PASS",
+    "E2": "PASS",
+    "E3": "PASS",
+    "Q1": "PASS",
+    "Q2": "PASS",
+    "Q3": "PASS",
+    "Q4": "PASS",
+    "Q5": "PASS",
+    "Q6": "PASS"
+  },
+  "independentAudits": [
+    {
+      "role": "adversarial-critic",
+      "reviewerId": "round5-adversarial-banach",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-adversarial-critic.json",
+      "sha256": "273f6f9aa38be4c3a30196501cbb6141efe39c8961f835b7ce67da05d9c3e398",
+      "verbatimResponseSha256": "6deed90a930dca2f80eb8dadc9a15a4700dfbb0bbcbe7f7b4f2501845e2be76a"
+    },
+    {
+      "role": "repository-critic",
+      "reviewerId": "round5-repository-socrates",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-repository-critic.json",
+      "sha256": "7921c68a19efd546674c149ad175b8eba12d581d91b55f6cecc219f08d0a20f9",
+      "verbatimResponseSha256": "e211eea680c6b5b8015c38f013db25cbc246972c425a9086ef8a5e763753b2cb"
+    },
+    {
+      "role": "runtime-critic",
+      "reviewerId": "round5-runtime-curie",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-runtime-critic.json",
+      "sha256": "6d758dee0fa4755b96e108a76f94b1eee144b2cfbcd06c8e5de7eed20715e173",
+      "verbatimResponseSha256": "ae24bb0120998248231b0744b048f200255e3f0a44e7ee84ecc5dbab7b6d5c97"
+    },
+    {
+      "role": "final-judge",
+      "reviewerId": "round5-final-judge-hopper",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-005-final-judge.json",
+      "sha256": "60f263bee6347d000b17d820107b2e05ac17e2504d05c7e0da4d2f44756b2dad",
+      "verbatimResponseSha256": "9f6aa1d3a3979c8868f1131a38b660f11c49394f899404cf43ddaa21e08b3440"
+    }
+  ],
+  "materialBlockers": [],
+  "externalSealCi": {
+    "requiredBeforeCompletionReport": true,
+    "recordedInsideSeal": false,
+    "exactC3PullRequestHeadCiRequired": true,
+    "exactC3ArtifactProvenanceInspectionRequired": true,
+    "mergedMainPushCiRequired": true,
+    "mergedMainArtifactProvenanceInspectionRequired": true,
+    "postMainExternalArtifactAuditWorkflowRequired": true,
+    "mergedMainMustContainC1C2C3": true,
+    "mergedMainExactTwoParentBindingRequired": true,
+    "mergedMainTreeMustEqualC3Tree": true
+  },
+  "judgmentBoundary": "Round 5 PASS seals the reviewed Step 1A evidence and exact C1/C2/C3 protocol. It does not claim that C3 PR CI, merge, main-push CI, post-main external artifact audit, Production alias change, physical-iPhone QA, player-save backup, or whole-repository backup has already completed."
+}
