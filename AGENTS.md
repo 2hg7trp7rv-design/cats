@@ -1,281 +1,277 @@
-# Cat's tower repository instructions
+# Cat's Tower repository instructions
 
-このファイルはリポジトリ全体に適用する。会話履歴やバージョン番号だけで判断せず、release source、GitHub `main`、GitHub Actions、固定Vercel Productionを別々に照合する。
+このファイルはリポジトリ全体に適用する。会話履歴や古いversion名だけで判断せず、正本仕様、GitHub、Vercel、runtime、QA証拠を分離して確認する。
 
-## 作業開始時に必ず読むもの
+## 作業開始時の必読順
 
-1. `AGENTS.md`
-2. `PROJECT_HANDOVER.md`
+1. `MASTER_SPEC.md`
+2. `AGENTS.md`
 3. `PROJECT_STATUS.json`
-4. `README.md`
-5. 現在の`git status`と`git diff`
-6. GitHub `main`
-7. 固定Vercel Production
+4. `PROJECT_HANDOVER.md`
+5. `README.md`
+6. 現在の`git status`と`git diff`
+7. GitHub `main`
+8. 固定Vercel Production
+
+仕様が競合した場合は`MASTER_SPEC.md`を優先し、矛盾を残したまま実装しない。
+
+## 現在の状態
+
+2026-08-22時点:
+
+- 100F最終方針: 承認済み
+- 準備工程: 2/10「100F正本仕様書」PASS。次は3/10「1〜10F完全設計」
+- コード修正: 未開始
+- 現行公開版: V0.8.2 legacy baseline
+- 保存点: `main@727b8d00c281e7539117da5ded7309ea01c7e516`
+- 保存点commit: <https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516>
+- 固定URL: <https://cats-tau-dusky.vercel.app/>
+- 1〜10F Preview Ready: false
+- 100F Product Production Ready: false
+
+現行V0.8.2が10Fで終わることは「現状の事実」であり、新版の要件ではない。新版は1塔100Fで設計する。
+
+## 最上位プロダクト定義
+
+Cat's Towerは、猫を呼んで塔を奪還し、制圧した部屋で猫が暮らし、選んだ店と物資配送が上階の戦闘を支える、スマートフォン縦画面専用の100F放置インクリメンタルRPGである。
+
+非交渉条件:
+
+1. 1つの塔は1F〜100F。101Fは作らない。
+2. 最初に完成させるのは1〜10Fだけ。
+3. 1〜10Fが商品品質Gateに合格するまで11F以降を量産しない。
+4. タップによる直接ダメージは0。
+5. タップは増援、予約、号令など意味のある反応へ変換する。
+6. 猫は入口から接敵地点まで実座標で移動する。
+7. 接敵・弾着前にダメージを出さない。
+8. 制圧後は猫が階段を登り、次階へ入る。
+9. 制圧済み・現在・未制圧階を連続スクロールできる。
+10. 制圧商業階ではプレイヤーがショップを選び、後から再配置できる。
+11. 猫は公開条件で解放し、ガチャや隠し乱数にしない。
+12. 複数敵と異なる行動役割を扱う。
+13. 制圧階には猫、店、配送、回復などの生活が残る。
+14. 物理iPhone未確認をProduction Readyにしない。
 
-## 状態を混同しない
+## 100F構造
 
-2026-08-20現在:
+10地区×10Fで構成する。
 
-- release source: V0.8.2 Tower Board Redesign。この`main` commitが正本
-- V0.8.2作業基点: `main@7d486189cccbdb58aeb209432f1782d5393915ef`
-- GitHub `main`: V0.8.2の正本source
-- Vercel Production: `main` pushの自動deploy先。live版は外部metadataとruntimeで都度確認
-- Production Ready: false。deploy成功とは別判定
-- 固定URL: `https://cats-tau-dusky.vercel.app/`
+1. 1〜10F 灰かぶり入口市場
+2. 11〜20F 焔の大厨房
+3. 21〜30F 水没貯水区
+4. 31〜40F 歯車工房
+5. 41〜50F 苔庭温室
+6. 51〜60F 亡霊書庫
+7. 61〜70F 雷鳴鳥舎
+8. 71〜80F 氷結宝物庫
+9. 81〜90F 月鏡宮
+10. 91〜100F 黒羽王座
 
-`main`へのpushでVercel Productionへ自動deployされる。公開後にVercel最新Production metadataの`githubCommitSha`を現在の`main` HEADと照合し、固定URLのruntimeも確認する。GitHub Actions、WebKit証跡、通常速度、実機、PWA、精密balanceを分離して報告し、deploy成功だけを根拠にProduction Readyと書かない。V0.8.1の過去QA結果をV0.8.2のQA結果として流用しない。
+各地区の用途は`X1`入口、`X2`店、`X3`支援、`X4`店、`X5`猫、`X6`店、`X7`支援、`X8`店と壁、`X9`エリートと遺物、`X0`ボスと拠点を基本とする。
 
-## V0.8.2の非交渉プロダクト定義
+## 1〜10Fの合格前スコープ
 
-Cat's towerは、スマートフォン縦画面専用の縦塔型放置インクリメンタルRPGである。
+- 名前付き猫4匹。ムギ、ルナ、トト＋公開条件の1匹
+- 一時増援3役割以上
+- 通常敵6種、エリート2種、追加敵種に数えない壁遭遇1件、3段階ボス1体
+- ショップ4種、支援施設2種
+- 塔スクロール、戦闘帰還、ショップ配置、猫解放、夜明け
+- 戦闘途中と配置状態を含む保存・復元
 
-1. 猫は自動で出撃する
-2. 猫は役割別の位置へ進み、天敵を自動攻撃する
-3. プレイヤーのtapは増援または号令であり、直接ダメージは0
-4. 攻撃、撃破、食堂配膳で得たコインを即時再投資する
-5. 3F食堂と5F共同部屋は塔の中で戦闘を支援する
-6. 8F黒羽の結界で停滞し、夜明けを選ぶ
-7. 夜明け後は恒久強化を得て1Fから再走する
-8. 10Fクロバネ撃破で最初の夜番を完了する
-9. 10F後に11Fへ進めない
+Gate C合格だけでは11Fを作らない。初見テスター10人以上を含むGate D1合格後に11〜20Fだけを許可し、以後も地区ごとのGate合格で次の10Fだけを許可する。
 
-店舗経営、在庫、接客、魚スライド、ごきげん管理を主ゲームへ戻さない。
+## 入力と動き
 
-## 3層塔ボード
+- 中核入力の一次反応: 100ms以内を内部目標
+- 猫の移動距離: 戦闘幅の30〜45%
+- 猫の通常移動時間: 650〜1,000ms
+- 命中、HP、音、反動: ±50ms以内
+- ヒットストップ: 50〜80ms目安
+- 階移動: 1.6〜2.2秒目安
+- 強攻撃の予備動作: 400〜800ms目安
+- 主要tap領域: 44×44pt以上
+- 増援50回で誤スクロール0、スクロール50回で誤増援0
 
-プレイ画面は常時、次の三層を持つ。
+短押しは増援1回、400ms以上の長押しは任意の連続呼び込みとする。指を離す、スクロール判定距離を越える、停止画面へ入る、のいずれかで必ず終了する。攻略へ長押しを必須にしない。
 
-- `towerSlice--next`: 次の未制圧階
-- `towerSlice--battle`: 現在の戦闘階
-- `towerSlice--support`: 制圧済み後方支援階
+数値バランスは後で調整してよいが、因果が見えなくなるほど短縮しない。
 
-戦場を静的な部屋カード一覧へ戻さない。階移動は次の順番を崩さない。
+## 床、足裏、影の契約
 
-> 敵撃破 → 勝利保持 → 猫の上昇 → 新しい階へ入階
+階とキャラクターは共通ワールド座標を使う。
 
-現行V0.8.2 release値は、勝利保持650ms、上昇1350ms、合計2000msである。数値は将来調整可能だが、因果順を同時切り替えへ戻さない。
+- 階: `floorGroundY`、入口、役割位置、敵入口、階段経路
+- 素材: 可視境界、足裏、頭頂、影、接触点、frame時間、表示倍率
+- 足裏と床の誤差: 2 CSS px以内
+- 状態切替時の足裏ジャンプ: 2 CSS px以内
+- 影中心の誤差: 2 CSS px以内
+- 意図しない体格差: ±15%以内
 
-## 猫の契約
+個別の`top`や`transform`を追加して症状だけ隠さない。透明余白の不一致は素材manifestで修正する。
 
-- `mugi`: 前衛、1F
-- `luna`: 後衛、2F
-- `toto`: 支援、5F
-- `helper-tabby`: 前衛helper
-- `helper-gray`: 後衛helper
-- `helper-calico`: 支援helper
+## 塔スクロール
 
-名前付き猫と3種類のhelperは、戦闘中と`recoveryQueue`を合わせて各kind 1匹だけ。回復中のkindは枠を予約し、自動・手動出撃で代役の同kindを重複生成しない。実戦枠は4から始まり、ルナとトトの解放で5、6へ増える。可視上限は6。helperは同一R3 helper行をkind固定の色差分で使うため、将来固有sheetへ置き換える余地を残す。
+- 戦闘追従と塔閲覧を分ける。
+- 塔閲覧中も戦闘は継続する。
+- 閲覧中に自動で現在階へ戻さない。
+- 固定HUDと「戦闘へ ○F」で現在階へ戻せる。
+- 右側に10F単位の地区レールを持つ。
+- 全100階をDOMへ置かない。
+- 同時描画は9〜13階以内。
+- 画面外animationを停止する。
+- `touch-action: pan-y`を基本にする。
 
-猫の役割:
+## ショップ、猫、敵
 
-- 前衛: 敵の近くで攻撃と被弾を引き受ける
-- 後衛: 前衛より後ろから短い間隔で攻撃する
-- 支援: 攻撃時に回復と味方cooldown短縮を行う
+最終ショップは、人材受付所、魚食堂、爪工房、おもちゃ工房、ねこ診療所、配送倉庫、星見観測所、灯火店、昼寝宿、珍品館の10種。
 
-## 敵の契約
+- 同一店舗の重複効果は逓減させる。
+- 隣接効果と物理的な配送演出を持つ。
+- 夜明け後も店舗種類と配置図を保持する。
+- 地区ボス後は地区内を無料再配置できる。
+- 毎周40店舗を手動再配置させない。
 
-- `crow` / 夜ガラス: R2通常敵
-- `owl` / 夜フクロウ: R3通常敵
-- `black-feather-barrier` / 黒羽の結界: 8F壁
-- `great-crow` / クロバネ: 10Fボス
+100F商品版の上限は名前付き猫12匹、通常敵30種、エリート10種、地区ボス9体、最終ボス1体。色替えや倍率だけの違いを別種として数えず、完成前に上限を増やさない。X8の壁は既存敵、環境障害、modifierで作る遭遇であり、51種目や地区別の追加キャラクター素材にしない。
 
-通常階は夜ガラスと夜フクロウを交互に出す。8Fと10Fは通常rotationへ含めない。クロバネを通常カラスの単純拡大へ戻さない。
+## 夜明け
 
-## 呼び鈴と号令
+夜明けは、失うもの、残るもの、得るもの、前後比較を実行前に表示する。
 
-- 空き枠がある: 猫を1匹増援
-- 満員: 6秒間の「みんなで号令」
-- 号令cooldown: 現行14秒
-- 号令中: 攻撃と移動を加速
-- どちらも直接tap damageは0
+失うもの:
 
-満員時に主操作をdisabledのまま放置しない。号令が充填中なら残り時間を表示する。
+- 現在階、今周コイン、今周猫レベル
+- 店舗の今周レベル、一時遺物、今周状態
 
-## 支援施設
+残るもの:
 
-### 3F さかな食堂
+- 解放猫、店舗設計図、配置図
+- ボス遺物、最高階、図鑑、物語、恒久強化
 
-- 制圧後に解放
-- 現行基本配膳間隔11秒、強化で短縮、下限6.5秒
-- 配膳後4秒間、攻撃間隔を短縮
-- 配膳時にコインを得る
-- 食堂ランlevelと解放状態は夜明けで失う
+最初の1〜10Fでは巨大な恒久ツリーを作らず、戦闘・増援・商業の違いが分かる3択で検証する。
 
-### 5F 猫の共同部屋
+## 保存
 
-- 制圧後に解放
-- 倒れた猫をrecovery queueへ入れる
-- 回復完了後、同じkindを入口から再出撃させる
-- 共同部屋levelは夜明け後も残る
+- 現行保存は`cats-tower-v080` / `gameplaySchema: 2`。
+- 新版はschema3を先に設計し、schema2へ無計画に追加しない。
+- schema3の正規キーは`cats-tower-v100`。旧`cats-tower-v080`へ書き込まない。
+- schema2原文は`cats-tower-v080-schema2-raw-backup`へ移行前にバックアップする。
+- 移行はcopy・idempotentとし、失敗時はschema3へ昇格しない。
+- 旧10Fクリアを100Fクリアへ変換しない。
+- future schemaを古いコードで上書きしない。
+- profile、run、tower、runtime、systemを分離する。
+- 猫、敵、階、店舗、遺物は安定IDで参照する。
+- 戦闘途中の猫、敵、HP、位置、増援列、施設、階移動を復元する。
+- オフラインで階、ボス、猫解放、店舗選択を自動実行しない。
 
-食堂を在庫・接客ゲームにせず、共同部屋をごきげん管理画面にしない。
+## V0.8.2からの再利用境界
 
-## シート停止
+再利用候補:
 
-猫、拠点、思い出、設定、夜明け、完了画面などのシートが開いている間は、`engine.advance`を呼ばない。次を裏で進めない。
+- 固定ステップ更新
+- イベントバス
+- future schema保護
+- オフライン上限
+- PWAとQAの基礎
 
-- 敵HP
-- 猫HP
-- 階数
-- 階遷移
-- 食堂配膳
-- 共同部屋復帰
-- 号令時間
+置き換え必須:
 
-シートを閉じた後に通常simulationへ戻す。保存や画面再描画は許可する。
+- 6枠固定座標
+- 単体敵モデル
+- 10F上限
+- 全猫共通レベル
+- 固定3F食堂・5F共同部屋だけの施設構造
+- 常時3層だけの塔UI
+- 旧素材規格の混在
+- CSS末尾の上書き方式
 
-## 10F完了
+旧版UI/CSS/定数/保存処理を新版の通常ロジックへ混在させない。移行処理は専用moduleへ隔離する。
 
-10Fクロバネ撃破時:
+## 性能と素材
 
-- `firstNightCleared = true`
-- `completed = true`
-- `currentFloor = 10`
-- `first-night`思い出を追加
-- 猫は勝利状態
-- 完了シートを表示
-- 11Fを生成しない
+- 初回はアプリ殻、共通UI、地区1素材だけを読む。
+- 地区素材は遅延取得する。
+- 100F素材を一括precacheしない。
+- 通常プレイ55〜60fpsを物理端末で目標にする。
+- 画面外のDOM、animation、timer、event listenerを増やし続けない。
+- 素材はbatchで作る。猫2、通常敵5、エリート2、ボス1、店2、背景1地区が一回の上限。
+- 前batchの実機、アンカー、animation、容量が不合格なら次を作らない。
 
-旧V0.8.1保存の`currentFloor`が11F以上かつ`firstNightCleared`の場合だけ、schema2正規化で10F完了へ移す。夜明け後の`currentFloor: 1`に歴代`bestFloor: 11`が残るデータは、現ランを1Fのまま維持し、bestだけ10Fへ丸める。
+Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、エリート1、形態変化を試すボス1、背景1階、ショップ1。Gate B前の第2batchは禁止。Gate Cまでは1〜10F必須数を総量上限とする。
 
-## アートの非交渉条件
+Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物理iPhoneの30秒戦闘で中央値55fps以上、p95 frame time 32ms以下、100ms超停止0、中核入力p95 100ms以内、cold転送4.0MB以下を合格条件にする。
 
-目標は「温かいレトロピクセルの夜の塔」。
+## QAと停止条件
 
-- 猫、敵、塔、UIを同じピクセル密度と光源へ揃える
-- 主役アートは同一ドメインのPNG / WebPラスターを使う
-- AI生成画像内の文字をUI文字として使用しない
-- Raw GitHub URLを実行時アセットに使わない
-- `image-rendering: pixelated`だけを合格理由にしない
-- 黒い敵は濃紺背景上で輪郭が消えないことを確認する
+工程状態は`NOT_STARTED`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使う。
 
-### Runtime art
+次を見つけたら新規機能・階・素材の制作を止める。
 
-Pixel R2継続:
+- 正本と実装の矛盾
+- 保存破損または移行失敗
+- P0・P1不具合
+- 性能予算超過
+- 実機の重大入力不良
+- 足裏、体格、命中の基準超過
 
-- `assets/v080/pixel-r2/tower-night-r2.png`
-- `assets/v080/pixel-r2/mugi-sprites-r2.png`
-- `assets/v080/pixel-r2/crow-sprites-r2.png`
+最後に合格したcommitを記録し、根本原因、回帰テスト、実機再検証を完了してから同じGateをやり直す。
 
-Pixel R3追加:
+テスト成功だけで完成にしない。通常プレイヤー導線、通常motion、保存、失敗状態、制作用音、実機録画、Vercel上の対象commitを証拠にする。1〜10F Preview Readyと100F Product Production Readyを混同しない。Product Readyには同一commit・deploymentでPreview Gateの再合格を必須とする。
 
-- `assets/v082/pixel-r3/cats-cast-r3.png` — 1448×1086 RGBA、4×3、各362px
-- `assets/v082/pixel-r3/enemies-r3.png` — 1448×1086 RGBA、4×3、各362px
+## GitHub / Vercel手順
 
-R3行契約:
+1. 作業開始前に`main`、固定Production、作業ツリーを照合する。
+2. 既定branchを直接編集せず、目的が一つの短命feature branchを作る。
+3. 変更を狭いcommitへまとめ、Draft PRで差分と未確認を示す。
+4. 構文、JSON、通常導線、該当QAを完了する。
+5. 合格後だけ`main`へ反映する。
+6. Vercel deploymentの`githubCommitSha`と`main` HEADを照合する。
+7. 固定URLのruntimeを確認する。
+8. deploy成功とProduction Readyを分離して報告する。
 
-- cats: ルナ / トト / helper
-- enemies: 夜フクロウ / 黒羽の結界 / クロバネ
+## 準備工程
 
-R3列契約は、idle / movement / action / completion系の4状態。CSSの`background-size: 400% 300%`と行位置を維持する。
+コード修正前に次を順番に完了する。
 
-## 保存データ
-
-- 保存キー: `cats-tower-v080`
-- schema: `gameplaySchema: 2`
-- 旧キー: `cats-tower-v01`
-- schema1バックアップ: `cats-tower-v080-schema1-backup`
-
-V0.8.2だからという理由で保存キーやschema番号を変更しない。schema2内で追加した主な状態は、`completed`、`pendingFloor`、`floorTransitionRemainingMs`、`floorTransitionStage`である。将来schemaを上げる場合は、先に移行とbackup方針を定義する。
-
-既存のschema1 / V0.1移行で行っている`coins`、`stock → fish`、`specialization`、`mugiMood`、`memories`、`hasPlayed`、`sound`、`firstNightDone`の保護を削除しない。
-
-オフライン進行は最大8時間のコインだけを付与し、未見階、8F結界、10Fボスを自動突破させない。
-
-## 実装規約
-
-- スマートフォン縦画面専用
-- iPhone Safari最優先。Android Chromeも確認
-- PC版・横画面版は対象外
-- 主要tap領域は44×44pt以上
-- simulationとDOM表示を分離
-- 実時間とQAで同じ固定step coreを使う
-- 数値式は`game-data.js`へ集約
-- 背景タブでは実時間simulationを回し続けない
-- ユーザーへコードを書かせたり、コード判断を丸投げしない
-- 関係のないユーザー変更を巻き戻さない
-
-## QA状態
-
-### V0.8.2 release sourceで完了
-
-- Chromium 390×844: 全E2E PASS、18証跡を目視
-- Chromium 375×667: 全E2E PASS、18証跡を目視
-- HTTP、console、overflow、tap target、シート停止の統合目視QAがPASS
-- 6種類を固定formationへ分離し、回復中のkind予約、復帰後の6種類各1匹、kind固定helper色を回帰検査してPASS
-- 前衛優先targetと、前衛不在時だけ後衛・支援へfallbackする役割回帰がPASS
-- 10F撃破直後に回復queueを解消して6種類全員を勝利rosterへ戻し、再読込後も同じ6種類を復元することを確認
-- 元画像床座標を共通接地線へ直接アンカーし、6匹同時攻撃時の身体接地点差0.003px未満、可視alpha境界box間2.87px以上をChromium両viewportで確認
-- 6匹×4状態と4敵×4状態の全40組をatlas由来の身体接地点で独立検査し、猫の床誤差0.009px未満、敵の浮遊量誤差0.011px未満でPASS。トトの攻撃シールドは接地点から除外し、クリッピング検査には含める
-- 10F入階中の12時点でも6種類の最小間隔2.87px以上と画面内保持を確認
-- 旧敵は勝利保持・上昇中とも`defeated`を維持し、入階後だけ新敵へ切り替える。通常motionのhit / defeat animation classも再描画後に保持する
-- `settingsFacts`を修正し、再目視PASS
-- 10F完了状態から完了シートが復元されることを確認
-- `PROJECT_STATUS.json`のJSON parse
-- R3画像のdecode、寸法、alpha確認
-
-Chromiumの36証跡はV0.8.2の証跡として扱ってよい。V0.8.1の過去64証跡とは別に管理する。
-
-### Production Ready前に残る必須QA
-
-- WebKit 390×844
-- WebKit 375×667
-- WebKit証跡画像の目視
-- 通常速度動画で3層と階上昇を確認
-- 精密バランスsimulation
-- 物理iPhone Safari / PWA / ChatGPT内ブラウザ
-- Service Worker更新確認
-- GitHub Actions
-- 固定Productionのruntime hash照合
-
-物理iPhoneの証跡を受け取っていない場合、「iPhone実機確認済み」と書かない。V0.8.1の過去64画面をV0.8.2の証跡に数えない。
-
-## GitHub / Production反映手順
-
-1. 作業ツリー、ローカル構文検査、利用可能なbrowser QAを完了し、未確認範囲を明記
-2. 目視上の問題を修正
-3. 明示的な承認後にcommit scopeを確認し、`main`へ反映
-4. `main` pushによるVercel Production自動deployを待ち、対象commitのdeploymentを特定
-5. GitHub ActionsでChromium / WebKitの4環境を完走し、証跡を目視
-6. 固定URLのHTML、CSS、JS、Service Worker、R3画像を対象commitと照合
-7. 通常速度・実機・PWA・精密balanceの未確認範囲を再評価
-8. commit、deployment、URL、確認済み範囲、未確認範囲、Production Ready判定を報告
-
-URLがHTTP 200であるだけではV0.8.2配信の証明にならない。
-
-## V0.8.1の履歴
-
-V0.8.1 Pixel Tower Vertical Sliceは、縦塔、自動戦闘、tap増援、8F夜明け、10Fボスを固定Productionへ戻した公開基準である。
-
-- Production build: `v081-pixel-tower-r2-p3`
-- Production runtime commit: `ebe26884f9e4500d8e755f0b4fae328ef208c6b6`
-- Production deployment: `dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm`
-- 最後に目視したActions: run `32091801556` / artifact `9308695207`
-- Chromium / WebKit、390×844 / 375×667の64証跡を当時確認
-
-この履歴は保持する。ただしV0.8.2の現在品質を証明しない。
+1. 現行版の保存点 — 完了
+2. 100F正本仕様書 — PASS
+3. 1〜10F完全設計
+4. 9画面の完成見本
+5. 動きの絵コンテ
+6. アートバイブル
+7. 少数の試験素材
+8. 保存・100Fデータ設計
+9. QA合格表
+10. コード修正
 
 ## 戻してはいけないもの
 
 - 旧V0.9.x
-- V0.8.0 Living Tower管理ループを主ゲームにする構成
-- R1 plushをcanonical runtime artにすること
-- 静止カードを塔として並べること
-- 魚・ベル・箱の三択夜番
-- 魚在庫・接客・ごきげん管理の必須化
-- tap直接ダメージ
-- 同じムギを12匹重ねること
-- 満員時に主操作を長時間無効化すること
-- 10F後の未完成階を進ませること
-- シート裏で重要進行を続けること
+- 店舗管理だけが主役のV0.8.0
+- R1 plushをcanonical artにすること
+- 静止カードだけの塔
+- 同じ猫の大量重ね表示
+- タップ直接ダメージ
+- 満員時の無反応
+- 接敵前の攻撃
+- 撃破と次敵出現の同時処理
+- 色替え敵の量産
+- 全100階DOM
+- シート裏で重要進行
+- 強制広告、ガチャ、スタミナ
 - 実機未確認なのに確認済みと書くこと
-- deploy成功だけでV0.8.2をProduction Readyと書くこと
+- deploy成功だけでProduction Readyと書くこと
 
-## 現在の優先順位
+## 完了報告の必須項目
 
-1. 現在の`main` HEADとVercel最新Productionの`githubCommitSha`を照合する
-2. GitHub Actionsの4環境QAと証跡目視を完了する
-3. 物理iPhoneで通常速度の主要フローを確認する
-4. PWA standaloneとService Worker更新を実機確認する
-5. 精密バランスsimulationは後続調整として行う
-6. 全ゲート通過後にProduction Readyを判定する
+1. 変更ファイル
+2. 変更しなかった領域
+3. branch、commit、PR
+4. GitHub反映状態
+5. 固定Vercel URL
+6. deploymentとruntime commit
+7. 構文・JSON・リンク検査
+8. 対象viewportとbrowser
+9. 通常motion、reduced-motion、実機確認
+10. 保存・移行確認
+11. 目視で残る問題
+12. 1〜10F Preview Ready判定と100F Product Production Ready判定
