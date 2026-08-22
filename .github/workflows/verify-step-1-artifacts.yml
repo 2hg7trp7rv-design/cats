@@ -45,7 +45,7 @@ jobs:
           GH_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
-          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-006.json
           mapfile -t SEALS < <(
             while read -r COMMIT PARENTS; do
               git cat-file -e "$COMMIT:$ROUND" 2>/dev/null || continue
@@ -73,17 +73,101 @@ jobs:
           git merge-base --is-ancestor "$SEAL_MERGE" HEAD
           if [ "$(git rev-parse HEAD)" = "$SEAL_MERGE" ]; then
             MODE=initial-main-seal
-            curl -fsSL \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H 'Accept: application/vnd.github+json' \
-              -H 'X-GitHub-Api-Version: 2022-11-28' \
-              "https://api.github.com/repos/$GH_REPOSITORY/actions/workflows/verify-main.yml/runs?event=pull_request&status=success&head_sha=$C3_SHA&per_page=100" \
-              > "$RUNNER_TEMP/c3-runs.json"
-            SELECTED=$(jq -r --arg sha "$C3_SHA" '
-              [.workflow_runs[] |
-                select(.head_sha==$sha and .event=="pull_request" and .status=="completed" and .conclusion=="success")
-              ] | sort_by(.id) | last | [.id,.run_attempt] | @tsv
-            ' "$RUNNER_TEMP/c3-runs.json")
+            fetch_unfiltered_workflow_snapshot() {
+              local OUTPUT=$1
+              local PAGE=1
+              local EXPECTED_TOTAL=-1
+              local SEEN=0
+              : > "$OUTPUT"
+              while true; do
+                test "$PAGE" -le 1000
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/workflows/verify-main.yml/runs?per_page=100&page=$PAGE" \
+                  > "$RUNNER_TEMP/c3-runs-page.json"
+                local TOTAL_NOW
+                local COUNT
+                TOTAL_NOW=$(jq -er '.total_count | select(type=="number" and .>=0 and floor==.)' "$RUNNER_TEMP/c3-runs-page.json")
+                COUNT=$(jq -er '.workflow_runs | length' "$RUNNER_TEMP/c3-runs-page.json")
+                if [ "$EXPECTED_TOTAL" -eq -1 ]; then EXPECTED_TOTAL=$TOTAL_NOW; fi
+                test "$TOTAL_NOW" -eq "$EXPECTED_TOTAL"
+                jq -c '.workflow_runs[]' "$RUNNER_TEMP/c3-runs-page.json" >> "$OUTPUT"
+                SEEN=$((SEEN + COUNT))
+                if [ "$COUNT" -lt 100 ]; then break; fi
+                PAGE=$((PAGE + 1))
+              done
+              test "$SEEN" -eq "$EXPECTED_TOTAL"
+              test "$(jq -sr '[.[].id] | length' "$OUTPUT")" -eq "$SEEN"
+              test "$(jq -sr '[.[].id] | unique | length' "$OUTPUT")" -eq "$SEEN"
+            }
+            # Filtered workflow-run searches are capped at 1,000 by GitHub.
+            # Take two complete, unfiltered workflow-specific snapshots instead,
+            # fail on truncation/shifting, then apply the exact C3 predicates locally.
+            fetch_unfiltered_workflow_snapshot "$RUNNER_TEMP/c3-runs-a.ndjson"
+            fetch_unfiltered_workflow_snapshot "$RUNNER_TEMP/c3-runs-b.ndjson"
+            jq -r '[.id,.run_attempt] | @tsv' "$RUNNER_TEMP/c3-runs-a.ndjson" | sort -n -k1,1 > "$RUNNER_TEMP/c3-run-identities-a.tsv"
+            jq -r '[.id,.run_attempt] | @tsv' "$RUNNER_TEMP/c3-runs-b.ndjson" | sort -n -k1,1 > "$RUNNER_TEMP/c3-run-identities-b.tsv"
+            cmp -s "$RUNNER_TEMP/c3-run-identities-a.tsv" "$RUNNER_TEMP/c3-run-identities-b.tsv"
+            jq -r --arg sha "$C3_SHA" --arg workflow "Verify Cat's Tower baseline and quality records" '
+              select(
+                .head_sha==$sha
+                and .event=="pull_request"
+                and .workflow_id==335561992
+                and .name==$workflow
+              )
+              | [.id,.run_attempt] | @tsv
+            ' "$RUNNER_TEMP/c3-runs-a.ndjson" > "$RUNNER_TEMP/c3-run-candidates.tsv"
+            : > "$RUNNER_TEMP/c3-qualified-attempts.tsv"
+            while IFS=$'\t' read -r CANDIDATE_RUN_ID LATEST_ATTEMPT; do
+              test "$CANDIDATE_RUN_ID" -gt 0
+              test "$LATEST_ATTEMPT" -gt 0
+              for CANDIDATE_ATTEMPT in $(seq 1 "$LATEST_ATTEMPT"); do
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/attempts/$CANDIDATE_ATTEMPT" \
+                  > "$RUNNER_TEMP/c3-exact-run.json"
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/attempts/$CANDIDATE_ATTEMPT/jobs?per_page=100" \
+                  > "$RUNNER_TEMP/c3-exact-jobs.json"
+                jq -e '.total_count==(.jobs | length) and .total_count<=100' "$RUNNER_TEMP/c3-exact-jobs.json" >/dev/null
+                jq -e \
+                  --argjson run "$CANDIDATE_RUN_ID" \
+                  --argjson attempt "$CANDIDATE_ATTEMPT" \
+                  --arg workflow "Verify Cat's Tower baseline and quality records" \
+                  --arg sha "$C3_SHA" '
+                    .id==$run
+                    and .run_attempt==$attempt
+                    and .workflow_id==335561992
+                    and .name==$workflow
+                    and .event=="pull_request"
+                    and .head_sha==$sha
+                    and .status=="completed"
+                    and .conclusion=="success"
+                  ' "$RUNNER_TEMP/c3-exact-run.json" >/dev/null || continue
+                jq -e \
+                  --argjson run "$CANDIDATE_RUN_ID" \
+                  --argjson attempt "$CANDIDATE_ATTEMPT" \
+                  --arg sha "$C3_SHA" '
+                    [.jobs[] | select(
+                      .name=="vertical-tower-qa"
+                      and .run_id==$run
+                      and .run_attempt==$attempt
+                      and .head_sha==$sha
+                      and .status=="completed"
+                      and .conclusion=="success"
+                    )] | length==1
+                  ' "$RUNNER_TEMP/c3-exact-jobs.json" >/dev/null || continue
+                printf '%s\t%s\n' "$CANDIDATE_RUN_ID" "$CANDIDATE_ATTEMPT" >> "$RUNNER_TEMP/c3-qualified-attempts.tsv"
+              done
+            done < <(sort -n -k1,1 -k2,2 "$RUNNER_TEMP/c3-run-candidates.tsv" | uniq)
+            SELECTED=$(sort -n -k1,1 -k2,2 "$RUNNER_TEMP/c3-qualified-attempts.tsv" | tail -n 1)
             test -n "$SELECTED"
             IFS=$'\t' read -r C3_RUN_ID C3_RUN_ATTEMPT <<< "$SELECTED"
             test "$C3_RUN_ID" -gt 0

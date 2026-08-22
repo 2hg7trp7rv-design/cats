@@ -1,12 +1,12 @@
 # Cat's Tower 引き継ぎ書
 
-更新日: 2026-08-22
+更新日: 2026-08-23
 
 Repository: `2hg7trp7rv-design/cats_tower`
 
 Canonical branch: `main`
 
-文書作業branch: `codex/restart-step-1-baseline`
+文書作業branch: `codex/restart-step-1-round6`
 
 固定Vercel URL: <https://cats-tau-dusky.vercel.app/>
 
@@ -260,7 +260,7 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 - Service Worker更新
 - 精密バランス
 
-工程1A Round 5の候補証拠では、WebKit 390×844 / 375×667の1F〜10F deterministic loopと通常motionの開始・戦闘・再読込、ChromiumのService Worker有効・offline復旧を再実行し、raw reportもrepositoryに保持した。Round 4はCI成功後の反証で外部artifact検証とC1変更境界の欠陥が判明したため`FAIL`として保持する。ただし通常速度の物理端末録画、物理iPhone Safari、ChatGPT内ブラウザ、standalone PWA、精密バランスは依然として未確認である。
+工程1A Round 6の候補証拠では、WebKit 390×844 / 375×667の1F〜10F deterministic loopと通常motionの開始・戦闘・再読込、ChromiumのService Worker有効・offline復旧を再実行し、raw reportもrepositoryに保持した。Round 4は外部artifact検証とC1変更境界、Round 5は後発rerunを含む全attempt探索に欠陥が判明したため、CIの成功とは分離して`FAIL`として保持する。ただし通常速度の物理端末録画、物理iPhone Safari、ChatGPT内ブラウザ、standalone PWA、精密バランスは依然として未確認である。
 
 過去のChromium結果を新版100Fの証拠へ流用しない。
 

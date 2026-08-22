@@ -24,7 +24,7 @@ const repository = process.env.GITHUB_REPOSITORY || '2hg7trp7rv-design/cats_towe
 assert.equal(repository, '2hg7trp7rv-design/cats_tower');
 const baselineCommit = '727b8d00c281e7539117da5ded7309ea01c7e516';
 const baselineTree = 'c508c58b0bb1b3fa591eefe143aab2dd6eac9271';
-const sealPath = 'quality-reviews/step-1-legacy-baseline/round-005.json';
+const sealPath = 'quality-reviews/step-1-legacy-baseline/round-006.json';
 const workflowPath = '.github/workflows/verify-main.yml';
 const externalWorkflowPath = '.github/workflows/verify-step-1-artifacts.yml';
 
@@ -146,6 +146,78 @@ async function githubApi(endpoint, binary = false) {
   return binary ? Buffer.from(await response.arrayBuffer()) : response.json();
 }
 
+function validatePaginatedPayloads(payloads, key, endpoint) {
+  assert(payloads.length >= 1, `GitHub API ${endpoint} returned no pagination payload`);
+  let expectedTotal = null;
+  const items = [];
+  for (const [index, payload] of payloads.entries()) {
+    assert(Array.isArray(payload[key]), `GitHub API ${endpoint} omitted ${key}`);
+    assert(Number.isSafeInteger(payload.total_count) && payload.total_count >= 0,
+      `GitHub API ${endpoint} omitted a valid total_count`);
+    if (expectedTotal === null) expectedTotal = payload.total_count;
+    assert.equal(payload.total_count, expectedTotal,
+      `GitHub API ${endpoint} changed total_count during pagination`);
+    if (index < payloads.length - 1) assert.equal(payload[key].length, 100,
+      `GitHub API ${endpoint} ended a page before the final payload`);
+    items.push(...payload[key]);
+  }
+  assert(payloads.at(-1)[key].length < 100,
+    `GitHub API pagination reached the explicit safety bound for ${endpoint}`);
+  assert.equal(items.length, expectedTotal,
+    `GitHub API ${endpoint} returned a truncated or shifting page sequence`);
+  const itemIds = items.map(item => item?.id);
+  assert(itemIds.every(id => Number.isSafeInteger(id) && id > 0),
+    `GitHub API ${endpoint} returned an item without a valid id`);
+  assert.equal(new Set(itemIds).size, itemIds.length,
+    `GitHub API ${endpoint} returned a duplicate item across pages`);
+  return items;
+}
+
+const paginationFixture = Array.from({ length: 101 }, (_, index) => ({ id: index + 1 }));
+assert.equal(validatePaginatedPayloads([
+  { total_count: 101, fixture: paginationFixture.slice(0, 100) },
+  { total_count: 101, fixture: paginationFixture.slice(100) },
+], 'fixture', 'pagination-self-test').length, 101);
+assert.throws(() => validatePaginatedPayloads([
+  { total_count: 1001, fixture: paginationFixture.slice(0, 100) },
+  { total_count: 1001, fixture: [] },
+], 'fixture', 'truncation-self-test'), /truncated or shifting/u);
+assert.throws(() => validatePaginatedPayloads([
+  { total_count: 2, fixture: [{ id: 1 }, { id: 1 }] },
+], 'fixture', 'duplicate-self-test'), /duplicate/u);
+assert.throws(() => validatePaginatedPayloads([
+  { total_count: 101, fixture: paginationFixture.slice(0, 100) },
+  { total_count: 102, fixture: paginationFixture.slice(100) },
+], 'fixture', 'mutation-self-test'), /changed total_count/u);
+
+async function githubPaginatedPass(endpoint, key) {
+  const payloads = [];
+  for (let page = 1; page <= 1000; page += 1) {
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const payload = await githubApi(`${endpoint}${separator}per_page=100&page=${page}`);
+    payloads.push(payload);
+    assert(Array.isArray(payload[key]), `GitHub API ${endpoint} omitted ${key}`);
+    if (payload[key].length < 100) return validatePaginatedPayloads(payloads, key, endpoint);
+  }
+  assert.fail(`GitHub API pagination exceeded the safety bound for ${endpoint}`);
+}
+
+async function githubPaginated(endpoint, key) {
+  return githubPaginatedPass(endpoint, key);
+}
+
+async function githubAllWorkflowRuns(workflowFile) {
+  assert.match(workflowFile, /^[A-Za-z0-9._-]+\.ya?ml$/u,
+    'workflow-run enumeration requires one protected workflow file name');
+  const endpoint = `/actions/workflows/${workflowFile}/runs`;
+  const first = await githubPaginatedPass(endpoint, 'workflow_runs');
+  const second = await githubPaginatedPass(endpoint, 'workflow_runs');
+  const identity = items => items.map(item => [item.id, item.run_attempt]);
+  assert.deepEqual(identity(second), identity(first),
+    `GitHub API ${endpoint} changed run identities or attempts between complete snapshots`);
+  return first;
+}
+
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 assert.throws(() => parseJsonStrict('{"x":1,"x":2}', 'strict-parser-self-test'), /duplicate object key/u);
 
@@ -155,10 +227,10 @@ const rows = git(['rev-list', '--parents', 'HEAD']).trim().split('\n').filter(Bo
 const sealCommits = rows.filter(([commit, ...parents]) => (
   gitPathExists(commit, sealPath) && parents.every(parent => !gitPathExists(parent, sealPath))
 )).map(([commit]) => commit);
-assert.equal(sealCommits.length, 1, 'exactly one reachable Round 5 seal introduction is required');
+assert.equal(sealCommits.length, 1, 'exactly one reachable Round 6 seal introduction is required');
 const sealCommit = sealCommits[0];
 const sealTree = git(['rev-parse', `${sealCommit}^{tree}`]).trim();
-const sealedRound = parseJsonStrict(git(['show', `${sealCommit}:${sealPath}`]), 'sealed round-005.json');
+const sealedRound = parseJsonStrict(git(['show', `${sealCommit}:${sealPath}`]), 'sealed round-006.json');
 const c2Commit = sealedRound.reviewTargetCommit;
 const c1Commit = sealedRound.acceptance.commit;
 assert.equal(git(['rev-parse', `${sealCommit}^`]).trim(), c2Commit);
@@ -195,74 +267,77 @@ else assert.equal(typeof run.head_branch, 'string');
 
 let initialExternalAudit = null;
 if (role === 'future-main') {
-  const query = new URLSearchParams({
-    event: 'workflow_run',
-    status: 'success',
-    head_sha: sealMergeCommit,
-    per_page: '100',
-  });
-  const payload = await githubApi(`/actions/workflows/verify-step-1-artifacts.yml/runs?${query}`);
-  const candidates = payload.workflow_runs.filter(candidate => (
+  // GitHub caps filtered workflow-run searches at 1,000 results. Enumerate the
+  // workflow-specific endpoint without actor/branch/check_suite_id/created/
+  // event/head_sha/status filters, require two identical complete snapshots,
+  // and apply the exact-seal predicates locally before exact-attempt lookups.
+  const workflowRuns = await githubAllWorkflowRuns('verify-step-1-artifacts.yml');
+  const candidates = workflowRuns.filter(candidate => (
     candidate.event === 'workflow_run'
     && candidate.head_sha === sealMergeCommit
     && candidate.head_branch === 'main'
-    && candidate.status === 'completed'
-    && candidate.conclusion === 'success'
     && candidate.name === 'Verify sealed Step 1 external CI artifacts'
     && workflowPathMatches(candidate.path, externalWorkflowPath)
-    && Date.parse(candidate.updated_at) < Date.parse(run.run_started_at)
   )).sort((left, right) => left.id - right.id);
   const verified = [];
   for (const candidate of candidates) {
-    const candidateAttempt = candidate.run_attempt;
-    if (!Number.isInteger(candidateAttempt) || candidateAttempt < 1) continue;
-    const exactRun = await githubApi(`/actions/runs/${candidate.id}/attempts/${candidateAttempt}`);
-    if (
-      exactRun.id !== candidate.id
-      || exactRun.run_attempt !== candidateAttempt
-      || exactRun.event !== 'workflow_run'
-      || exactRun.head_sha !== sealMergeCommit
-      || exactRun.head_branch !== 'main'
-      || exactRun.status !== 'completed'
-      || exactRun.conclusion !== 'success'
-      || exactRun.name !== 'Verify sealed Step 1 external CI artifacts'
-      || !workflowPathMatches(exactRun.path, externalWorkflowPath)
-      || Date.parse(exactRun.updated_at) >= Date.parse(run.run_started_at)
-    ) continue;
-    const candidateJobs = await githubApi(`/actions/runs/${candidate.id}/attempts/${candidateAttempt}/jobs?per_page=100`);
-    const matchingJobs = candidateJobs.jobs.filter(item => (
-      item.name === 'verify-sealed-artifacts'
-      && item.run_id === candidate.id
-      && item.head_sha === sealMergeCommit
-      && item.status === 'completed'
-      && item.conclusion === 'success'
-    ));
-    if (matchingJobs.length !== 1) continue;
-    const candidateStepMap = new Map(matchingJobs[0].steps.map(step => [step.name, step.conclusion]));
-    if (![
-      'Bind source main workflow run',
-      'Resolve seal, audit mode, and exact C3 run when required',
-      'Verify C3 pull-request artifact through GitHub API',
-      'Verify merged main artifact through GitHub API',
-      'Upload external artifact audit results',
-    ].every(stepName => candidateStepMap.get(stepName) === 'success')) continue;
-    verified.push({
-      runId: exactRun.id,
-      runAttempt: exactRun.run_attempt,
-      jobId: matchingJobs[0].id,
-      headSha: exactRun.head_sha,
-      completedAt: exactRun.updated_at,
-    });
+    if (!Number.isInteger(candidate.run_attempt) || candidate.run_attempt < 1) continue;
+    for (let candidateAttempt = 1; candidateAttempt <= candidate.run_attempt; candidateAttempt += 1) {
+      const exactRun = await githubApi(`/actions/runs/${candidate.id}/attempts/${candidateAttempt}`);
+      if (
+        exactRun.id !== candidate.id
+        || exactRun.run_attempt !== candidateAttempt
+        || exactRun.event !== 'workflow_run'
+        || exactRun.head_sha !== sealMergeCommit
+        || exactRun.head_branch !== 'main'
+        || exactRun.status !== 'completed'
+        || exactRun.conclusion !== 'success'
+        || exactRun.name !== 'Verify sealed Step 1 external CI artifacts'
+        || !workflowPathMatches(exactRun.path, externalWorkflowPath)
+      ) continue;
+      const candidateJobs = await githubPaginated(
+        `/actions/runs/${candidate.id}/attempts/${candidateAttempt}/jobs`,
+        'jobs',
+      );
+      const matchingJobs = candidateJobs.filter(item => (
+        item.name === 'verify-sealed-artifacts'
+        && item.run_id === candidate.id
+        && item.run_attempt === candidateAttempt
+        && item.head_sha === sealMergeCommit
+        && item.status === 'completed'
+        && item.conclusion === 'success'
+        && Date.parse(item.started_at) < Date.parse(item.completed_at)
+        && Date.parse(item.completed_at) < Date.parse(run.run_started_at)
+      ));
+      if (matchingJobs.length !== 1) continue;
+      const candidateStepMap = new Map(matchingJobs[0].steps.map(step => [step.name, step.conclusion]));
+      if (![
+        'Bind source main workflow run',
+        'Resolve seal, audit mode, and exact C3 run when required',
+        'Verify C3 pull-request artifact through GitHub API',
+        'Verify merged main artifact through GitHub API',
+        'Upload external artifact audit results',
+      ].every(stepName => candidateStepMap.get(stepName) === 'success')) continue;
+      verified.push({
+        runId: exactRun.id,
+        runAttempt: exactRun.run_attempt,
+        jobId: matchingJobs[0].id,
+        headSha: exactRun.head_sha,
+        completedAt: matchingJobs[0].completed_at,
+      });
+    }
   }
   assert(verified.length >= 1, 'future-main requires an earlier provider-bound successful initial seal audit for the exact seal merge');
+  verified.sort((left, right) => left.runId - right.runId || left.runAttempt - right.runAttempt);
   [initialExternalAudit] = verified;
 }
 
-const jobsPayload = await githubApi(`/actions/runs/${runId}/attempts/${attempt}/jobs?per_page=100`);
-const jobs = jobsPayload.jobs.filter(candidate => candidate.name === 'vertical-tower-qa');
+const jobsPayload = await githubPaginated(`/actions/runs/${runId}/attempts/${attempt}/jobs`, 'jobs');
+const jobs = jobsPayload.filter(candidate => candidate.name === 'vertical-tower-qa');
 assert.equal(jobs.length, 1, 'exactly one matched vertical-tower-qa job is required');
 const job = jobs[0];
 assert.equal(job.run_id, runId);
+assert.equal(job.run_attempt, attempt, 'job run attempt differs from the requested exact attempt');
 assert.equal(job.head_sha, run.head_sha);
 assert.equal(job.status, 'completed');
 assert.equal(job.conclusion, 'success');
@@ -282,8 +357,8 @@ assert.equal(
   'baseline checkout conclusion differs from role-specific expectation',
 );
 
-const artifactsPayload = await githubApi(`/actions/runs/${runId}/artifacts?per_page=100`);
-const artifacts = artifactsPayload.artifacts.filter(candidate => (
+const artifactsPayload = await githubPaginated(`/actions/runs/${runId}/artifacts`, 'artifacts');
+const artifacts = artifactsPayload.filter(candidate => (
   candidate.name === `cats-v082-step-1-recovery-evidence-attempt-${attempt}`
   && !candidate.expired
   && Date.parse(candidate.created_at) >= Date.parse(job.started_at)

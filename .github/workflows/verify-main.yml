@@ -147,7 +147,7 @@ jobs:
         id: step1
         run: |
           set -euo pipefail
-          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-006.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
@@ -385,7 +385,7 @@ jobs:
             exit 0
           fi
           AUTH=(-H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
-          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-006.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then

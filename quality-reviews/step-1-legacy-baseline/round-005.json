@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 5,
+  "reviewTargetCommit": "cfebec0c546478f8dc7a6af9476d795205e52002",
+  "reviewTargetParent": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+  "reviewTargetTree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+  "overallStatus": "FAIL",
+  "publishedTarget": {
+    "repository": "2hg7trp7rv-design/cats_tower",
+    "pullRequestNumber": 4,
+    "branch": "codex/restart-step-1-baseline",
+    "observedRemoteHead": "cfebec0c546478f8dc7a6af9476d795205e52002",
+    "observedAt": "2026-08-22T17:01:56Z",
+    "sourceBoundary": "Authenticated GitHub connector PR and workflow metadata; mutable pull_requests[] relationship fields are not historical authority."
+  },
+  "failedAcceptance": {
+    "path": "quality-reviews/step-1-legacy-baseline/acceptance-round-005.json",
+    "commit": "cfebec0c546478f8dc7a6af9476d795205e52002",
+    "blobSha1": "4542c9f40bb273f62c70b06a262732c8e6639710",
+    "sha256": "fd99d20bd74ebe0a6e1addc3ecd2c40df85e7825ed5e73c5747c27d14868f14c"
+  },
+  "successfulCiBeforeRejection": {
+    "runId": 32586052537,
+    "runNumber": 24,
+    "runAttempt": 1,
+    "workflowId": 335561992,
+    "workflowPath": ".github/workflows/verify-main.yml",
+    "jobId": 97062470626,
+    "jobName": "vertical-tower-qa",
+    "event": "pull_request",
+    "headBranch": "codex/restart-step-1-baseline",
+    "headSha": "cfebec0c546478f8dc7a6af9476d795205e52002",
+    "status": "completed",
+    "conclusion": "success",
+    "runStartedAt": "2026-08-22T16:53:06Z",
+    "runCompletedAt": "2026-08-22T16:59:27Z",
+    "jobLogFirstAt": "2026-08-22T16:53:10.8011920Z",
+    "jobLogLastAt": "2026-08-22T16:59:24.3516308Z",
+    "requiredStepsConclusion": "all-success",
+    "artifact": {
+      "id": 9479141640,
+      "name": "cats-v082-step-1-recovery-evidence-attempt-1",
+      "sizeBytes": 71604643,
+      "digest": "sha256:56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821",
+      "fileCount": 95,
+      "provenanceSha256": "ec7d987b60a0818998d282735c54e91b57700c823d8683e92cf88f0cf2316fa6",
+      "createdAt": "2026-08-22T16:59:23Z",
+      "expiresAt": "2026-09-21T16:59:20Z",
+      "expiredAtAudit": false
+    },
+    "authorityBoundary": "Run-level identity, exact provider-reported attempt, job steps, logs, artifact metadata, downloaded ZIP digest/size/file count, and provenance bytes were checked. CI success is an observation and does not override the later quality rejection."
+  },
+  "providerAttemptLedger": {
+    "auditedAt": "2026-08-22T17:01:56Z",
+    "providerLatestAttempt": 1,
+    "attempts": [
+      {
+        "runId": 32586052537,
+        "runAttempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "cfebec0c546478f8dc7a6af9476d795205e52002",
+        "jobId": 97062470626,
+        "jobConclusion": "success",
+        "artifactId": 9479141640,
+        "artifactDigest": "sha256:56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821"
+      }
+    ],
+    "mutableFieldsIgnored": [
+      "pull_requests[]"
+    ],
+    "boundary": "This is the complete provider-retained attempt ledger observed at the audit cutoff. Future reruns do not rewrite this historical observation."
+  },
+  "frozenWeakImplementation": {
+    "primaryWorkflow": {
+      "path": ".github/workflows/verify-main.yml",
+      "blobSha1": "afc95923bddd6209f19585d07a45c9d577dd06be",
+      "sha256": "79fc82787e9d1932ea8b73d6551858465742465fbcdddf1c426d27bb7718f8fb"
+    },
+    "externalAuditWorkflow": {
+      "path": ".github/workflows/verify-step-1-artifacts.yml",
+      "blobSha1": "8c22f711126b90ec04088510c622a19be7c1fa3c",
+      "sha256": "0bd843ec8ea4cd9b6b335f635bfe68de4da0aebca34264e71828dd710489c3b0"
+    },
+    "externalArtifactVerifier": {
+      "path": "tests/verify-ci-artifact.mjs",
+      "blobSha1": "0e91129ee55b6b8e2a054e088023ee5f9a7a1a66",
+      "sha256": "a08d53f8d2600e6ce2a039e8c59fbdc2fce6aea83d580211f8197d5b92da4eb5"
+    },
+    "baselineValidator": {
+      "path": "tests/verify-step-1-baseline.mjs",
+      "blobSha1": "08e4a5dc8cf8fbb1b9d78340cb5cbedf04b1b994",
+      "sha256": "e773045db8f86eacf432970c8905855420107888a848445d0c468e2d873093d8"
+    },
+    "defect": {
+      "listQueryFiltersLatestConclusion": "status=success",
+      "inspectedAttempts": "provider list record candidate.run_attempt only",
+      "exactJobRunAttemptRequired": false,
+      "consequence": "A later failed or cancelled rerun can hide an earlier successful initial external audit and incorrectly block a legitimate future main verification."
+    }
+  },
+  "counterexample": {
+    "fixture": {
+      "synthetic": true,
+      "purpose": "A later failed rerun must not hide an earlier successful exact-seal external audit attempt.",
+      "providerListRecord": {
+        "runId": 9001,
+        "runAttempt": 2,
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      "exactAttempts": [
+        {
+          "runAttempt": 1,
+          "runConclusion": "success",
+          "jobRunAttempt": 1,
+          "jobConclusion": "success",
+          "jobCompletedAt": "2030-01-01T00:05:00Z"
+        },
+        {
+          "runAttempt": 2,
+          "runConclusion": "failure",
+          "jobRunAttempt": 2,
+          "jobConclusion": "failure",
+          "jobCompletedAt": "2030-01-02T00:05:00Z"
+        }
+      ],
+      "currentPrimaryRunStartedAt": "2030-01-03T00:00:00Z",
+      "expected": {
+        "roundFiveLatestOnlyResult": "NO_QUALIFYING_ATTEMPT",
+        "roundSixAllAttemptsQualifyingAttempts": [
+          1
+        ]
+      }
+    },
+    "fixtureSha256": "57aa1cb518f382a7475587d3ad6cf46310206f8fc7f6d6e6e3d488327a26729d"
+  },
+  "postPublicationAudit": {
+    "performedAfterRemotePublication": true,
+    "exactHeadCiOutcomeKnownBeforeFinalRejection": true,
+    "confirmedAt": "2026-08-22T17:01:56Z",
+    "judgment": "FAIL",
+    "materialBlockers": [
+      "future-main filters the workflow-run list to the latest successful conclusion instead of enumerating every retained attempt",
+      "future-main inspects only candidate.run_attempt and does not bind the matched job to that exact attempt",
+      "a later failed or cancelled rerun can therefore erase discovery of an earlier successful initial audit and violate the promised durable future verification"
+    ],
+    "claimBoundary": "This rejects the future-main evidence-discovery durability design. It does not negate the observed V0.8.2 runtime-byte CI results and does not authorize Step 1A completion."
+  },
+  "rebuildDecision": {
+    "preservePublishedC1": true,
+    "forceRewriteForbidden": true,
+    "nextRound": 6,
+    "nextAcceptance": "acceptance-round-006.json",
+    "nextC1MustBeDirectChildOf": "cfebec0c546478f8dc7a6af9476d795205e52002",
+    "requiredChanges": [
+      "remove latest-conclusion status filtering from initial external-audit discovery",
+      "enumerate attempt 1 through the provider-reported latest attempt using exact-attempt run and job APIs",
+      "bind every qualifying job to run_id, run_attempt, head_sha, interval, conclusion, and all five required verification steps",
+      "fail closed when the provider no longer retains the required run or job record",
+      "move the active seal and all reviewer paths to Round 6 without changing Acceptance Round 5"
+    ]
+  }
+}
