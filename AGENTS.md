@@ -2,16 +2,21 @@
 
 このファイルはリポジトリ全体に適用する。会話履歴や古いversion名だけで判断せず、正本仕様、GitHub、Vercel、runtime、QA証拠を分離して確認する。
 
+## 完成判定の絶対規則
+
+すべての成果物は`QUALITY_GATE.md`の①期待定義→②制作→③実物自己検収→④反証・完成判定を通す。作成、build、テスト、deploymentの成功だけでは完成にしない。G1〜G5の一つでも不合格なら、ユーザーへ完成報告せず`IN_PROGRESS`へ戻して期待定義から再構成する。通常の欠陥確認をユーザーへ検品として戻さない。
+
 ## 作業開始時の必読順
 
 1. `MASTER_SPEC.md`
-2. `AGENTS.md`
-3. `PROJECT_STATUS.json`
-4. `PROJECT_HANDOVER.md`
-5. `README.md`
-6. 現在の`git status`と`git diff`
-7. GitHub `main`
-8. 固定Vercel Production
+2. `QUALITY_GATE.md`
+3. `AGENTS.md`
+4. `PROJECT_STATUS.json`
+5. `PROJECT_HANDOVER.md`
+6. `README.md`
+7. 現在の`git status`と`git diff`
+8. GitHub `main`
+9. 固定Vercel Production
 
 仕様が競合した場合は`MASTER_SPEC.md`を優先し、矛盾を残したまま実装しない。
 
@@ -20,7 +25,8 @@
 2026-08-22時点:
 
 - 100F最終方針: 承認済み
-- 準備工程: 3/10「1〜10F完全設計」PASS。次は4/10「9画面の完成見本」
+- 準備工程: 新しい完成判定で工程1から再開。工程1は`IN_PROGRESS`
+- 工程2・3: 旧成果物は保持するが`PENDING_REVALIDATION`
 - コード修正: 未開始
 - 現行公開版: V0.8.2 legacy baseline
 - 保存点: `main@727b8d00c281e7539117da5ded7309ea01c7e516`

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "title": "V0.8.2 source and runtime recovery baseline",
+  "fixedBeforeReconstruction": true,
+  "scope": [
+    "recover the exact V0.8.2 source and runtime from GitHub",
+    "distinguish the historical baseline deployment from the current Production deployment",
+    "prove current Production runtime bytes still equal the baseline",
+    "prove the recovered runtime boots and completes its existing 1F-through-10F loop",
+    "prove schema-2 reload, future-schema non-overwrite, service-worker cache replacement, and offline shell startup",
+    "record known defects without silently improving the baseline"
+  ],
+  "outOfScope": [
+    {
+      "item": "V0.8.2 product quality or 100-floor Production Ready",
+      "reason": "Step 1 preserves a legacy comparison and recovery point; it does not approve the legacy game as the target product."
+    },
+    {
+      "item": "recovery of deleted or corrupted real-user localStorage",
+      "reason": "V0.8.2 has no server backup or export. The baseline can preserve compatibility but cannot recreate data that no longer exists."
+    },
+    {
+      "item": "physical-iPhone standalone PWA approval",
+      "reason": "That remains mandatory for the later product QA gate. Step 1 must not relabel emulator evidence as physical-device evidence."
+    }
+  ],
+  "requirements": [
+    { "id": "S1", "gate": "G1", "condition": "Baseline commit and tree exist and contain every blob without LFS or submodules." },
+    { "id": "S2", "gate": "G1", "condition": "A second remote archive ref points to the exact baseline commit; local-only refs are insufficient." },
+    { "id": "S3", "gate": "G2", "condition": "A complete runtime manifest records source path, served path, byte size, MIME type, and SHA-256." },
+    { "id": "D1", "gate": "G2", "condition": "The historical baseline Vercel deployment is READY and its metadata commit is the baseline commit." },
+    { "id": "D2", "gate": "G1", "condition": "Current Production alias deployment and historical baseline deployment are recorded separately." },
+    { "id": "D3", "gate": "G2", "condition": "Every manifest entry served by the fixed Production URL equals the baseline source bytes." },
+    { "id": "R1", "gate": "G5", "condition": "A clean recovered runtime passes the existing 1F-through-10F deterministic browser loop at 390x844 and 375x667." },
+    { "id": "R2", "gate": "G5", "condition": "Service Worker enabled tests pass online install, controller acquisition, obsolete cache removal, and offline shell restart." },
+    { "id": "V1", "gate": "G5", "condition": "Schema-2 progress reloads and a future-schema save remains byte-for-byte unmodified." },
+    { "id": "V2", "gate": "G3", "condition": "Known save limits, especially non-persistence of the live combat roster, are stated as defects rather than hidden." },
+    { "id": "Q1", "gate": "G4", "condition": "At least three independent audits search for reasons to reject the baseline and the final judge resolves every material finding." },
+    { "id": "Q2", "gate": "G4", "condition": "No game runtime file is changed by the Step 1 redo." }
+  ],
+  "automaticFailureConditions": [
+    "a local test passes but the remote recovery ref is absent",
+    "Vercel READY is used as the only completion evidence",
+    "the current Production deployment commit is falsely reported as the historical baseline commit",
+    "only source code or hashes are checked without running the recovered artifact",
+    "service workers are blocked in every browser run",
+    "future-schema or existing-save preservation is not tested",
+    "physical iPhone or real-user save recovery is claimed without evidence",
+    "a gameplay, style, asset, manifest, or service-worker file changes during this archival step"
+  ],
+  "comparisonAxes": [
+    "source recoverability",
+    "runtime identity",
+    "deployment identity",
+    "normal-flow reproducibility",
+    "save compatibility",
+    "offline recovery",
+    "claim accuracy"
+  ]
+}

@@ -4,8 +4,9 @@
   "project": "Cat's Tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
-  "documentationBranch": "codex/floors-1-10-design",
+  "documentationBranch": "codex/restart-step-1-baseline",
   "productSourceOfTruth": "MASTER_SPEC.md",
+  "completionQualityGate": "QUALITY_GATE.md",
   "projectStage": "preproduction",
   "codeChangesStarted": false,
   "firstTenPreviewReady": false,
@@ -15,17 +16,17 @@
     {
       "order": 1,
       "name": "legacy-baseline-save-point",
-      "status": "PASS"
+      "status": "IN_PROGRESS"
     },
     {
       "order": 2,
       "name": "100f-master-specification",
-      "status": "PASS"
+      "status": "PENDING_REVALIDATION"
     },
     {
       "order": 3,
       "name": "floors-1-through-10-complete-design",
-      "status": "PASS"
+      "status": "PENDING_REVALIDATION"
     },
     {
       "order": 4,
@@ -436,10 +437,11 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "create-nine-screen-final-mockups-without-changing-gameplay-code",
+  "nextAction": "reconstruct-and-independently-verify-step-1-legacy-baseline-without-changing-runtime",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",
+    "PENDING_REVALIDATION",
     "IN_PROGRESS",
     "BLOCKED",
     "PASS"
