@@ -70,13 +70,40 @@
     "commit": "727b8d00c281e7539117da5ded7309ea01c7e516",
     "commitUrl": "https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516",
     "localAnnotatedTag": "v0.8.2-legacy-baseline",
+    "remoteArchiveBranch": "archive/v0.8.2-legacy-baseline",
+    "remoteArchiveBranchCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "remoteArchiveBranchProtected": false,
+    "selfContainedRuntimeSnapshot": ".github/baselines/v0.8.2",
+    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-002.json",
     "remoteTagPublished": false,
-    "remoteTagBlocker": "git-https-credentials-unavailable-and-connected-github-api-has-no-tag-ref-write",
-    "vercelDeploymentId": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
-    "vercelDeploymentState": "READY",
-    "vercelRuntimeCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "remoteTagBlocker": "connected-github-capability-has-no-tag-ref-or-release-write",
+    "historicalDeployment": {
+      "id": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
+      "state": "READY",
+      "githubCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+      "isCurrentFixedAliasTarget": false
+    },
+    "currentProductionAtAudit": {
+      "id": "dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az",
+      "state": "READY",
+      "githubCommit": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+      "runtimeBytesEqualBaseline": true
+    },
+    "freshRecoveryPreview": {
+      "id": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
+      "url": "https://catstower-r2xy45s33-shinyaaas-projects.vercel.app/",
+      "commit": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
+      "treeEqualsBaseline": true,
+      "state": "READY",
+      "runtimeEntriesExact": 15,
+      "htmlEntriesPreviewToolbarNormalized": 2,
+      "runtimeEntriesFailed": 0
+    },
     "fixedUrlHttpStatus": 200,
-    "role": "comparison-and-recovery-baseline-not-the-100f-target",
+    "role": "step-1a-source-runtime-byte-checkpoint-not-player-save-backup-and-not-the-100f-target",
+    "sourceRuntimeCheckpoint": "IN_PROGRESS",
+    "playerSaveBackup": "UNAVAILABLE_IN_V082",
+    "physicalIPhoneStandalonePwaApproval": "NOT_VERIFIED",
     "productionReady": false
   },
   "approvedRequirements": {
@@ -407,11 +434,15 @@
     "unknownProvenanceAssetsAllowedInProduction": false
   },
   "legacyV082Verification": {
-    "chromium390x844": "passed-at-baseline-only",
-    "chromium375x667": "passed-at-baseline-only",
+    "chromium390x844": "passed-in-step-1-reconstruction",
+    "chromium375x667": "passed-in-step-1-reconstruction",
     "webkit390x844": "not-run",
     "webkit375x667": "not-run",
-    "normalMotionVideo": "not-run",
+    "normalMotionUiFlow": "passed-in-chromium-emulation",
+    "serviceWorkerOnlineOffline": "passed-in-chromium-emulation",
+    "cachedResponseSha256": "15-of-15-core-cache-entries-passed",
+    "futureSchemaRawNonOverwrite": "passed",
+    "midCombatRosterNonPersistence": "reproduced-and-documented",
     "physicalIPhone": "not-verified",
     "chatGptInAppBrowser": "not-verified",
     "pwaStandaloneAndUpdate": "not-verified",
@@ -437,7 +468,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "reconstruct-and-independently-verify-step-1-legacy-baseline-without-changing-runtime",
+  "nextAction": "publish-step-1-evidence-branch-run-chromium-and-webkit-ci-and-rejudge",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "baselineCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "baselineTree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+  "scope": "Self-contained execution-critical V0.8.2 runtime snapshot and its original verification inputs.",
+  "files": [
+    { "path": "runtime/index.html", "baselinePath": "index.html", "sha256": "200459f026103a1281a5a61d1ede465ce5ddc2de1c503d31f0c6ceb0ae2a5a60" },
+    { "path": "runtime/styles.css", "baselinePath": "styles.css", "sha256": "cd7eb0d490a92cfc268d69135848c0e2c5c84f15b6e58a132ca307b1a1eaf109" },
+    { "path": "runtime/game-data.js", "baselinePath": "game-data.js", "sha256": "e7f09664a5db84e6ee08923860e047ed2d2619ad2655b38e55db2dea33236b84" },
+    { "path": "runtime/game-core.js", "baselinePath": "game-core.js", "sha256": "3628e3dff09ab50f6330e4216d00189c8cf7bfe0a231d4fe2d21a4260dec0792" },
+    { "path": "runtime/app.js", "baselinePath": "app.js", "sha256": "d83da12c1457222f493393f4eb07a963636d35e7b89121ccf88ceb399d16db0d" },
+    { "path": "runtime/sw.js", "baselinePath": "sw.js", "sha256": "a96d74ee28e85b6682fc5c781c9834c18eed894783e2786d97db412c39982945" },
+    { "path": "runtime/manifest.webmanifest", "baselinePath": "manifest.webmanifest", "sha256": "548f4e7b3f5b5d1edd7e474b04def4d5a6e23ca9105e5abf710c2e3e2dc23e31" },
+    { "path": "runtime/assets/v080/pixel-r2/tower-night-r2.png", "baselinePath": "assets/v080/pixel-r2/tower-night-r2.png", "sha256": "c7d79513957f6b6628d13b967c0bf10e1b88724fc8b7c69a01ed364e253e5dfa" },
+    { "path": "runtime/assets/v080/pixel-r2/mugi-sprites-r2.png", "baselinePath": "assets/v080/pixel-r2/mugi-sprites-r2.png", "sha256": "6c9b6069b8a60e56540b3881a3bcab2c69cb0d60c718547f2687ac434d94cacb" },
+    { "path": "runtime/assets/v080/pixel-r2/crow-sprites-r2.png", "baselinePath": "assets/v080/pixel-r2/crow-sprites-r2.png", "sha256": "7e27c35fc758a7ed8af3d04b2bfaac0fa080cb69fcfb3ca1ae4cd633e5ce12c0" },
+    { "path": "runtime/assets/v082/pixel-r3/cats-cast-r3.png", "baselinePath": "assets/v082/pixel-r3/cats-cast-r3.png", "sha256": "8f4d08a4f266402c80aeeeeed76a4d9bd521a74709ffe43d4fbf5c8839d1152f" },
+    { "path": "runtime/assets/v082/pixel-r3/enemies-r3.png", "baselinePath": "assets/v082/pixel-r3/enemies-r3.png", "sha256": "cb891076a68a8e2dc75490e19116a2d5f19100c68bcec5bba4126fa667a60ea0" },
+    { "path": "runtime/assets/fonts/noto-sans-jp-700-ja.woff2", "baselinePath": "assets/fonts/noto-sans-jp-700-ja.woff2", "sha256": "a5861823629995d9abb4b16b96a1c57139d9663d7a256209cb6b40640ed5431e" },
+    { "path": "runtime/assets/fonts/NotoSansJP-OFL.txt", "baselinePath": "assets/fonts/NotoSansJP-OFL.txt", "sha256": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3" },
+    { "path": "runtime/assets/icons/icon-192.png", "baselinePath": "assets/icons/icon-192.png", "sha256": "04c32037e12c1f0cd34338ae08b016f6735fdb87ed2f9f3a830d4340b807ecf1" },
+    { "path": "runtime/assets/icons/icon-512.png", "baselinePath": "assets/icons/icon-512.png", "sha256": "dde19042d8658459ad692beda126f13846a6f4ca5d90111f2ef0016902da5e56" },
+    { "path": "runtime/.vercelignore", "baselinePath": ".vercelignore", "sha256": "9e027818c51f6821322084b30260bf5c59db2e0e2cae85be27b481d56b497b0f" },
+    { "path": "runtime/vercel.json", "baselinePath": "vercel.json", "sha256": "0f76ad25f80d8fbce9d540ab4195bd2fdfd3cc51d24de330de3b3e6353d4e094" },
+    { "path": "verification/tests/living-tower-v080.mjs", "baselinePath": "tests/living-tower-v080.mjs", "sha256": "9a90ce3be8bec60eb6bb72d4e48dfc964f728475eefa1e9904f76315ce34d3c9" },
+    { "path": "verification/scripts/build_v080_art.py", "baselinePath": "scripts/build_v080_art.py", "sha256": "08622585b56e4ddeb74a68ee6f3cfdadc8ebe5c07a8f85fd11ad44c9dd6cdeaf" }
+  ]
+}

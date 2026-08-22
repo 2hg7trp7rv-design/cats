@@ -6,7 +6,7 @@ Repository: `2hg7trp7rv-design/cats_tower`
 
 Canonical branch: `main`
 
-文書作業branch: `codex/100f-master-spec`
+文書作業branch: `codex/restart-step-1-baseline`
 
 固定Vercel URL: <https://cats-tau-dusky.vercel.app/>
 
@@ -16,36 +16,44 @@ Canonical branch: `main`
 
 ただし、100F分の素材やデータを一括生成しない。最初に1〜10Fを完全な商品スライスとして作り、実移動、接敵、複数敵、ショップ選択、猫解放、塔スクロール、夜明け、保存、物理iPhone QAを合格させる。11F以降はその後に10F単位で制作する。
 
-今回の工程はコード修正ではない。`MASTER_SPEC.md`を正本として作り、旧10F文書との矛盾を除去する工程である。
+現在は新しい完成判定に従って工程1「現行版の保存点」からやり直している。source/runtime checkpointを再検証中で、ゲームruntimeの変更は0件である。工程2と工程3の旧成果物は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降はまだ開始しない。
 
 ## 2. 文書の権限
 
 仕様の優先順位:
 
 1. `MASTER_SPEC.md`
-2. `AGENTS.md`
-3. `PROJECT_STATUS.json`
-4. `PROJECT_HANDOVER.md`
-5. `README.md`
-6. コード、テスト、コメント
+2. `QUALITY_GATE.md`
+3. `AGENTS.md`
+4. `PROJECT_STATUS.json`
+5. `PROJECT_HANDOVER.md`
+6. `README.md`
+7. コード、テスト、コメント
 
 旧文書、現行コード、古いテストに「10F終了」「11F禁止」「3F食堂・5F共同部屋固定」「ショップ不要」と書かれていても、新製品仕様としては失効している。現行V0.8.2の挙動を説明する履歴としてのみ扱う。
 
-## 3. 現行版の保存点
+## 3. 工程1・現行版の保存点
 
-コード修正前の基準を次で固定した。
+V0.8.2をコード修正前の比較・復旧checkpoint候補として再検証している。GitHubの現在の`origin/main`、V0.8.2 baseline commit、履歴上のdeployment、現在の固定Productionは別々に扱う。
 
 | 項目 | 値 |
 |---|---|
-| 保存点commit | `727b8d00c281e7539117da5ded7309ea01c7e516` |
-| GitHub | <https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516> |
-| Vercel deployment | `dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1` |
-| 固定URL | <https://cats-tau-dusky.vercel.app/> |
-| deployment状態 | READY、HTTP 200を確認済み |
+| 工程1状態 | `IN_PROGRESS` — source/runtime checkpointを再検証中 |
+| 現在の`origin/main` | `76c49e9fca82a4c0f6922de8f93ea3b4e57289f6` |
+| baseline候補commit | `727b8d00c281e7539117da5ded7309ea01c7e516` |
+| baseline GitHub | <https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516> |
+| 履歴上のbaseline deployment | `dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1` / `727b8d0` / `READY` |
+| 現在の固定Production | `dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az` / `76c49e9` / `READY` |
+| 固定Production URL | <https://cats-tau-dusky.vercel.app/> |
+| runtime照合 | baseline候補と現在の固定Productionがbyte単位で一致 |
+| 工程1再構成によるゲームruntime変更 | 0件 |
+| fresh recovery Vercel Preview | `dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV` / baseline同一tree / `READY` |
+| 物理iPhone / ChatGPT内ブラウザ / standalone PWA | 未検証 |
+| player save backup | 利用不可。削除・回復不能に破損した実ユーザー`localStorage`は復元不可 |
 | 1〜10F Preview Ready | false |
 | 100F Product Production Ready | false |
 
-ローカルにはannotated tag `v0.8.2-legacy-baseline`を作成したが、git HTTPS資格情報がないためremote tagは未反映。復旧にはGitHub commit SHAを使用できるため、保存点自体は失われていない。
+remote archive branch `archive/v0.8.2-legacy-baseline`はbaseline候補commitを指す。ローカルannotated tag `v0.8.2-legacy-baseline`はあるがremote tagは未反映である。fresh recovery Previewでは非HTML 15経路が直接一致し、HTML 2経路はVercel Preview Toolbar注入行だけを除いて一致した。旧成果物は削除せず候補として残し、全CIと独立再審査が合格するまでは工程1を`PASS`としない。
 
 ## 4. 新しい製品定義
 
@@ -216,7 +224,7 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 
 正本矛盾、保存破損、P0・P1、性能予算超過、実機重大入力不良があれば新規制作を停止し、最後に合格したcommitへ基準を戻して根本原因を直す。
 
-工程状態は`NOT_STARTED`、`IN_PROGRESS`、`BLOCKED`、`PASS`のみ。「ほぼ完成」「実質完成」は使わない。
+工程状態は`NOT_STARTED`、`PENDING_REVALIDATION`、`IN_PROGRESS`、`BLOCKED`、`PASS`のみ。「ほぼ完成」「実質完成」は使わない。`PENDING_REVALIDATION`は旧成果物を削除せず、新しい完成判定で再評価する状態にだけ使う。
 
 ## 15. 現行V0.8.2の既知状態
 
@@ -250,17 +258,15 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 
 ## 16. 次に行うこと
 
-工程3「1〜10F完全設計」は[`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)で`PASS`となった。現在の次作業は工程4「9画面の完成見本」である。ゲーム本体コード修正ではない。
+工程1のsource/runtime checkpointを完成させる。作成済みのfresh recovery Vercel Previewを含め、GitHub archive ref、runtime manifest、通常導線、保存、Service Worker、offline復旧、既知の制限、固定Productionとのbyte一致をCIと独立監査で再確認する。物理iPhoneは未検証として分離し、確認済みと書かない。
 
-工程4では、1F初回戦闘、通常戦闘、100F塔閲覧、ショップ比較、店舗再配置、猫名簿、敗北診断、10Fボス、夜明けの9画面を390×844 CSS px基準で作る。通常・押下・使用不可・safe-area・スクロール位置を含め、320px幅と430px幅でも破綻しないことを完成見本で確認する。
-
-工程3で未確定のまま後工程へ送ったのは、最終HP、最終価格、最終DPS、細かな確率、精密クリア時間だけである。構造、役割、因果、表示要件は確定済み。
+工程1が新しい完成判定で`PASS`になるまで工程2へ進まない。工程2の`MASTER_SPEC.md`と工程3の`FLOORS_1_10_DESIGN.md`は削除せず候補として保持するが、現在の判定は`PENDING_REVALIDATION`である。工程4以降とゲーム本体コード修正は`NOT_STARTED`のままとする。
 
 ## 17. コード修正前の全順序
 
-1. 現行版の保存点 — `PASS`
-2. 100F正本仕様書 — `PASS`
-3. 1〜10F完全設計 — `PASS`
+1. 現行版の保存点 — `IN_PROGRESS`
+2. 100F正本仕様書 — `PENDING_REVALIDATION`
+3. 1〜10F完全設計 — `PENDING_REVALIDATION`
 4. 9画面の完成見本 — `NOT_STARTED`
 5. 動きの絵コンテ — `NOT_STARTED`
 6. アートバイブル — `NOT_STARTED`

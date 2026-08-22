@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-08-22",
+  "fixedProductionUrl": "https://cats-tau-dusky.vercel.app/",
+  "historicalBaselineDeployment": {
+    "id": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
+    "url": "https://catstower-987c02xo0-shinyaaas-projects.vercel.app/",
+    "state": "READY",
+    "target": "production",
+    "githubCommitSha": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "isCurrentFixedAliasTarget": false
+  },
+  "currentProductionDeploymentAtAudit": {
+    "id": "dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az",
+    "url": "https://catstower-3qxr1063n-shinyaaas-projects.vercel.app/",
+    "state": "READY",
+    "target": "production",
+    "githubCommitSha": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+    "isCurrentFixedAliasTarget": true,
+    "differenceFromBaseline": "Documentation-only commits; all runtime-manifest bytes are identical to the baseline."
+  },
+  "fixedUrlHttpStatus": 200,
+  "runtimeManifestMatchCount": 17,
+  "runtimeManifestMismatchCount": 0,
+  "freshRecoveryDrill": {
+    "branch": "codex/v082-recovery-drill",
+    "commit": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
+    "commitParent": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "tree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+    "treeEqualsBaseline": true,
+    "deploymentId": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
+    "url": "https://catstower-r2xy45s33-shinyaaas-projects.vercel.app/",
+    "state": "READY",
+    "target": "preview",
+    "runtimeEntriesExact": 15,
+    "htmlEntriesEqualAfterRemovingVercelPreviewToolbarInjection": 2,
+    "runtimeEntriesFailed": 0,
+    "previewDifference": "Vercel injects one deployment-specific vercel.live toolbar script into preview HTML. Removing only that platform-owned line produces the exact baseline index.html SHA-256; every non-HTML runtime entry matches directly.",
+    "build": {
+      "region": "cle1",
+      "machine": "4 cores, 8 GB",
+      "previousBuildCache": false,
+      "vercelCli": "59.3.0",
+      "framework": null,
+      "projectNodeVersion": "24.x",
+      "vercelIgnoreDetected": true,
+      "ignoredFileCount": 60,
+      "buildDurationMs": 43
+    }
+  },
+  "project": {
+    "id": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
+    "teamId": "team_6odZCZQ1QxjzhPdC9sgEtoCM",
+    "framework": null,
+    "nodeVersion": "24.x"
+  },
+  "identityRule": "Deployment identity and deployed runtime identity are separate facts. The current alias must not be described as pointing to the historical deployment."
+}

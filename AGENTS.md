@@ -29,7 +29,8 @@
 - 工程2・3: 旧成果物は保持するが`PENDING_REVALIDATION`
 - コード修正: 未開始
 - 現行公開版: V0.8.2 legacy baseline
-- 保存点: `main@727b8d00c281e7539117da5ded7309ea01c7e516`
+- 監査時の`origin/main`: `76c49e9fca82a4c0f6922de8f93ea3b4e57289f6`
+- V0.8.2 source/runtime保存点: `727b8d00c281e7539117da5ded7309ea01c7e516`
 - 保存点commit: <https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516>
 - 固定URL: <https://cats-tau-dusky.vercel.app/>
 - 1〜10F Preview Ready: false
@@ -208,7 +209,7 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 
 ## QAと停止条件
 
-工程状態は`NOT_STARTED`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使う。
+工程状態は`NOT_STARTED`、`PENDING_REVALIDATION`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使う。`PENDING_REVALIDATION`は旧成果物が残っているが、現在の完成Gateでは未判定であることを示す。
 
 次を見つけたら新規機能・階・素材の制作を止める。
 
@@ -238,16 +239,18 @@ Gate Cでは375×667、390×844、430×932をChromium / WebKitで確認し、物
 
 コード修正前に次を順番に完了する。
 
-1. 現行版の保存点 — 完了
-2. 100F正本仕様書 — PASS
-3. 1〜10F完全設計 — PASS（`FLOORS_1_10_DESIGN.md`）
-4. 9画面の完成見本
-5. 動きの絵コンテ
-6. アートバイブル
-7. 少数の試験素材
-8. 保存・100Fデータ設計
-9. QA合格表
-10. コード修正
+1. V0.8.2 source/runtime保存点 — `IN_PROGRESS`
+2. 100F正本仕様書 — `PENDING_REVALIDATION`
+3. 1〜10F完全設計 — `PENDING_REVALIDATION`（`FLOORS_1_10_DESIGN.md`）
+4. 9画面の完成見本 — `NOT_STARTED`（旧ワイヤーフレーム候補は不合格のまま保持）
+5. 動きの絵コンテ — `NOT_STARTED`
+6. アートバイブル — `NOT_STARTED`
+7. 少数の試験素材 — `NOT_STARTED`
+8. 保存・100Fデータ設計 — `NOT_STARTED`
+9. QA合格表 — `NOT_STARTED`
+10. コード修正 — `NOT_STARTED`
+
+工程1の合格対象は旧版source/runtimeのbyte checkpointである。V0.8.2に存在しない実ユーザーsaveの外部backupは`UNAVAILABLE_IN_V082`、物理iPhone standalone PWAは`NOT_VERIFIED`として分離し、工程1の成果へ含めたように表現しない。
 
 ## 戻してはいけないもの
 

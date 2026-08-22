@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "browserName": "chromium",
+  "targetUrl": "http://127.0.0.1:4179/",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "deviceScaleFactor": 1,
+  "qaMode": false,
+  "reducedMotion": false,
+  "serviceWorkers": "enabled",
+  "initial": {
+    "floor": "1F",
+    "enemy": "夜ガラス",
+    "enemyHp": "HP 21 / 21"
+  },
+  "active": {
+    "floor": "2F",
+    "enemy": "夜フクロウ",
+    "enemyHp": "HP 0 / 42",
+    "coins": "111",
+    "visibleCats": 5,
+    "gameVisible": true,
+    "titleHidden": true,
+    "serviceWorkerControlled": true
+  },
+  "reloaded": {
+    "floor": "2F",
+    "coins": "111",
+    "gameVisible": true
+  },
+  "screenshots": [
+    {
+      "name": "01-title.png",
+      "bytes": 473265,
+      "sha256": "13e0b7707aae07be0fc3d3420847e7864930b11130b190db3d5d99df37688ae3"
+    },
+    {
+      "name": "02-active-battle.png",
+      "bytes": 314809,
+      "sha256": "811190d7de35d2fef86ad04baec9b5f76c3cf22435b519565368fcf34c9357eb"
+    },
+    {
+      "name": "03-reloaded.png",
+      "bytes": 292969,
+      "sha256": "ffae74d3427c61c3edaf717916430fd66fd11d12e82d4fec3ea28a6a751adf99"
+    }
+  ],
+  "errors": [],
+  "failedRequests": []
+}

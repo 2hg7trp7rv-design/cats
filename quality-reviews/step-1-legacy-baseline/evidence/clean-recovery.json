@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-08-22",
+  "sourceRef": "refs/heads/archive/v0.8.2-legacy-baseline",
+  "sourceRefFetchedFromGitHub": true,
+  "sourceRefCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "checkoutMethod": "isolated git clone --no-local after fetching the exact GitHub archive ref; direct GitHub checkout is also required by the pull-request CI",
+  "checkoutHead": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "checkoutTree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+  "checkoutStatusPorcelain": "",
+  "validationKitLocation": "review branch, separate from the historical checkout",
+  "commandContract": "CATS_BASELINE_DIR=<clean-checkout> node tests/verify-step-1-baseline.mjs --remote",
+  "verifierResult": "PASS",
+  "remoteArchiveRefResult": "PASS",
+  "directGitHubCheckoutCiResult": "PENDING",
+  "browserFromCleanCheckoutCiResult": "PENDING",
+  "note": "The historical checkout intentionally does not contain the new validation kit. CI checks out the archive into a second path and runs the current kit against it."
+}

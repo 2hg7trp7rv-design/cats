@@ -1,0 +1,61 @@
+{
+  "passed": true,
+  "browserName": "chromium",
+  "targetUrl": "http://127.0.0.1:4182/",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "runtimeVersion": "0.8.2",
+  "gameplaySchema": 2,
+  "saveKey": "cats-tower-v080",
+  "cacheState": {
+    "cacheNames": [
+      "cats-tower-v082-pixel-tower-r3"
+    ],
+    "expectedName": "cats-tower-v082-pixel-tower-r3",
+    "paths": [
+      "/",
+      "/app.js",
+      "/assets/fonts/noto-sans-jp-700-ja.woff2",
+      "/assets/icons/icon-192.png",
+      "/assets/icons/icon-512.png",
+      "/assets/v080/pixel-r2/crow-sprites-r2.png",
+      "/assets/v080/pixel-r2/mugi-sprites-r2.png",
+      "/assets/v080/pixel-r2/tower-night-r2.png",
+      "/assets/v082/pixel-r3/cats-cast-r3.png",
+      "/assets/v082/pixel-r3/enemies-r3.png",
+      "/game-core.js",
+      "/game-data.js",
+      "/index.html",
+      "/manifest.webmanifest",
+      "/styles.css"
+    ],
+    "controlled": true
+  },
+  "schema2Reload": {
+    "currentFloor": 5,
+    "bestFloor": 5,
+    "coins": 4321,
+    "fish": 17
+  },
+  "midCombatKnownDefect": {
+    "durableFieldsPreserved": true,
+    "enemyHpBefore": 392.31738106600017,
+    "enemyHpAfter": 392.31738106600017,
+    "unitCountBefore": 6,
+    "unitCountAfter": 0
+  },
+  "cachedResponseHashesVerified": 15,
+  "futureSchemaPreserved": true,
+  "obsoleteCacheRemoved": true,
+  "offline": {
+    "title": "Cat's tower",
+    "version": "0.8.2",
+    "controlled": true,
+    "cacheNames": [
+      "cats-tower-v082-pixel-tower-r3"
+    ]
+  },
+  "errors": []
+}

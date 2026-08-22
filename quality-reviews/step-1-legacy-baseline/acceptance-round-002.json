@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "acceptanceRevision": 2,
+  "supersedes": "acceptance.json",
+  "revisionReason": "Round 1 and the first adversarial audit proved that a reachable commit and one browser test were not enough. This revision narrows the claim to a source/runtime byte checkpoint and adds independent recovery, fresh deployment, normal-flow, cache-body, evidence-integrity, and canonical-document requirements before Round 2 may pass.",
+  "scopeName": "Step 1A — V0.8.2 source/runtime byte checkpoint",
+  "scope": [
+    "recover the exact V0.8.2 source, deployment inputs, runtime assets, and license bytes",
+    "run the recovered runtime through deterministic and normal-player browser paths",
+    "prove a fresh Vercel build can be made from the exact baseline tree",
+    "record the historical deployment separately from the current fixed Production target",
+    "preserve raw, visual, repository, deployment, and browser evidence for later recalculation",
+    "document every legacy limitation without treating the baseline as the target product"
+  ],
+  "separateCapabilities": [
+    {
+      "id": "1B-player-save-continuity",
+      "status": "UNAVAILABLE_IN_V082",
+      "reason": "V0.8.2 stores data only in browser localStorage and has no export, server backup, or recovery source for deleted or irrecoverably corrupted user data. Step 1A must not claim otherwise."
+    },
+    {
+      "id": "physical-iphone-standalone-pwa",
+      "status": "NOT_VERIFIED",
+      "reason": "Emulated Chromium/WebKit evidence is not physical-device evidence. Physical iPhone approval remains mandatory at the later product QA gate."
+    },
+    {
+      "id": "production-alias-switch-drill",
+      "status": "NOT_EXECUTED_BY_DESIGN",
+      "reason": "The public Production runtime was healthy and byte-identical. A real alias switch is an externally visible operation and is not required to prove the source/runtime checkpoint; the promote and roll-forward runbook is documented instead."
+    }
+  ],
+  "requirements": [
+    { "id": "S1", "gate": "G1", "condition": "The baseline commit and tree resolve exactly, git fsck passes, and the baseline uses neither Git LFS nor submodules." },
+    { "id": "S2", "gate": "G1", "condition": "GitHub retains an archive branch at the exact baseline commit and the review branch contains a self-contained, SHA-256-bound runtime snapshot independent of that mutable archive ref." },
+    { "id": "S3", "gate": "G2", "condition": "The runtime manifest contains all 17 served execution/license paths and also binds .vercelignore and vercel.json." },
+    { "id": "S4", "gate": "G5", "condition": "A clean GitHub checkout of the archive branch passes the current independent verification kit through CATS_BASELINE_DIR." },
+    { "id": "D1", "gate": "G2", "condition": "The historical baseline Vercel deployment is READY and reports the baseline commit." },
+    { "id": "D2", "gate": "G1", "condition": "The historical deployment, current fixed Production deployment, and fresh recovery deployment are three separately named identities." },
+    { "id": "D3", "gate": "G2", "condition": "All 17 fixed-Production manifest paths have the expected status, MIME type, byte length, and SHA-256." },
+    { "id": "D4", "gate": "G5", "condition": "Vercel freshly builds a no-content commit whose tree is exactly the baseline tree; all 15 non-HTML entries match directly and both HTML paths match after removal of only the official Preview Toolbar injection." },
+    { "id": "R1", "gate": "G5", "condition": "The recovered runtime completes the existing 1F-through-10F deterministic loop at 390x844 and 375x667." },
+    { "id": "R2", "gate": "G5", "condition": "Without qa=1 and with normal motion, a player can start, enter real battle, and reload successfully at both mobile viewports." },
+    { "id": "R3", "gate": "G5", "condition": "With service workers enabled, the test verifies controller acquisition, every cached response body SHA-256, obsolete and synthetic future cache removal, and offline shell restart." },
+    { "id": "V1", "gate": "G5", "condition": "Schema-2 durable state reloads and the raw future-schema localStorage string remains byte-for-byte unmodified." },
+    { "id": "V2", "gate": "G3", "condition": "Mid-combat roster non-persistence, unavailable deleted-save recovery, and the physical-device evidence boundary are stated as limitations." },
+    { "id": "E1", "gate": "G4", "condition": "Every raw report and final-size visual has a stored artifact and a verifier-checked SHA-256." },
+    { "id": "Q1", "gate": "G4", "condition": "Three independent critics and a final judge re-audit the strengthened artifact after CI; every material finding is resolved or explicitly outside the narrowed scope." },
+    { "id": "Q2", "gate": "G4", "condition": "No original game runtime, asset, PWA, or deployment-input file changes during the Step 1 redo." },
+    { "id": "Q3", "gate": "G1", "condition": "README, AGENTS, MASTER_SPEC, FLOORS_1_10_DESIGN, PROJECT_HANDOVER, PROJECT_STATUS, and BASELINE_V082 agree on Step 1 and the revalidation state of later steps." },
+    { "id": "Q4", "gate": "G4", "condition": "The strengthened Acceptance is committed before the final review; Round 2 binds that commit and the verifier rejects later Acceptance edits." }
+  ],
+  "automaticFailureConditions": [
+    "Step 1 is described without the source/runtime scope qualifier",
+    "a mutable remote ref is the only retained copy",
+    "the recovery test depends on files that do not exist in the selected recovery checkout without explaining the separate validation kit",
+    "Vercel READY is used as the only deployment evidence",
+    "the current fixed alias is falsely described as the historical baseline deployment",
+    "a fresh build has a different Git tree from the baseline",
+    "normal UI or service-worker-enabled paths are absent",
+    "cache names are checked without hashing cached response bodies",
+    "future-schema preservation is tested only as parsed JSON rather than the raw stored string",
+    "raw reports or final-size visual evidence are missing",
+    "physical iPhone, player-save backup, or an actual Production alias switch is claimed without evidence",
+    "canonical status documents disagree",
+    "an original runtime or deployment-input byte changes",
+    "the final PASS changes or weakens this Acceptance after its committed checkpoint",
+    "any independent critic or final judge has an unresolved material blocker"
+  ],
+  "comparisonAxes": [
+    "source recoverability",
+    "runtime byte identity",
+    "clean-room usability",
+    "fresh deployment reproducibility",
+    "normal-player reproducibility",
+    "save compatibility boundaries",
+    "offline cache integrity",
+    "evidence recalculability",
+    "claim accuracy"
+  ]
+}

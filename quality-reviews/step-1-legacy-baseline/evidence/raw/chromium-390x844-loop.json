@@ -1,0 +1,760 @@
+{
+  "passed": true,
+  "browserName": "chromium",
+  "targetUrl": "http://127.0.0.1:4174/",
+  "version": "0.8.2",
+  "gameplaySchema": 2,
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 3,
+    "reducedMotion": "reduce"
+  },
+  "japaneseFont": {
+    "status": "loaded",
+    "checked": true,
+    "faceCount": 1,
+    "faceStatuses": [
+      "loaded"
+    ],
+    "bodyFamily": "CatsTowerJP, -apple-system, BlinkMacSystemFont, \"Hiragino Sans\", \"Yu Gothic\", sans-serif",
+    "fontHttpStatus": 200,
+    "fontByteLength": 1039792,
+    "fontSignature": "wOF2",
+    "customFingerprint": {
+      "ink": 7070,
+      "hash": 2081776926
+    },
+    "fallbackFingerprint": {
+      "ink": 4009,
+      "hash": 795470575
+    }
+  },
+  "v082Assets": [
+    {
+      "path": "/assets/v082/pixel-r3/cats-cast-r3.png",
+      "status": 200,
+      "bytes": 977730,
+      "width": 1448,
+      "height": 1086
+    },
+    {
+      "path": "/assets/v082/pixel-r3/enemies-r3.png",
+      "status": 200,
+      "bytes": 1012304,
+      "width": 1448,
+      "height": 1086
+    }
+  ],
+  "modalPause": {
+    "playTimeMs": 0,
+    "enemyDamage": 0,
+    "floorBefore": 1,
+    "floorAfter": 1
+  },
+  "rules": {
+    "wallFloor": 8,
+    "dawnUnlockFloor": 8,
+    "restaurantUnlockFloor": 3,
+    "roomUnlockFloor": 5,
+    "firstBossFloor": 10,
+    "floorVictoryHoldMs": 650,
+    "floorAscentMs": 1350,
+    "fixedStepMs": 100
+  },
+  "recoveryRosterContract": {
+    "queuedKinds": [
+      "mugi",
+      "luna",
+      "toto",
+      "helper-tabby",
+      "helper-calico"
+    ],
+    "waitingCounts": {
+      "mugi": 1,
+      "luna": 1,
+      "toto": 1,
+      "helper-tabby": 1,
+      "helper-gray": 0,
+      "helper-calico": 1
+    },
+    "waitingUnitCount": 5,
+    "recoveredCounts": {
+      "mugi": 1,
+      "luna": 1,
+      "toto": 1,
+      "helper-tabby": 1,
+      "helper-gray": 1,
+      "helper-calico": 1
+    },
+    "recoveredUnitCount": 6,
+    "recoveryCount": 0,
+    "totalUnitsRecovered": 1
+  },
+  "roleTargetContract": {
+    "withFrontline": {
+      "kind": "mugi",
+      "role": "frontline"
+    },
+    "withoutFrontline": {
+      "kind": "toto",
+      "role": "support"
+    }
+  },
+  "loop": {
+    "autoDispatches": 1,
+    "tapDispatches": 1,
+    "tapDirectDamage": 0,
+    "rally": {
+      "directDamage": 0,
+      "durationMs": 6000,
+      "unitCount": 6,
+      "namedKinds": [
+        "luna",
+        "mugi",
+        "toto"
+      ],
+      "castVisual": {
+        "count": 5,
+        "characters": [
+          "luna",
+          "toto",
+          "helper",
+          "helper",
+          "helper"
+        ],
+        "backgrounds": [
+          "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/cats-cast-r3.png\")"
+        ]
+      },
+      "helperHueVisual": {
+        "helper-tabby": "42deg",
+        "helper-gray": "84deg",
+        "helper-calico": "0deg"
+      },
+      "rallyHelperFilters": {
+        "helper-tabby": "hue-rotate(42deg) saturate(0.92) brightness(1.16) drop-shadow(rgba(18, 11, 8, 0.72) 0px 4px 2px) drop-shadow(rgb(216, 239, 120) 0px 0px 7px)",
+        "helper-gray": "hue-rotate(84deg) saturate(0.92) brightness(1.16) drop-shadow(rgba(18, 11, 8, 0.72) 0px 4px 2px) drop-shadow(rgb(216, 239, 120) 0px 0px 7px)",
+        "helper-calico": "hue-rotate(0deg) saturate(0.92) brightness(1.16) drop-shadow(rgba(18, 11, 8, 0.72) 0px 4px 2px) drop-shadow(rgb(216, 239, 120) 0px 0px 7px)"
+      },
+      "partyGeometry": {
+        "cats": [
+          {
+            "kind": "helper-calico",
+            "frame": "attack",
+            "footRatio": 0.8038674033149171,
+            "foot": 558.5921286904351,
+            "visible": {
+              "left": 30.145977209944753,
+              "top": 526.7458752373964,
+              "right": 71.22902279005524,
+              "bottom": 559.832891811982
+            }
+          },
+          {
+            "kind": "toto",
+            "frame": "attack",
+            "footRatio": 0.8149171270718232,
+            "foot": 558.594834891472,
+            "visible": {
+              "left": 74.4193283839779,
+              "top": 514.004602168805,
+              "right": 124.4556716160221,
+              "bottom": 564.2111619137927
+            }
+          },
+          {
+            "kind": "helper-gray",
+            "frame": "attack",
+            "footRatio": 0.8038674033149171,
+            "foot": 558.5921286904351,
+            "visible": {
+              "left": 127.64597720994475,
+              "top": 526.7458752373964,
+              "right": 168.72902279005524,
+              "bottom": 559.832891811982
+            }
+          },
+          {
+            "kind": "luna",
+            "frame": "attack",
+            "footRatio": 0.8895027624309392,
+            "foot": 558.5939179309823,
+            "visible": {
+              "left": 171.7273825966851,
+              "top": 515.6866320193802,
+              "right": 222.1476174033149,
+              "bottom": 558.5939179309823
+            }
+          },
+          {
+            "kind": "helper-tabby",
+            "frame": "attack",
+            "footRatio": 0.8038674033149171,
+            "foot": 558.5921286904351,
+            "visible": {
+              "left": 225.14597720994476,
+              "top": 526.7458752373964,
+              "right": 266.22902279005524,
+              "bottom": 559.832891811982
+            }
+          },
+          {
+            "kind": "mugi",
+            "frame": "attack",
+            "footRatio": 0.8024861878453039,
+            "foot": 558.5926419252849,
+            "visible": {
+              "left": 270.078125,
+              "top": 506.2836381269423,
+              "right": 330.515625,
+              "bottom": 558.5926419252849
+            }
+          }
+        ],
+        "footSpread": 0.0027062010369718337,
+        "groundRatio": 0.8799847299073309,
+        "minimumGap": 2.99835980662985,
+        "contained": true
+      },
+      "alignmentPhaseMatrix": {
+        "cats": [
+          {
+            "kind": "mugi",
+            "phase": "idle",
+            "bodyFoot": 558.592132399754,
+            "gap": 0.007242600246058828
+          },
+          {
+            "kind": "mugi",
+            "phase": "moving",
+            "bodyFoot": 558.5926419252849,
+            "gap": 0.006733074715157272
+          },
+          {
+            "kind": "mugi",
+            "phase": "attacking",
+            "bodyFoot": 558.5926419252849,
+            "gap": 0.006733074715157272
+          },
+          {
+            "kind": "mugi",
+            "phase": "celebrating",
+            "bodyFoot": 558.5926419252849,
+            "gap": 0.006733074715157272
+          },
+          {
+            "kind": "luna",
+            "phase": "idle",
+            "bodyFoot": 558.5947026205326,
+            "gap": 0.004672379467365317
+          },
+          {
+            "kind": "luna",
+            "phase": "moving",
+            "bodyFoot": 558.5939179309823,
+            "gap": 0.005457069017666072
+          },
+          {
+            "kind": "luna",
+            "phase": "attacking",
+            "bodyFoot": 558.5939179309823,
+            "gap": 0.005457069017666072
+          },
+          {
+            "kind": "luna",
+            "phase": "celebrating",
+            "bodyFoot": 558.5939179309823,
+            "gap": 0.005457069017666072
+          },
+          {
+            "kind": "toto",
+            "phase": "idle",
+            "bodyFoot": 558.5956122466872,
+            "gap": 0.00376275331279885
+          },
+          {
+            "kind": "toto",
+            "phase": "moving",
+            "bodyFoot": 558.594834891472,
+            "gap": 0.004540108527976372
+          },
+          {
+            "kind": "toto",
+            "phase": "attacking",
+            "bodyFoot": 558.594834891472,
+            "gap": 0.004540108527976372
+          },
+          {
+            "kind": "toto",
+            "phase": "celebrating",
+            "bodyFoot": 558.5909696968879,
+            "gap": 0.00840530311211296
+          },
+          {
+            "kind": "helper-tabby",
+            "phase": "idle",
+            "bodyFoot": 558.5939708730792,
+            "gap": 0.005404126920780072
+          },
+          {
+            "kind": "helper-tabby",
+            "phase": "moving",
+            "bodyFoot": 558.5921239694837,
+            "gap": 0.007251030516272294
+          },
+          {
+            "kind": "helper-tabby",
+            "phase": "attacking",
+            "bodyFoot": 558.5921286904351,
+            "gap": 0.007246309564948206
+          },
+          {
+            "kind": "helper-tabby",
+            "phase": "celebrating",
+            "bodyFoot": 558.5952209135445,
+            "gap": 0.004154086455514516
+          },
+          {
+            "kind": "helper-gray",
+            "phase": "idle",
+            "bodyFoot": 558.5939708730792,
+            "gap": 0.005404126920780072
+          },
+          {
+            "kind": "helper-gray",
+            "phase": "moving",
+            "bodyFoot": 558.5921239694837,
+            "gap": 0.007251030516272294
+          },
+          {
+            "kind": "helper-gray",
+            "phase": "attacking",
+            "bodyFoot": 558.5921286904351,
+            "gap": 0.007246309564948206
+          },
+          {
+            "kind": "helper-gray",
+            "phase": "celebrating",
+            "bodyFoot": 558.5952209135445,
+            "gap": 0.004154086455514516
+          },
+          {
+            "kind": "helper-calico",
+            "phase": "idle",
+            "bodyFoot": 558.5939708730792,
+            "gap": 0.005404126920780072
+          },
+          {
+            "kind": "helper-calico",
+            "phase": "moving",
+            "bodyFoot": 558.5921239694837,
+            "gap": 0.007251030516272294
+          },
+          {
+            "kind": "helper-calico",
+            "phase": "attacking",
+            "bodyFoot": 558.5921286904351,
+            "gap": 0.007246309564948206
+          },
+          {
+            "kind": "helper-calico",
+            "phase": "celebrating",
+            "bodyFoot": 558.5952209135445,
+            "gap": 0.004154086455514516
+          }
+        ],
+        "enemies": [
+          {
+            "enemy": "crow",
+            "phase": "idle",
+            "expectedHover": 6,
+            "bodyFoot": 552.5995250818022,
+            "hoverGap": 5.99984991819781
+          },
+          {
+            "enemy": "crow",
+            "phase": "moving",
+            "expectedHover": 6,
+            "bodyFoot": 552.5995250818022,
+            "hoverGap": 5.99984991819781
+          },
+          {
+            "enemy": "crow",
+            "phase": "attacking",
+            "expectedHover": 6,
+            "bodyFoot": 552.5892375270839,
+            "hoverGap": 6.010137472916085
+          },
+          {
+            "enemy": "crow",
+            "phase": "defeated",
+            "expectedHover": 6,
+            "bodyFoot": 552.5962556067018,
+            "hoverGap": 6.0031193932982205
+          },
+          {
+            "enemy": "owl",
+            "phase": "idle",
+            "expectedHover": 6,
+            "bodyFoot": 552.5898744361835,
+            "hoverGap": 6.009500563816459
+          },
+          {
+            "enemy": "owl",
+            "phase": "moving",
+            "expectedHover": 6,
+            "bodyFoot": 552.5930688341679,
+            "hoverGap": 6.006306165832143
+          },
+          {
+            "enemy": "owl",
+            "phase": "attacking",
+            "expectedHover": 6,
+            "bodyFoot": 552.5960612428781,
+            "hoverGap": 6.003313757121873
+          },
+          {
+            "enemy": "owl",
+            "phase": "defeated",
+            "expectedHover": 6,
+            "bodyFoot": 552.5919836897876,
+            "hoverGap": 6.00739131021237
+          },
+          {
+            "enemy": "black-feather-barrier",
+            "phase": "idle",
+            "expectedHover": 4,
+            "bodyFoot": 554.598060228548,
+            "hoverGap": 4.00131477145203
+          },
+          {
+            "enemy": "black-feather-barrier",
+            "phase": "moving",
+            "expectedHover": 4,
+            "bodyFoot": 554.598060228548,
+            "hoverGap": 4.00131477145203
+          },
+          {
+            "enemy": "black-feather-barrier",
+            "phase": "attacking",
+            "expectedHover": 4,
+            "bodyFoot": 554.598060228548,
+            "hoverGap": 4.00131477145203
+          },
+          {
+            "enemy": "black-feather-barrier",
+            "phase": "defeated",
+            "expectedHover": 4,
+            "bodyFoot": 554.598060228548,
+            "hoverGap": 4.00131477145203
+          },
+          {
+            "enemy": "boss",
+            "phase": "idle",
+            "expectedHover": 6,
+            "bodyFoot": 552.5885535814485,
+            "hoverGap": 6.010821418551473
+          },
+          {
+            "enemy": "boss",
+            "phase": "moving",
+            "expectedHover": 6,
+            "bodyFoot": 552.5957950992479,
+            "hoverGap": 6.003579900752129
+          },
+          {
+            "enemy": "boss",
+            "phase": "attacking",
+            "expectedHover": 6,
+            "bodyFoot": 552.5913716521711,
+            "hoverGap": 6.00800334782889
+          },
+          {
+            "enemy": "boss",
+            "phase": "defeated",
+            "expectedHover": 6,
+            "bodyFoot": 552.5885535814485,
+            "hoverGap": 6.010821418551473
+          }
+        ],
+        "maximumCatGroundError": 0.00840530311211296,
+        "maximumEnemyHoverError": 0.010821418551472561
+      }
+    },
+    "firstKillReward": 15,
+    "upgrade": {
+      "levelBefore": 1,
+      "levelAfter": 2,
+      "dpsBefore": 5.777777777777778,
+      "dpsAfter": 7.222222222222222
+    },
+    "wall": {
+      "floor": 8,
+      "heldMs": 12000,
+      "visual": {
+        "enemy": "black-feather-barrier",
+        "character": "barrier",
+        "spriteBackground": "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/enemies-r3.png\")"
+      },
+      "ground": {
+        "enemy": "black-feather-barrier",
+        "phase": "attacking",
+        "footRatio": 0.8646408839779005,
+        "ground": 558.599375,
+        "visibleFoot": 554.598060228548,
+        "hoverGap": 4.00131477145203
+      }
+    },
+    "dawn": {
+      "bestFloorBefore": 8,
+      "bestFloorAfter": 8,
+      "shardsBefore": 0,
+      "shardsAfter": 1
+    },
+    "replay": {
+      "baselineMs": 126900,
+      "replayMs": 77100,
+      "speedupRatio": 0.607565011820331
+    },
+    "firstEnemy": {
+      "ground": {
+        "enemy": "crow",
+        "phase": "moving",
+        "footRatio": 0.6640360766629086,
+        "ground": 558.599375,
+        "visibleFoot": 552.5995250818022,
+        "hoverGap": 5.99984991819781
+      }
+    },
+    "normalEnemy": {
+      "enemy": "owl",
+      "character": "owl",
+      "spriteBackground": "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/enemies-r3.png\")",
+      "ground": {
+        "enemy": "owl",
+        "phase": "moving",
+        "footRatio": 0.8314917127071824,
+        "ground": 558.599375,
+        "visibleFoot": 552.5930688341679,
+        "hoverGap": 6.006306165832143
+      }
+    },
+    "firstNightBoss": {
+      "enemy": "boss",
+      "character": "boss",
+      "phase": "moving",
+      "opacity": 1,
+      "width": 113.09375,
+      "height": 113.09371948242188,
+      "intersectsViewport": true,
+      "spriteBackground": "url(\"http://127.0.0.1:4174/assets/v082/pixel-r3/enemies-r3.png\")",
+      "ground": {
+        "enemy": "boss",
+        "phase": "moving",
+        "footRatio": 0.7707182320441989,
+        "ground": 558.599375,
+        "visibleFoot": 552.5957950992479,
+        "hoverGap": 6.003579900752129
+      },
+      "entryFormation": {
+        "count": 6,
+        "kinds": [
+          "helper-calico",
+          "toto",
+          "helper-gray",
+          "luna",
+          "helper-tabby",
+          "mugi"
+        ],
+        "phases": [
+          "moving"
+        ],
+        "minimumGap": 2.99835980662985,
+        "contained": true
+      },
+      "entryFormationSweep": {
+        "samples": 12,
+        "minimumGap": 2.99835980662985,
+        "allContained": true
+      }
+    },
+    "completedImmediateRoster": {
+      "unitCount": 6,
+      "kinds": [
+        "toto",
+        "helper-gray",
+        "helper-calico",
+        "luna",
+        "mugi",
+        "helper-tabby"
+      ],
+      "recoveryCount": 0,
+      "geometry": {
+        "count": 6,
+        "kinds": [
+          "helper-calico",
+          "toto",
+          "helper-gray",
+          "luna",
+          "helper-tabby",
+          "mugi"
+        ],
+        "phases": [
+          "celebrating"
+        ],
+        "minimumGap": 2.99835980662985,
+        "contained": true
+      }
+    },
+    "firstNightCleared": true,
+    "firstNightCompleted": true,
+    "completedFloor": 10
+  },
+  "save": {
+    "newSchemaReload": true,
+    "completedReloadRuntime": {
+      "unitCount": 6,
+      "kinds": [
+        "helper-calico",
+        "toto",
+        "helper-gray",
+        "luna",
+        "helper-tabby",
+        "mugi"
+      ],
+      "phases": [
+        "celebrating"
+      ],
+      "geometry": {
+        "count": 6,
+        "kinds": [
+          "helper-calico",
+          "toto",
+          "helper-gray",
+          "luna",
+          "helper-tabby",
+          "mugi"
+        ],
+        "phases": [
+          "celebrating"
+        ],
+        "minimumGap": 2.99835980662985,
+        "contained": true
+      }
+    },
+    "migrations": [
+      {
+        "name": "living-v080",
+        "passed": true,
+        "gameplaySchema": 2
+      },
+      {
+        "name": "legacy-v01",
+        "passed": true,
+        "gameplaySchema": 2
+      },
+      {
+        "name": "corrupt-v080",
+        "passed": true,
+        "gameplaySchema": 2
+      },
+      {
+        "name": "v081-post-dawn",
+        "passed": true,
+        "gameplaySchema": 2
+      },
+      {
+        "name": "v081-boss-clear",
+        "passed": true,
+        "gameplaySchema": 2
+      },
+      {
+        "name": "future-schema",
+        "passed": true,
+        "gameplaySchema": 2
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "name": "00-settings-paused.png",
+      "sha256": "eb25a33ed8bd6172d3646da4117dd029391fb91cb59c61ef3ff75c0ba051b94f"
+    },
+    {
+      "name": "00-title.png",
+      "sha256": "f5f5d486002cca2075214ef308e326c785905dc838fc1e88125592809274ec1a"
+    },
+    {
+      "name": "01-auto-climb.png",
+      "sha256": "5bea68bc36a0e356ac6fc8564ad4c46629cf5d2773466e125b673242b43f3a18"
+    },
+    {
+      "name": "02-full-party-rally.png",
+      "sha256": "e742a7f2663f3dc55dca563b14edfc157b51cd4f254cd79105acefcb73a14983"
+    },
+    {
+      "name": "02-tap-dispatch.png",
+      "sha256": "d5eaee22f9198d81c32f1412a7c0ed359c5633c4e567b2028d06f3d114edf612"
+    },
+    {
+      "name": "03-upgrade-panel.png",
+      "sha256": "b51ee0da29987ebffed2252df7d0acaa75f926a7aaeea8e7e6a59c99b70f80f6"
+    },
+    {
+      "name": "04-floor-conquered.png",
+      "sha256": "390993e2882eb1d7280cb61e402d8572593a94e758ddc46b12e66d180ab3f061"
+    },
+    {
+      "name": "05-food-support-full.png",
+      "sha256": "209347492ec13019c92a48e11d10e31b4eaacc1d58e40640f58745bb40d37bd0"
+    },
+    {
+      "name": "05-food-support-sheet.png",
+      "sha256": "1018a548eecb3d9b3563cc569b15dbdf8ecbed1dc3ede7fc009ae75466bc34cd"
+    },
+    {
+      "name": "06-shared-room-full.png",
+      "sha256": "a875d3b6559d806eeb03c2540302db5c373fc3fa9277e6215f57de3628826bc4"
+    },
+    {
+      "name": "06-shared-room-sheet.png",
+      "sha256": "0e5d2a04ece23c1ff58c30aa1d3b7a5ff7ff5d4f9cf2bcf07c62dd2c860ed81e"
+    },
+    {
+      "name": "07-wall.png",
+      "sha256": "cb0e586fcce8fc0183fbc9f7b2fd959fcdb14e50463b59da5fca70945f70c81b"
+    },
+    {
+      "name": "08-dawn-actions.png",
+      "sha256": "e97a325d47bf9f43236eebca08173a8c2fc6e26fc1e9a70d2014ec0a4fd0480a"
+    },
+    {
+      "name": "08-dawn-preview-full.png",
+      "sha256": "b3c7f601de4f81a4facace50fb6cd448e315e56cc15449b2611c50e2589a0d24"
+    },
+    {
+      "name": "08-dawn-preview-sheet.png",
+      "sha256": "b39ad964041e8d04be4598d43d5738d481293f6675d38ca25b01d799cdfb999a"
+    },
+    {
+      "name": "09-faster-replay.png",
+      "sha256": "4d1f41dc54a0c08e980a2899ff6bfd23041d365e33d3109286e6855d50e073a9"
+    },
+    {
+      "name": "10-first-night-boss.png",
+      "sha256": "c330f7ca65725dfc8b8d021f6aafb5eefd8ccb3040275fbc161dd4a4439bb5dd"
+    },
+    {
+      "name": "11-first-night-clear.png",
+      "sha256": "38ed0039fb14bfe26d371a37c01d81c79cf1b6f883577efbed2f3b712f0bdcbe"
+    }
+  ],
+  "errors": [],
+  "badResponses": [],
+  "failedRequests": []
+}

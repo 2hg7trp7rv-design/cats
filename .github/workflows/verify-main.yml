@@ -1,14 +1,21 @@
-name: Verify Cat's tower V0.8.2 redesigned vertical tower
+name: Verify Cat's Tower baseline and quality records
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
     paths:
       - README.md
       - AGENTS.md
+      - BASELINE_V082.md
+      - QUALITY_GATE.md
       - PROJECT_HANDOVER.md
       - PROJECT_STATUS.json
+      - quality-reviews/**
+      - .github/baselines/**
       - .vercelignore
+      - vercel.json
       - index.html
       - styles.css
       - game-data.js
@@ -20,7 +27,7 @@ on:
       - assets/v082/**
       - assets/fonts/**
       - assets/icons/**
-      - tests/living-tower-v080.mjs
+      - tests/**
       - scripts/build_v080_art.py
       - .github/workflows/verify-main.yml
   workflow_dispatch:
@@ -38,6 +45,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clean checkout of the archived V0.8.2 source/runtime
+        uses: actions/checkout@v4
+        with:
+          ref: archive/v0.8.2-legacy-baseline
+          fetch-depth: 0
+          path: recovered-v082
 
       - uses: actions/setup-node@v4
         with:
@@ -51,6 +67,8 @@ jobs:
         run: |
           set -euo pipefail
           test -s AGENTS.md
+          test -s BASELINE_V082.md
+          test -s QUALITY_GATE.md
           test -s PROJECT_HANDOVER.md
           test -s PROJECT_STATUS.json
           test -s README.md
@@ -67,20 +85,21 @@ jobs:
           grep -qx 'assets/v080/r1/' .vercelignore
           grep -qx 'assets/v080/\*.webp' .vercelignore
           test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
-          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort)" = "living-tower-v080.mjs"
+          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-step-1-baseline.mjs"
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
           python - <<'PY'
           import json
           from pathlib import Path
           status=json.loads(Path('PROJECT_STATUS.json').read_text())
-          assert status['canonicalReleaseVersion']=='0.8.2'
-          assert status['canonicalReleaseBuild']=='v082-pixel-tower-gameplay-redesign'
-          assert status['githubMainContainsV082'] is True
-          assert status['v082ProductionReady'] is False
+          assert status['legacyBaseline']['version']=='0.8.2'
+          assert status['legacyBaseline']['build']=='v082-pixel-tower-gameplay-redesign'
+          assert status['legacyBaseline']['commit']=='727b8d00c281e7539117da5ded7309ea01c7e516'
+          assert status['legacyBaseline']['productionReady'] is False
           assert status['canonicalBranch']=='main'
-          assert status['physicalIPhoneVerified'] is False
           assert status['productionUrl']=='https://cats-tau-dusky.vercel.app/'
-          assert status['history']['v081']['production']['runtimeCommit']=='ebe26884f9e4500d8e755f0b4fae328ef208c6b6'
+          assert status['productionGates']['physicalIPhoneRequired'] is True
+          assert status['legacyV082Verification']['physicalIPhone']=='not-verified'
+          assert status['completionQualityGate']=='QUALITY_GATE.md'
           print('handover contracts passed')
           PY
 
@@ -93,6 +112,9 @@ jobs:
           node --check app.js
           node --check sw.js
           node --check tests/living-tower-v080.mjs
+          node --check tests/step-1-normal-flow.mjs
+          node --check tests/step-1-service-worker.mjs
+          node --check tests/verify-step-1-baseline.mjs
           grep -q "const VERSION = '0.8.2'" game-data.js
           grep -q "GAMEPLAY_SCHEMA = 2" game-data.js
           grep -q "cats-tower-v080" game-data.js
@@ -179,6 +201,11 @@ jobs:
           print('V0.8.2 Pixel R2/R3 raster, font, and icon contracts passed')
           PY
 
+      - name: GitHub recovery ref and live runtime manifest
+        env:
+          CATS_BASELINE_DIR: ${{ github.workspace }}/recovered-v082
+        run: node tests/verify-step-1-baseline.mjs --remote --live
+
       - name: Install mobile browser QA runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
@@ -187,13 +214,16 @@ jobs:
       - name: Chromium and WebKit vertical tower loop QA
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 >/tmp/cats-v082-http.log 2>&1 &
+          python3 -m http.server 4173 --directory recovered-v082 >/tmp/cats-v082-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           for VIEWPORT in 390x844 375x667; do
             CATS_BROWSER=chromium CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v082-chromium-$VIEWPORT node tests/living-tower-v080.mjs
             CATS_BROWSER=webkit CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/v082-webkit-$VIEWPORT node tests/living-tower-v080.mjs
+            CATS_BROWSER=chromium CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/step-1-normal-chromium-$VIEWPORT node tests/step-1-normal-flow.mjs
+            CATS_BROWSER=webkit CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/step-1-normal-webkit-$VIEWPORT node tests/step-1-normal-flow.mjs
+            CATS_BROWSER=chromium CATS_VIEWPORT=$VIEWPORT CATS_TEST_OUT=test-results/step-1-sw-chromium-$VIEWPORT node tests/step-1-service-worker.mjs
           done
           python - <<'PY'
           import json
@@ -302,6 +332,38 @@ jobs:
               assert all(item['passed'] for item in report['save']['migrations'])
               assert {item['name'] for item in report['evidence']}==expected
               assert {path.name for path in root.glob('*.png')}==expected
+              normal=json.loads((Path('test-results')/f'step-1-normal-{browser}-{label}'/'report.json').read_text())
+              assert normal['passed'] is True
+              assert normal['qaMode'] is False
+              assert normal['reducedMotion'] is False
+              assert normal['serviceWorkers']=='enabled'
+              assert normal['active']['gameVisible'] is True
+              assert normal['active']['titleHidden'] is True
+              assert normal['active']['visibleCats']>=1
+              assert normal['reloaded']['gameVisible'] is True
+              assert normal['durableReload']['preserved'] is True
+              assert normal['durableReload']['before']['durable']==normal['durableReload']['after']['durable']
+              assert normal['durableReload']['before']['screen']==normal['durableReload']['after']['screen']
+              assert normal['errors']==[]
+              assert normal['failedRequests']==[]
+              if browser=='chromium':
+                assert normal['reloaded']['serviceWorkerSupported'] is True
+                assert normal['reloaded']['serviceWorkerControlled'] is True
+                assert normal['reloaded']['serviceWorkerControllerUrl']
+                sw=json.loads((Path('test-results')/f'step-1-sw-{browser}-{label}'/'report.json').read_text())
+                assert sw['passed'] is True
+                assert sw['runtimeVersion']=='0.8.2'
+                assert sw['gameplaySchema']==2
+                assert sw['saveKey']=='cats-tower-v080'
+                assert sw['cacheState']['controlled'] is True
+                assert sw['cacheState']['actualEntryCount']==15
+                assert sw['cacheState']['expectedEntryCount']==15
+                assert sw['futureSchemaPreserved'] is True
+                assert sw['futureSchemaRawBytesUnchanged'] is True
+                assert sw['obsoleteCacheRemoved'] is True
+                assert sw['offline']['version']=='0.8.2'
+                assert sw['offline']['controlled'] is True
+                assert sw['errors']==[]
           print('deterministic vertical tower and visual evidence contracts passed')
           PY
 
@@ -309,7 +371,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-v082-vertical-tower-evidence
+          name: cats-v082-step-1-recovery-evidence
           path: test-results
           if-no-files-found: warn
           retention-days: 30

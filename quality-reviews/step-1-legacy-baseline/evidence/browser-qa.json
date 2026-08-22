@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-08-22",
+  "recoveredCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "deterministicLoop": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "72079336c0c73c5be7d01873138e69451965b50e15c5a05029078cfdfe8e0334"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "8948c0cc2a58c53d737a06e17a8db3f5f39e6ab9711e64725be4c0165af76147"
+    }
+  ],
+  "serviceWorkerRecovery": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "serviceWorkers": "enabled",
+      "onlineInstall": "PASS",
+      "controller": "PASS",
+      "precache": "PASS",
+      "obsoleteCacheRemoval": "PASS",
+      "offlineShellRestart": "PASS",
+      "schema2Reload": "PASS",
+      "midCombatDurableState": "PASS",
+      "midCombatRosterNonPersistenceReproduced": "PASS",
+      "cachedResponseSha256Count": 15,
+      "syntheticFutureCacheRemoval": "PASS",
+      "futureSchemaNonOverwrite": "PASS",
+      "futureSchemaRawBytesUnchanged": "PASS",
+      "rawReportSha256": "5140bad252c61b8e4b5fd31a4768d83990627273e99ddeef2f473748a1910630"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "serviceWorkers": "enabled",
+      "onlineInstall": "PASS",
+      "controller": "PASS",
+      "precache": "PASS",
+      "obsoleteCacheRemoval": "PASS",
+      "offlineShellRestart": "PASS",
+      "schema2Reload": "PASS",
+      "midCombatDurableState": "PASS",
+      "midCombatRosterNonPersistenceReproduced": "PASS",
+      "cachedResponseSha256Count": 15,
+      "syntheticFutureCacheRemoval": "PASS",
+      "futureSchemaNonOverwrite": "PASS",
+      "futureSchemaRawBytesUnchanged": "PASS",
+      "rawReportSha256": "9929c8717d2c5f093124759bb2b7bcf091c6dfd3b605190f62d74bba7bcb236b"
+    }
+  ],
+  "normalUiFlow": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "5bdf7a4ec3fda64f5b2365ff546184cc1a0c4ff15225d7e56e6edd2cbd77fb8d"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "888737dea1b44ff17330e967c2ff2be17a1493b52a80fe89b711003852096870"
+    }
+  ],
+  "existingSaveCases": [
+    "schema2-completed-reload",
+    "living-v080-migration",
+    "legacy-v01-migration",
+    "corrupt-v080-safe-fresh-state",
+    "v081-post-dawn-clamp",
+    "v081-boss-clear-clamp",
+    "future-schema-non-overwrite"
+  ],
+  "knownLegacyDefects": [
+    "A mid-combat reload preserves durable progression and enemy state but does not persist the live six-cat runtime roster; it restores below six and may be observed as zero or one before automatic dispatch.",
+    "Deleted or irrecoverably corrupted real-user localStorage cannot be reconstructed because V0.8.2 has no export or server backup.",
+    "This evidence is not a physical-iPhone standalone-PWA approval and must not be reused as one.",
+    "The legacy UI is a comparison baseline, not the approved visual quality target for the 100-floor product."
+  ],
+  "visualEvidence": [
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/01-title-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "eec16e3dfaa99f77fd21ba030af8659c69ca0653d400b38d871fd9c9ce008ed1" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/02-rally-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "0b7111568d1002603193354723e653a1ab77d3a175961680aa10b3b1eb44134d" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/03-clear-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "2b2d55b240edcecfd2b3ffe94bc1d0ba9119623d08aade5e34d152c39e47307f" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/04-normal-title-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "8c0c252e15b18422e8967da6ebf092cd4cb769996f2e08c7abc1fa27b1bbcde6" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/05-normal-battle-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "7738fb9ab3a385d7f996e18776824b03465fb4547244a1810f7713b33da8de17" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/06-normal-reload-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "72e919361ea89753ca02e0069af7f824e46c792731b5b814d6984c5909f15ce0" }
+  ],
+  "rawReports": [
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-loop.json", "sha256": "72079336c0c73c5be7d01873138e69451965b50e15c5a05029078cfdfe8e0334" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-loop.json", "sha256": "8948c0cc2a58c53d737a06e17a8db3f5f39e6ab9711e64725be4c0165af76147" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-service-worker.json", "sha256": "5140bad252c61b8e4b5fd31a4768d83990627273e99ddeef2f473748a1910630" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-service-worker.json", "sha256": "9929c8717d2c5f093124759bb2b7bcf091c6dfd3b605190f62d74bba7bcb236b" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-normal-flow.json", "sha256": "5bdf7a4ec3fda64f5b2365ff546184cc1a0c4ff15225d7e56e6edd2cbd77fb8d" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-normal-flow.json", "sha256": "888737dea1b44ff17330e967c2ff2be17a1493b52a80fe89b711003852096870" }
+  ]
+}
