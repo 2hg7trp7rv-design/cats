@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "role": "runtime-critic",
+  "source": "Codex collaboration sub-agent response recorded by the primary agent",
+  "cryptographicReviewerAuthentication": false,
+  "reviewerId": "round5-runtime-curie",
+  "taskPath": "/root/step1_runtime_critic_r5",
+  "assignment": "Round 5 C1のCI完了後にVercel connected-project metadataを再照会し、固定Production、fresh baseline recovery preview、live 17-path byte checkpoint、artifact runtime provenanceを独立検証する。",
+  "reviewedAt": "2026-08-22T17:07:45Z",
+  "reviewTargetCommit": "cfebec0c546478f8dc7a6af9476d795205e52002",
+  "reviewTargetTree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+  "reviewedAcceptanceSha256": "fd99d20bd74ebe0a6e1addc3ecd2c40df85e7825ed5e73c5747c27d14868f14c",
+  "reviewedCiRunId": 32586052537,
+  "reviewedCiJobId": 97062470626,
+  "reviewedCiCheckoutSha": "cfebec0c546478f8dc7a6af9476d795205e52002",
+  "reviewedCiCheckoutTree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+  "reviewedCiArtifactDigest": "sha256:56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821",
+  "reviewedCiRecordPath": "quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json",
+  "reviewedCiRecordSha256": "ed4339639d595d2f2ea86ef46255559ef9b416dcf5561e96829609293396b068",
+  "vercelDeploymentId": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
+  "vercelCommitSha": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
+  "vercelState": "READY",
+  "vercelRecheckedAt": "2026-08-22T17:07:33Z",
+  "status": "PASS",
+  "unresolvedMaterialBlockers": [],
+  "method": [
+    "C1のCI完了後にVercel接続APIでプロジェクト、固定Production alias、fresh recovery deploymentを再照会し、deployment ID・Git commit SHA・stateを突合した。",
+    "exact C1 commitを一時Git cloneへdetached checkoutし、検証器を--remote --liveで再実行して、manifest全17パスのHTTP状態・MIME・byte長・SHA-256を独立照合した。",
+    "GitHub APIから指定run・job・artifactを再取得してZIPをダウンロードし、provider digest、95個の一意で安全なmember、重複JSON key不在、CI provenanceのcheckout・verification kit・served runtime・workflow Git objectを検査した。"
+  ],
+  "findings": [
+    "固定Production aliasはdpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az、commit 76c49e9fca82a4c0f6922de8f93ea3b4e57289f6、READYのままで、C1 Previewとは分離されていた。",
+    "fresh recovery deploymentはdpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV、commit 2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3、READYとして接続APIから再確認できた。",
+    "固定Productionのlive runtimeはmanifestの17パスすべてでHTTP 200、期待MIME、byte長、SHA-256がimmutable baselineと一致した。",
+    "artifact 9479141640のZIP SHA-256はprovider digest 56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821と一致し、provenanceはC1 treeとimmutable baseline runtimeを正しく分離していた。"
+  ],
+  "verbatimResponse": "{\"role\":\"runtime-critic\",\"reviewTargetCommit\":\"cfebec0c546478f8dc7a6af9476d795205e52002\",\"reviewTargetTree\":\"8c2a7bce08f1dcb69298a664534cddd69e3543ef\",\"reviewedCiRunId\":32586052537,\"reviewedCiJobId\":97062470626,\"verdict\":\"PASS\",\"materialBlockers\":[],\"method\":[\"C1のCI完了後にVercel接続APIでプロジェクト、固定Production alias、fresh recovery deploymentを再照会し、deployment ID・Git commit SHA・stateを突合した。\",\"exact C1 commitを一時Git cloneへdetached checkoutし、検証器を--remote --liveで再実行して、manifest全17パスのHTTP状態・MIME・byte長・SHA-256を独立照合した。\",\"GitHub APIから指定run・job・artifactを再取得してZIPをダウンロードし、provider digest、95個の一意で安全なmember、重複JSON key不在、CI provenanceのcheckout・verification kit・served runtime・workflow Git objectを検査した。\"],\"findings\":[\"固定Production aliasはdpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az、commit 76c49e9fca82a4c0f6922de8f93ea3b4e57289f6、READYのままで、C1 Previewとは分離されていた。\",\"fresh recovery deploymentはdpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV、commit 2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3、READYとして接続APIから再確認できた。\",\"固定Productionのlive runtimeはmanifestの17パスすべてでHTTP 200、期待MIME、byte長、SHA-256がimmutable baselineと一致した。\",\"artifact 9479141640のZIP SHA-256はprovider digest 56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821と一致し、provenanceはC1 treeとimmutable baseline runtimeを正しく分離していた。\"],\"vercelDeploymentId\":\"dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV\",\"vercelCommitSha\":\"2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3\",\"vercelState\":\"READY\",\"vercelRecheckedAt\":\"2026-08-22T17:07:33Z\"}",
+  "verbatimResponseSha256": "ae24bb0120998248231b0744b048f200255e3f0a44e7ee84ecc5dbab7b6d5c97"
+}

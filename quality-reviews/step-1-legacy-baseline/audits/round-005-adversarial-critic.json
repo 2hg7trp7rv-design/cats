@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "role": "adversarial-critic",
+  "source": "Codex collaboration sub-agent response recorded by the primary agent",
+  "cryptographicReviewerAuthentication": false,
+  "reviewerId": "round5-adversarial-banach",
+  "taskPath": "/root/step1_final_tamper",
+  "assignment": "Round 5 C1のexact commit/tree、attempt別CIとartifact provenance、外部監査helper、lineage、tamper境界を隔離環境で反証し、material blockerの有無を独立判定する。",
+  "reviewedAt": "2026-08-22T17:04:30Z",
+  "reviewTargetCommit": "cfebec0c546478f8dc7a6af9476d795205e52002",
+  "reviewTargetTree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+  "reviewedAcceptanceSha256": "fd99d20bd74ebe0a6e1addc3ecd2c40df85e7825ed5e73c5747c27d14868f14c",
+  "reviewedCiRunId": 32586052537,
+  "reviewedCiJobId": 97062470626,
+  "reviewedCiCheckoutSha": "cfebec0c546478f8dc7a6af9476d795205e52002",
+  "reviewedCiCheckoutTree": "8c2a7bce08f1dcb69298a664534cddd69e3543ef",
+  "reviewedCiArtifactDigest": "sha256:56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821",
+  "reviewedCiRecordPath": "quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json",
+  "reviewedCiRecordSha256": "ed4339639d595d2f2ea86ef46255559ef9b416dcf5561e96829609293396b068",
+  "status": "PASS",
+  "unresolvedMaterialBlockers": [],
+  "method": [
+    "対象C1を隔離クローンへdetached checkoutし、commit・tree・単一親・正確な9件のA/M差分をGitオブジェクトから照合したうえでvalidatorを実行しました。",
+    "Acceptanceが固定する26ファイルのモードとSHA-256をC1 blobから再計算し、helper・validator・両workflowを含む全件の一致を検証しました。",
+    "GitHubのattempt別run・job・artifactを独立照会し、ZIPを再取得してサイズ、provider digest、安全な95 member、provenance raw hash、全10 reportのPASSを照合しました。",
+    "隔離クローンへ余分な変更pathと保護helper改変を注入してvalidatorの拒否を確認し、親差替え、merge化、workflow pathの別名・CR/LF、重複JSON keyについてfail-closed条件を反証しました。"
+  ],
+  "findings": [
+    "C1は親44696c97be9d6206775cbf317a5b3d28fdeff37bを持つ単一親commitで、指定9 pathの追加・変更種別だけを含みます。正規C1のvalidatorはPASSし、余分なpath、保護helper改変、親系譜差替えはいずれも拒否されました。",
+    "CI run 32586052537 attempt 1とjob 97062470626はC1 headで成功し、必須stepは全て成功しています。artifact 9479141640は71,604,643 bytesで未期限切れ、再取得SHA-256は56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821と一致しました。",
+    "ci-provenance.jsonのraw SHA-256はec7d987b60a0818998d282735c54e91b57700c823d8683e92cf88f0cf2316fa6です。PR番号4、base/head、run/job/attempt、C1 tree、baseline runtimeを拘束し、workflow commit d4a26ae515dd2a609dc1f24a8a48c90aab036643のtreeとworkflow blobもC1に一致しました。",
+    "外部helperはc3-pr・initial-main-seal・future-mainを分離し、唯一の歴史的二親seal merge、親順序、tree同一性、C3 event base、main push before、先行initial external auditのrun/job/必須stepをprovider APIで拘束します。任意caller metadataや別workflow path、CR/LF付きpathによる代替は成立しません。",
+    "provenanceがGitHub署名attestationではないこと、workflow bootstrapの完全な耐改ざん性には未設定の外部rulesetが必要なことはAcceptanceで明示的に非主張です。今回確認した固定workflow、provider API、artifact digestの範囲ではmaterial blockerではありません。"
+  ],
+  "verbatimResponse": "{\"role\":\"adversarial-critic\",\"reviewTargetCommit\":\"cfebec0c546478f8dc7a6af9476d795205e52002\",\"reviewTargetTree\":\"8c2a7bce08f1dcb69298a664534cddd69e3543ef\",\"reviewedCiRunId\":32586052537,\"reviewedCiJobId\":97062470626,\"verdict\":\"PASS\",\"materialBlockers\":[],\"method\":[\"対象C1を隔離クローンへdetached checkoutし、commit・tree・単一親・正確な9件のA/M差分をGitオブジェクトから照合したうえでvalidatorを実行しました。\",\"Acceptanceが固定する26ファイルのモードとSHA-256をC1 blobから再計算し、helper・validator・両workflowを含む全件の一致を検証しました。\",\"GitHubのattempt別run・job・artifactを独立照会し、ZIPを再取得してサイズ、provider digest、安全な95 member、provenance raw hash、全10 reportのPASSを照合しました。\",\"隔離クローンへ余分な変更pathと保護helper改変を注入してvalidatorの拒否を確認し、親差替え、merge化、workflow pathの別名・CR/LF、重複JSON keyについてfail-closed条件を反証しました。\"],\"findings\":[\"C1は親44696c97be9d6206775cbf317a5b3d28fdeff37bを持つ単一親commitで、指定9 pathの追加・変更種別だけを含みます。正規C1のvalidatorはPASSし、余分なpath、保護helper改変、親系譜差替えはいずれも拒否されました。\",\"CI run 32586052537 attempt 1とjob 97062470626はC1 headで成功し、必須stepは全て成功しています。artifact 9479141640は71,604,643 bytesで未期限切れ、再取得SHA-256は56eec906b8187d6ad962284d05a769137162a47856323478f40fe03e1e191821と一致しました。\",\"ci-provenance.jsonのraw SHA-256はec7d987b60a0818998d282735c54e91b57700c823d8683e92cf88f0cf2316fa6です。PR番号4、base/head、run/job/attempt、C1 tree、baseline runtimeを拘束し、workflow commit d4a26ae515dd2a609dc1f24a8a48c90aab036643のtreeとworkflow blobもC1に一致しました。\",\"外部helperはc3-pr・initial-main-seal・future-mainを分離し、唯一の歴史的二親seal merge、親順序、tree同一性、C3 event base、main push before、先行initial external auditのrun/job/必須stepをprovider APIで拘束します。任意caller metadataや別workflow path、CR/LF付きpathによる代替は成立しません。\",\"provenanceがGitHub署名attestationではないこと、workflow bootstrapの完全な耐改ざん性には未設定の外部rulesetが必要なことはAcceptanceで明示的に非主張です。今回確認した固定workflow、provider API、artifact digestの範囲ではmaterial blockerではありません。\"]}",
+  "verbatimResponseSha256": "6deed90a930dca2f80eb8dadc9a15a4700dfbb0bbcbe7f7b4f2501845e2be76a"
+}
