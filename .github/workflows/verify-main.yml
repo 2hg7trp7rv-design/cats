@@ -147,7 +147,7 @@ jobs:
         id: step1
         run: |
           set -euo pipefail
-          ROUND=quality-reviews/step-1-legacy-baseline/round-004.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
@@ -253,7 +253,7 @@ jobs:
           grep -qx 'tests/' .vercelignore
           grep -qx 'assets/v080/r1/' .vercelignore
           grep -qx 'assets/v080/\*.webp' .vercelignore
-          test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
+          test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "verify-main.yml verify-step-1-artifacts.yml"
           test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "capture-v082-preview.mjs living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-ci-artifact.mjs verify-step-1-baseline.mjs"
           node --check tests/verify-ci-artifact.mjs
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
@@ -385,7 +385,7 @@ jobs:
             exit 0
           fi
           AUTH=(-H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
-          ROUND=quality-reviews/step-1-legacy-baseline/round-004.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
@@ -868,7 +868,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cats-v082-step-1-recovery-evidence
+          name: cats-v082-step-1-recovery-evidence-attempt-${{ github.run_attempt }}
           path: ${{ steps.step1.outputs.kit }}/test-results
           if-no-files-found: error
           retention-days: 30

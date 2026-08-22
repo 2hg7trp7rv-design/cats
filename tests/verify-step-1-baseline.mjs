@@ -20,7 +20,14 @@ const failedRoundThreeAcceptancePath = 'quality-reviews/step-1-legacy-baseline/a
 const failedRoundThreeAcceptanceBlob = '347ddd8cae160364835a043a45376b6ac6b97888';
 const failedRoundThreeAcceptanceSha256 = '1c7bcb9f2e71f27e3a03de2e85ef3ea16e89be0f736a4e6aa52842c66f0d4100';
 const failedRoundThreePath = 'quality-reviews/step-1-legacy-baseline/round-003.json';
-const sealRoundPath = 'quality-reviews/step-1-legacy-baseline/round-004.json';
+const failedRoundFourCommit = '44696c97be9d6206775cbf317a5b3d28fdeff37b';
+const failedRoundFourTree = '0e7022e0ea1ae4f5c47560ae2177344049dc8e0b';
+const failedRoundFourAcceptancePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json';
+const failedRoundFourAcceptanceBlob = '0f0f0427aac16ce615ed33317504b9912e8d7f81';
+const failedRoundFourAcceptanceSha256 = '9336daac146f2d03dc590137c5c0504e8ca188ffbfa7d5edf54bcac5d36fe055';
+const failedRoundFourPath = 'quality-reviews/step-1-legacy-baseline/round-004.json';
+const failedRoundFourSha256 = '21146088494f258a12ca5fb1e0229c0cd0a9c2791545dcd8f9f203423cdf4898';
+const sealRoundPath = 'quality-reviews/step-1-legacy-baseline/round-005.json';
 const futureImmutablePaths = [
   '.github/baselines/v0.8.2',
   'quality-reviews/step-1-legacy-baseline',
@@ -201,7 +208,7 @@ assert.deepEqual(
 assert.equal(kitGit(['rev-parse', '--is-shallow-repository']).trim(), 'false', 'Step 1 verification requires full Git history');
 assert.equal(kitGit(['replace', '-l']).trim(), '', 'Git replace refs are forbidden during Step 1 verification');
 const reachableSealCommits = reachablePathIntroductions(sealRoundPath);
-assert(reachableSealCommits.length <= 1, 'round-004 was added more than once in reachable history');
+assert(reachableSealCommits.length <= 1, 'round-005 was added more than once in reachable history');
 if (process.env.CATS_SEAL_COMMIT) {
   assert.equal(reachableSealCommits.length, 1, 'An injected seal commit is forbidden when no unique reachable seal exists');
   assert.equal(process.env.CATS_SEAL_COMMIT, reachableSealCommits[0], 'An injected seal commit differs from the unique reachable seal');
@@ -233,8 +240,8 @@ if (process.env.CATS_SEALED_REENTRY === '1') {
 // verifier from the historical seal instead of comparing the future HEAD to V0.8.2.
 if (sealCommit && currentHead !== sealCommit) {
   const frozenAcceptance = parseJsonStrict(kitGit([
-    'show', `${sealCommit}:quality-reviews/step-1-legacy-baseline/acceptance-round-004.json`,
-  ], 'utf8'), 'sealed acceptance-round-004.json');
+    'show', `${sealCommit}:quality-reviews/step-1-legacy-baseline/acceptance-round-005.json`,
+  ], 'utf8'), 'sealed acceptance-round-005.json');
   assert.deepEqual(frozenAcceptance.futureImmutablePaths, futureImmutablePaths);
   assert.deepEqual(frozenAcceptance.futureRequiredQualityGateClaims, futureRequiredQualityGateClaims);
   assert.equal(frozenAcceptance.futureNormativeKernel.arbitraryNaturalLanguageSemanticCompletenessClaimed, false);
@@ -323,7 +330,7 @@ if (sealCommit && currentHead !== sealCommit) {
 }
 
 const sealedRound = sealCommit
-  ? parseJsonStrict(kitGit(['show', `${sealCommit}:${sealRoundPath}`], 'utf8'), 'sealed round-004.json')
+  ? parseJsonStrict(kitGit(['show', `${sealCommit}:${sealRoundPath}`], 'utf8'), 'sealed round-005.json')
   : null;
 const contentCommit = sealedRound?.reviewTargetCommit || currentHead;
 
@@ -1078,7 +1085,7 @@ function validateCiRecord(record, role, expectedHead = null) {
   assert(Number.isInteger(record.runAttempt) && record.runAttempt > 0);
   assert.equal(record.status, 'completed');
   assert.equal(record.conclusion, 'success');
-  assert.equal(record.pullRequest.number, 4);
+  assert(Number.isSafeInteger(record.pullRequest.number) && record.pullRequest.number > 0);
   assert.equal(record.pullRequest.baseBranch, 'main');
   if (expectedHead) assert.equal(record.pullRequest.headSha, expectedHead);
   assert.equal(kitGit(['rev-parse', `${record.pullRequest.baseSha}^{tree}`]).trim(), record.pullRequest.baseTree);
@@ -1124,7 +1131,12 @@ function validateCiRecord(record, role, expectedHead = null) {
     }
   }
   assert.match(record.artifact.digest, /^sha256:[a-f0-9]{64}$/);
-  assert.equal(record.artifact.name, 'cats-v082-step-1-recovery-evidence');
+  assert.equal(
+    record.artifact.name,
+    role === 'raw-source'
+      ? 'cats-v082-step-1-recovery-evidence'
+      : `cats-v082-step-1-recovery-evidence-attempt-${record.runAttempt}`,
+  );
   assert(Number.isInteger(record.artifact.id) && record.artifact.id > 0);
   assert(Number.isInteger(record.artifact.sizeBytes) && record.artifact.sizeBytes > 0);
   assert.equal(record.artifact.fileCount, role === 'raw-source' ? 94 : 95);
@@ -1214,7 +1226,7 @@ assert.equal(sha256(failedRoundThreeAcceptanceBytes), failedRoundThreeAcceptance
 assert.equal(
   sha256(await readFile(path.join(kitRoot, failedRoundThreeAcceptancePath))),
   failedRoundThreeAcceptanceSha256,
-  'Round 3 Acceptance bytes were rewritten during the Round 4 rebuild',
+  'Round 3 Acceptance bytes were rewritten during a later rebuild',
 );
 assert(roundThreeFailure.materialBlockers.length >= 2);
 assert.equal(roundThreeFailure.observedApiBehavior.historicalRunId, 32578260669);
@@ -1222,15 +1234,112 @@ assert.equal(roundThreeFailure.observedApiBehavior.historicalRunHeadSha, '5792be
 assert.equal(roundThreeFailure.observedApiBehavior.embeddedPullRequestHeadShaAfterC1, '830b32d4b0d26abebe7354b8db9d8dd3b21c203f');
 assert.equal(roundThreeFailure.rebuildDecision.nextAcceptance, 'acceptance-round-004.json');
 
-const acceptanceRelativePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json';
+const roundFourFailure = parseJsonStrict(await readFile(
+  path.join(kitRoot, failedRoundFourPath),
+  'utf8',
+), 'round-004.json');
+assert.equal(roundFourFailure.schemaVersion, 1);
+assert.equal(roundFourFailure.artifactId, 'step-1-legacy-baseline');
+assert.equal(roundFourFailure.round, 4);
+assert.equal(roundFourFailure.reviewTargetCommit, failedRoundFourCommit);
+assert.equal(roundFourFailure.reviewTargetTree, failedRoundFourTree);
+assert.equal(roundFourFailure.overallStatus, 'FAIL');
+assert.deepEqual(roundFourFailure.failedAcceptance, {
+  path: failedRoundFourAcceptancePath,
+  commit: failedRoundFourCommit,
+  blobSha1: failedRoundFourAcceptanceBlob,
+  sha256: failedRoundFourAcceptanceSha256,
+});
+assert.deepEqual(roundFourFailure.successfulCiBeforeRejection, {
+  runId: 32584243470,
+  runNumber: 23,
+  runAttempt: 1,
+  workflowId: 335561992,
+  workflowPath: '.github/workflows/verify-main.yml',
+  jobId: 97058103217,
+  jobName: 'vertical-tower-qa',
+  event: 'pull_request',
+  headBranch: 'codex/restart-step-1-baseline',
+  headSha: failedRoundFourCommit,
+  status: 'completed',
+  conclusion: 'success',
+  runStartedAt: '2026-08-22T16:17:11Z',
+  runCompletedAt: '2026-08-22T16:22:28Z',
+  artifact: {
+    id: 9478670595,
+    name: 'cats-v082-step-1-recovery-evidence',
+    sizeBytes: 71612841,
+    digest: 'sha256:7994f52234170803515c7b851bea988e438b750c40ef32b9f69a501b2e9bf304',
+    createdAt: '2026-08-22T16:22:24Z',
+    expiresAt: '2026-09-21T16:22:20Z',
+    expiredAtAudit: false,
+  },
+  authorityBoundary: 'Run-level fields, exact attempt, job, and artifact metadata were observed through GitHub APIs. Mutable pull_requests[] relationship fields are not historical authority. CI success is recorded as an observation, not as completion approval.',
+});
+assert.deepEqual(roundFourFailure.frozenWeakImplementation, {
+  workflow: {
+    path: '.github/workflows/verify-main.yml',
+    blobSha1: '12c86210d5187604de062b11ee94f400c9d5e492',
+    sha256: '0958f09ebe6074d7b314697d10ca10d5ef311b89bc1cc441873db69108c61f04',
+  },
+  externalArtifactVerifier: {
+    path: 'tests/verify-ci-artifact.mjs',
+    blobSha1: '609b843840867b4450dd6456b36165f57aae5f08',
+    sha256: '7e4ce2fdf4a0eff91f1191e5ffee9c50f0206f9cb62ab63595f78ea0f844a5db',
+  },
+  baselineValidator: {
+    path: 'tests/verify-step-1-baseline.mjs',
+    blobSha1: 'c780db174019a851e881d8ae5b38c84430d18599',
+    sha256: 'c98e6d04f448b58e000aa3ecc047e63f40e6f8a1e57c0d379ac2de415835d7d8',
+  },
+  defaultBranchExternalAuditWorkflowPresent: false,
+});
+assert.equal(roundFourFailure.postCiAudit.taskPath, '/root/step1_adversarial_audit');
+assert.equal(roundFourFailure.postCiAudit.performedAfterExactHeadCi, true);
+assert.equal(roundFourFailure.postCiAudit.judgment, 'FAIL');
+assert.equal(roundFourFailure.postCiAudit.materialBlockers.length, 5);
+assert.deepEqual(roundFourFailure.rebuildDecision, {
+  preservePublishedC1: true,
+  forceRewriteForbidden: true,
+  nextRound: 5,
+  nextAcceptance: 'acceptance-round-005.json',
+  nextC1MustBeDirectChildOf: failedRoundFourCommit,
+  requiredChanges: [
+    'replace caller-authored inspection input with direct attempt-scoped GitHub API access inside the verifier',
+    'add and freeze a default-branch workflow_run audit for exact C3 and main artifacts',
+    'freeze and verify the exact Round 5 C1 changed-path and A/M set',
+    'bind merged main to the exact two-parent [pre-merge main,C3] topology, matching the C3 base and push.before values',
+  ],
+});
+assert.equal(kitGit(['rev-parse', `${failedRoundFourCommit}^{commit}`]).trim(), failedRoundFourCommit);
+assert.equal(kitGit(['rev-parse', `${failedRoundFourCommit}^{tree}`]).trim(), failedRoundFourTree);
+assert.equal(singleParent(failedRoundFourCommit, 'failed Round 4 C1'), failedRoundThreeCommit);
+kitGit(['merge-base', '--is-ancestor', failedRoundFourCommit, 'HEAD']);
+assert.equal(kitGit(['rev-parse', `${failedRoundFourCommit}:${failedRoundFourAcceptancePath}`]).trim(), failedRoundFourAcceptanceBlob);
+const failedRoundFourAcceptanceBytes = kitGit(['show', `${failedRoundFourCommit}:${failedRoundFourAcceptancePath}`], null);
+assert.equal(sha256(failedRoundFourAcceptanceBytes), failedRoundFourAcceptanceSha256);
+assert.equal(sha256(await readFile(path.join(kitRoot, failedRoundFourAcceptancePath))), failedRoundFourAcceptanceSha256);
+assert.equal(sha256(await readFile(path.join(kitRoot, failedRoundFourPath))), failedRoundFourSha256);
+for (const frozen of Object.values(roundFourFailure.frozenWeakImplementation).filter(value => value?.path)) {
+  assert.equal(kitGit(['rev-parse', `${failedRoundFourCommit}:${frozen.path}`]).trim(), frozen.blobSha1);
+  assert.equal(sha256(kitGit(['show', `${failedRoundFourCommit}:${frozen.path}`], null)), frozen.sha256);
+}
+
+const acceptanceRelativePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-005.json';
 const strengthenedAcceptanceBytes = await readFile(path.join(kitRoot, acceptanceRelativePath));
 const strengthenedAcceptance = parseJsonStrict(
   strengthenedAcceptanceBytes.toString('utf8'),
   acceptanceRelativePath,
 );
 assert.equal(strengthenedAcceptance.artifactId, 'step-1-legacy-baseline');
-assert.equal(strengthenedAcceptance.acceptanceRevision, 4);
+assert.equal(strengthenedAcceptance.acceptanceRevision, 5);
 assert.equal(strengthenedAcceptance.scopeName, 'Step 1A — V0.8.2 deployed browser-runtime source and deployment-input byte checkpoint');
+assert.deepEqual(strengthenedAcceptance.preC1AdversarialCorrections, [
+  'Artifact names include github.run_attempt so reruns cannot collide with an earlier upload-artifact v4 artifact in the same workflow run.',
+  'The workflow_run audit job always starts and explicitly rejects any source that is not a successful push-triggered primary run on main, so a skipped job cannot appear as a successful audit.',
+  'The initial seal merge and later legitimate main updates use separate verifier roles: a unique historical two-parent seal merge must remain reachable, only that initial merge downloads the still-retained C3 pull-request artifact, and every future main push must prove both seal-merge ancestry and an earlier provider-bound successful initial external audit before auditing its own current artifact.',
+  'The direct API verifier accepts only the protected workflow path itself or that path followed by one non-empty, newline-free API ref suffix.',
+]);
 const requiredAcceptanceIds = [
   'S1', 'S2', 'S3', 'S4', 'S5', 'D1', 'D2', 'D3', 'D4', 'D5', 'R1', 'R2', 'R3', 'R4',
   'V1', 'V2', 'E1', 'E2', 'E3', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6',
@@ -1272,6 +1381,7 @@ assert.deepEqual(strengthenedAcceptance.ciProvenanceContract, {
   appliesToRecordRoles: ['acceptance', 'candidate'],
   rawSourceArtifactFileCount: 94,
   expectedArtifactFileCount: 95,
+  attemptScopedArtifactName: 'cats-v082-step-1-recovery-evidence-attempt-<runAttempt> for Round 5 C1/C2/C3/main; the historical raw-source artifact retains cats-v082-step-1-recovery-evidence',
   requiredFields: [
     'schemaVersion', 'repository', 'workflowName', 'workflowPath', 'workflowRef', 'workflowCommitSha',
     'workflowBlobSha', 'generator', 'sourceBoundary', 'event', 'eventContext.kind', 'runId',
@@ -1293,7 +1403,8 @@ assert.deepEqual(strengthenedAcceptance.ciProvenanceContract, {
 });
 assert.deepEqual(strengthenedAcceptance.externalArtifactVerifier, {
   path: 'tests/verify-ci-artifact.mjs',
-  input: ['strict duplicate-key-free provider inspection JSON', 'downloaded provider artifact ZIP'],
+  invocation: 'node tests/verify-ci-artifact.mjs <c3-pr|initial-main-seal|future-main> <run-id> <exact-run-attempt> with GitHub Actions read token',
+  providerAccess: 'the workflow passes the source event attempt or the deterministically selected latest successful C3 run attempt; the verifier itself calls those exact attempt-scoped run and job APIs, selects the artifact inside the matched job interval, downloads the ZIP, and calls Git commit/tree APIs; no caller-authored provider metadata is trusted',
   providerBindings: [
     'run id/attempt/workflow/event/head/status', 'job id/attempt/interval/steps',
     'artifact id/digest/size/expiry', 'workflow commit/tree/path/blob',
@@ -1302,18 +1413,37 @@ assert.deepEqual(strengthenedAcceptance.externalArtifactVerifier, {
     'exact 95 entries', 'unique safe member names', 'exactly one ci-provenance.json',
     'ZIP SHA-256 equals provider digest',
   ],
-  supportedEvents: ['pull_request', 'push', 'workflow_dispatch'],
-  requiredExternalUses: ['C3 pull-request-head artifact', 'merged main push artifact'],
-  output: 'machine-readable PASS summary binding run, attempt, job, artifact, event, head, artifact digest, provenance SHA-256, verification kit, and served runtime',
+  supportedRoles: ['c3-pr', 'initial-main-seal', 'future-main'],
+  derivedRoleInvariants: 'C3 is discovered as the unique full-DAG seal introduction. Exactly one reachable historical merge must have parents [pre-merge main,C3], the C3 tree, and a first parent that does not already contain C3. c3-pr and initial-main-seal require that merge to be the audited main head; c3-pr binds its event-time base to its first parent and initial-main-seal binds push.before to it. future-main requires that merge as a strict ancestor, permits a changed descendant tree, binds push.before to a strict ancestor of the current main head, verifies the current workflow blob, and independently queries GitHub for an earlier successful external audit run/job on that exact merge in which both C3 and initial-main artifact steps succeeded. It therefore cannot substitute a later green run for a missing initial audit and does not re-download the historical C3 artifact; if the provider run/job record is unavailable, it fails closed. Both main roles require push/historical-seal/sealed-C3-runtime plus C1-C2-C3 ancestry.',
+  requiredExternalUses: [
+    'C3 pull-request-head artifact during the initial seal audit',
+    'initial merged main push artifact',
+    'each later main push artifact after proving an earlier provider-bound successful initial audit, without requiring the historical C3 artifact to remain downloadable',
+  ],
+  output: 'machine-readable PASS summary binding run, attempt, job, artifact, event, head, artifact digest, provenance SHA-256, verification kit, served runtime, and the provider-bound initial external audit identity required by future-main',
+});
+assert.deepEqual(strengthenedAcceptance.externalArtifactAuditWorkflow, {
+  path: '.github/workflows/verify-step-1-artifacts.yml',
+  trigger: 'workflow_run completion of the primary workflow on main',
+  sourceRestriction: 'the job always starts and explicitly fails unless the source is a successful push-triggered primary run on main; no skipped job may represent a successful audit',
+  checks: [
+    'initial seal only: exact C3 pull-request artifact and exact two-parent merge topology',
+    'initial seal: exact source main-push artifact',
+    'future main: exact source main-push artifact, unique historical seal-merge ancestry, an earlier provider-bound successful initial audit whose C3 and main verification steps both passed, current workflow blob, and no re-download dependency on the expired C3 artifact',
+  ],
+  requiredConclusion: 'success before Step 1 completion report',
 });
 
 const requiredProtectedPaths = [
   '.github/baselines/v0.8.2/MANIFEST.json',
   '.github/baselines/v0.8.2/RESTORE.md',
   '.github/workflows/verify-main.yml',
+  '.github/workflows/verify-step-1-artifacts.yml',
   'QUALITY_GATE.md',
   'quality-reviews/step-1-legacy-baseline/acceptance-round-003.json',
+  'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json',
   'quality-reviews/step-1-legacy-baseline/round-003.json',
+  'quality-reviews/step-1-legacy-baseline/round-004.json',
   'quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-commit-object.b64',
   'quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-preview-capture.json',
   'quality-reviews/step-1-legacy-baseline/evidence/runtime-manifest.json',
@@ -1340,16 +1470,27 @@ for (const protectedFile of strengthenedAcceptance.protectedFiles) {
 }
 
 const criticPathsByRole = {
-  'adversarial-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-adversarial-critic.json',
-  'repository-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-repository-critic.json',
-  'runtime-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-runtime-critic.json',
+  'adversarial-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-005-adversarial-critic.json',
+  'repository-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-005-repository-critic.json',
+  'runtime-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-005-runtime-critic.json',
 };
 const canonicalMarkdownPaths = [
   'README.md', 'AGENTS.md', 'MASTER_SPEC.md', 'FLOORS_1_10_DESIGN.md', 'PROJECT_HANDOVER.md', 'BASELINE_V082.md',
 ];
+const expectedC1Entries = [
+  { status: 'M', path: '.github/workflows/verify-main.yml' },
+  { status: 'A', path: '.github/workflows/verify-step-1-artifacts.yml' },
+  { status: 'M', path: 'BASELINE_V082.md' },
+  { status: 'M', path: 'PROJECT_HANDOVER.md' },
+  { status: 'M', path: 'PROJECT_STATUS.json' },
+  { status: 'A', path: 'quality-reviews/step-1-legacy-baseline/acceptance-round-005.json' },
+  { status: 'A', path: 'quality-reviews/step-1-legacy-baseline/round-004.json' },
+  { status: 'M', path: 'tests/verify-ci-artifact.mjs' },
+  { status: 'M', path: 'tests/verify-step-1-baseline.mjs' },
+].sort((left, right) => left.path.localeCompare(right.path));
 const acceptanceCiPath = 'quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json';
 const candidateCiPath = 'quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json';
-const finalJudgePath = 'quality-reviews/step-1-legacy-baseline/audits/round-004-final-judge.json';
+const finalJudgePath = 'quality-reviews/step-1-legacy-baseline/audits/round-005-final-judge.json';
 const requiredCandidatePaths = [acceptanceCiPath, 'quality-reviews/step-1-legacy-baseline/evidence/clean-recovery.json', ...Object.values(criticPathsByRole)].sort();
 const requiredSealPaths = [
   'AGENTS.md', 'BASELINE_V082.md', 'FLOORS_1_10_DESIGN.md', 'MASTER_SPEC.md', 'PROJECT_HANDOVER.md',
@@ -1357,6 +1498,10 @@ const requiredSealPaths = [
 ].sort();
 assert.deepEqual([...strengthenedAcceptance.candidateAllowedPaths].sort(), requiredCandidatePaths);
 assert.deepEqual([...strengthenedAcceptance.sealAllowedPaths].sort(), requiredSealPaths);
+assert.deepEqual(
+  [...strengthenedAcceptance.c1AllowedPaths].sort((left, right) => left.path.localeCompare(right.path)),
+  expectedC1Entries,
+);
 const expectedCandidateEntries = requiredCandidatePaths.map(relativePath => ({
   status: relativePath === 'quality-reviews/step-1-legacy-baseline/evidence/clean-recovery.json' ? 'M' : 'A',
   path: relativePath,
@@ -1383,7 +1528,7 @@ assert.equal(
 assert.deepEqual(strengthenedAcceptance.futureImmutablePaths, futureImmutablePaths);
 assert.deepEqual(strengthenedAcceptance.futureRequiredQualityGateClaims, futureRequiredQualityGateClaims);
 assert.deepEqual(strengthenedAcceptance.futureNormativeKernel, {
-  authorityPath: 'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json',
+  authorityPath: 'quality-reviews/step-1-legacy-baseline/acceptance-round-005.json',
   authorityRetention: 'The full quality-reviews/step-1-legacy-baseline Git tree is immutable at descendants of C3 when the verifier runs, so this kernel cannot be overridden by a current Markdown edit.',
   qualityLoopAuthority: 'futureRequiredQualityGateClaims is the non-overridable machine-readable minimum; current QUALITY_GATE.md is an evolvable mirror that must retain every exact claim.',
   step1StatusAuthority: 'The sealed PROJECT_STATUS legacyBaseline and legacyV082Verification objects plus the exact preparation[0] object {order:1,name:legacy-v082-source-runtime-byte-checkpoint,status:PASS} are authoritative; that entry must be unique by name and order, and current canonical Markdown files must retain one structured PASS marker and checklist row.',
@@ -1438,12 +1583,12 @@ assert.deepEqual(
 assert.deepEqual(strengthenedAcceptance.externalCompletionStopConditions, [
   'the remote pull-request head equals C3',
   'the exact C3 head completes this workflow successfully',
-  'the exact C3 workflow artifact is resolved through the provider API, downloaded, and its ci-provenance.json raw bytes, hash, event context, checkout, workflow generator, verification kit, and served runtime all match the C3 run and Git objects',
+  'after the main push workflow succeeds, the separately triggered external artifact workflow directly resolves and downloads the exact C3 artifact through GitHub API and verifies its ci-provenance.json raw bytes, hash, event context, checkout, workflow generator, verification kit, served runtime, and workflow Git objects',
   'the C3 Vercel Preview reaches READY and serves the expected documentation-only tree',
   'the PR is merged without squashing or rebasing so C1, C2, and C3 remain ancestors of main',
-  'the resulting main head has the same Git tree as C3, so the merge adds no unreviewed content and every canonical Step 1 blob equals its sealed C3 blob',
+  'the resulting main head is an exact two-parent merge whose second parent is C3 and whose first parent is both the C3 event-time base and main push before SHA, and its Git tree equals C3 so the merge adds no unreviewed content',
   'the exact resulting main head completes the main push workflow successfully in historical-seal mode',
-  'the exact resulting main push artifact is resolved through the provider API, downloaded, and its push-event ci-provenance.json raw bytes, hash, checkout, workflow generator, historical verification kit, and sealed served runtime all match the main run and Git objects',
+  'the same external artifact workflow directly resolves and downloads the exact resulting main push artifact through GitHub API and verifies its push-event ci-provenance.json raw bytes, hash, checkout, workflow generator, historical verification kit, sealed served runtime, C1/C2/C3 ancestry, and main-tree equality; that external workflow must complete successfully before reporting',
   'the remote archive ref still resolves to the exact baseline commit at completion-report time',
   'the fixed Production URL is rechecked after merge; no Production alias switch is performed',
 ]);
@@ -1491,7 +1636,8 @@ if (phase === 'seal') {
 }
 
 if (acceptanceCommit) {
-  assert.equal(singleParent(acceptanceCommit, 'Round 4 C1'), failedRoundThreeCommit, 'Round 4 C1 is not the direct child of failed Round 3 C1');
+  assert.equal(singleParent(acceptanceCommit, 'Round 5 C1'), failedRoundFourCommit, 'Round 5 C1 is not the direct child of failed Round 4 C1');
+  assertExactEdge(failedRoundFourCommit, acceptanceCommit, expectedC1Entries, 'failed Round 4 C1→Round 5 C1');
   const frozenAcceptance = kitGit(['show', `${acceptanceCommit}:${acceptanceRelativePath}`], null);
   assert.equal(sha256(frozenAcceptance), sha256(strengthenedAcceptanceBytes), 'Acceptance changed after C1');
   for (const protectedFile of strengthenedAcceptance.protectedFiles) {
@@ -1747,7 +1893,7 @@ if (phase === 'seal') {
   );
 
   assert.equal(finalReview.artifactId, 'step-1-legacy-baseline');
-  assert.equal(finalReview.round, 4);
+  assert.equal(finalReview.round, 5);
   assert.equal(finalReview.reviewTargetCommit, candidateCommit);
   assert.equal(finalReview.reviewTargetTree, kitGit(['rev-parse', `${candidateCommit}^{tree}`]).trim());
   assert.equal(finalReview.overallStatus, 'PASS');
@@ -1792,7 +1938,9 @@ if (phase === 'seal') {
     exactC3ArtifactProvenanceInspectionRequired: true,
     mergedMainPushCiRequired: true,
     mergedMainArtifactProvenanceInspectionRequired: true,
+    postMainExternalArtifactAuditWorkflowRequired: true,
     mergedMainMustContainC1C2C3: true,
+    mergedMainExactTwoParentBindingRequired: true,
     mergedMainTreeMustEqualC3Tree: true,
   });
 }

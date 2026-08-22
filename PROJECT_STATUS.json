@@ -74,7 +74,7 @@
     "remoteArchiveBranchCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
     "remoteArchiveBranchProtected": false,
     "selfContainedRuntimeSnapshot": ".github/baselines/v0.8.2",
-    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-004.json",
+    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-005.json",
     "scopeName": "V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint",
     "retainedObject": {
       "servedPaths": 17,
@@ -444,9 +444,9 @@
     "unknownProvenanceAssetsAllowedInProduction": false
   },
   "legacyV082Verification": {
-    "githubActionsRun": 32582804569,
-    "githubActionsHead": "830b32d4b0d26abebe7354b8db9d8dd3b21c203f",
-    "githubActionsConclusion": "failure-round-3-c1-api-binding",
+    "githubActionsRun": 32584243470,
+    "githubActionsHead": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+    "githubActionsConclusion": "failure-round-4-post-ci-independent-audit",
     "chromium390x844": "passed-in-clean-checkout-ci",
     "chromium375x667": "passed-in-clean-checkout-ci",
     "webkit390x844": "passed-in-clean-checkout-ci",
@@ -481,7 +481,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "freeze-round-4-acceptance-run-clean-checkout-ci-and-independent-rejudgment",
+  "nextAction": "freeze-round-5-acceptance-run-clean-checkout-ci-and-independent-rejudgment",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",

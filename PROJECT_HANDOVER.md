@@ -260,7 +260,7 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 - Service Worker更新
 - 精密バランス
 
-工程1A Round 4の候補証拠では、WebKit 390×844 / 375×667の1F〜10F deterministic loopと通常motionの開始・戦闘・再読込、ChromiumのService Worker有効・offline復旧を再実行し、raw reportもrepositoryに保持した。ただし通常速度の物理端末録画、物理iPhone Safari、ChatGPT内ブラウザ、standalone PWA、精密バランスは依然として未確認である。
+工程1A Round 5の候補証拠では、WebKit 390×844 / 375×667の1F〜10F deterministic loopと通常motionの開始・戦闘・再読込、ChromiumのService Worker有効・offline復旧を再実行し、raw reportもrepositoryに保持した。Round 4はCI成功後の反証で外部artifact検証とC1変更境界の欠陥が判明したため`FAIL`として保持する。ただし通常速度の物理端末録画、物理iPhone Safari、ChatGPT内ブラウザ、standalone PWA、精密バランスは依然として未確認である。
 
 過去のChromium結果を新版100Fの証拠へ流用しない。
 

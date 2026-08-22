@@ -1,0 +1,128 @@
+name: Verify sealed Step 1 external CI artifacts
+
+on:
+  workflow_run:
+    workflows: ["Verify Cat's Tower baseline and quality records"]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-sealed-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Bind source main workflow run
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SOURCE_EVENT: ${{ github.event.workflow_run.event }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          set -euo pipefail
+          test "$SOURCE_EVENT" = "push"
+          test "$SOURCE_CONCLUSION" = "success"
+          test "$SOURCE_HEAD_BRANCH" = "main"
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$SOURCE_RUN_ID"
+          test "$SOURCE_RUN_ATTEMPT" -gt 0
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Resolve seal, audit mode, and exact C3 run when required
+        id: audit_mode
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ROUND=quality-reviews/step-1-legacy-baseline/round-005.json
+          mapfile -t SEALS < <(
+            while read -r COMMIT PARENTS; do
+              git cat-file -e "$COMMIT:$ROUND" 2>/dev/null || continue
+              INTRODUCED=true
+              for PARENT in $PARENTS; do
+                if git cat-file -e "$PARENT:$ROUND" 2>/dev/null; then INTRODUCED=false; break; fi
+              done
+              if [ "$INTRODUCED" = "true" ]; then printf '%s\n' "$COMMIT"; fi
+            done < <(git rev-list --parents HEAD)
+          )
+          test "${#SEALS[@]}" -eq 1
+          C3_SHA=${SEALS[0]}
+          git merge-base --is-ancestor "$C3_SHA" HEAD
+          C3_TREE=$(git rev-parse "$C3_SHA^{tree}")
+          mapfile -t SEAL_MERGES < <(
+            while read -ra ROW; do
+              if [ "${#ROW[@]}" -ne 3 ] || [ "${ROW[2]}" != "$C3_SHA" ]; then continue; fi
+              if [ "$(git rev-parse "${ROW[0]}^{tree}")" != "$C3_TREE" ]; then continue; fi
+              if git merge-base --is-ancestor "$C3_SHA" "${ROW[1]}"; then continue; fi
+              printf '%s\n' "${ROW[0]}"
+            done < <(git rev-list --parents HEAD)
+          )
+          test "${#SEAL_MERGES[@]}" -eq 1
+          SEAL_MERGE=${SEAL_MERGES[0]}
+          git merge-base --is-ancestor "$SEAL_MERGE" HEAD
+          if [ "$(git rev-parse HEAD)" = "$SEAL_MERGE" ]; then
+            MODE=initial-main-seal
+            curl -fsSL \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GH_REPOSITORY/actions/workflows/verify-main.yml/runs?event=pull_request&status=success&head_sha=$C3_SHA&per_page=100" \
+              > "$RUNNER_TEMP/c3-runs.json"
+            SELECTED=$(jq -r --arg sha "$C3_SHA" '
+              [.workflow_runs[] |
+                select(.head_sha==$sha and .event=="pull_request" and .status=="completed" and .conclusion=="success")
+              ] | sort_by(.id) | last | [.id,.run_attempt] | @tsv
+            ' "$RUNNER_TEMP/c3-runs.json")
+            test -n "$SELECTED"
+            IFS=$'\t' read -r C3_RUN_ID C3_RUN_ATTEMPT <<< "$SELECTED"
+            test "$C3_RUN_ID" -gt 0
+            test "$C3_RUN_ATTEMPT" -gt 0
+            echo "c3_run_id=$C3_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "c3_run_attempt=$C3_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          else
+            MODE=future-main
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "c3_sha=$C3_SHA" >> "$GITHUB_OUTPUT"
+          echo "seal_merge=$SEAL_MERGE" >> "$GITHUB_OUTPUT"
+
+      - name: Verify C3 pull-request artifact through GitHub API
+        if: steps.audit_mode.outputs.mode == 'initial-main-seal'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p external-audit-results
+          node tests/verify-ci-artifact.mjs c3-pr "${{ steps.audit_mode.outputs.c3_run_id }}" "${{ steps.audit_mode.outputs.c3_run_attempt }}" | tee external-audit-results/c3-pr.json
+
+      - name: Verify merged main artifact through GitHub API
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p external-audit-results
+          MODE=${{ steps.audit_mode.outputs.mode }}
+          node tests/verify-ci-artifact.mjs "$MODE" "$SOURCE_RUN_ID" "$SOURCE_RUN_ATTEMPT" | tee "external-audit-results/$MODE.json"
+
+      - name: Upload external artifact audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-step-1-external-artifact-audit-source-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}-audit-${{ github.run_attempt }}
+          path: external-audit-results
+          if-no-files-found: error
+          retention-days: 30
