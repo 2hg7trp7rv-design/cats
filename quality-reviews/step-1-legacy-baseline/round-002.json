@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 2,
+  "reviewedDate": "2026-08-22",
+  "reviewTargetCommit": "5792be4a0cee37e540747233fd2921ab5f0db392",
+  "reviewTargetTree": "d2f6b71c50e85f4b098de38187bbb01c5d0aa471",
+  "overallStatus": "FAIL",
+  "gates": {
+    "G1": "FAIL",
+    "G2": "PASS",
+    "G3": "PASS",
+    "G4": "FAIL",
+    "G5": "PASS"
+  },
+  "successfulEvidenceNotTreatedAsCompletion": {
+    "githubActionsRunId": 32578260669,
+    "githubActionsConclusion": "success",
+    "cleanCheckoutAndBrowserQa": "PASS",
+    "fixedProductionRuntime17Of17": "PASS",
+    "freshRecoveryPreview": "READY"
+  },
+  "materialBlockers": [
+    "Canonical documents used unqualified Step 1 wording even though the approved claim was narrower.",
+    "Acceptance said exact source while the self-contained fallback intentionally contained deployed runtime source and verification inputs rather than all 79 repository files.",
+    "The snapshot verifier did not enforce its required manifest binding set, so a weakened snapshot manifest could bypass it.",
+    "Committed CI evidence was not API-bound to its run ID, head SHA, conclusion, job, and artifact digest.",
+    "Acceptance, verifier, and workflow were not frozen together before final review, and review records could be self-declared without a strict final-only diff.",
+    "Canonical status validation checked only the presence of a vocabulary word instead of exact Step 1A and later-step states.",
+    "Fresh Preview evidence stored observed hashes but not raw injected HTML and response headers needed to recalculate the only normalized paths.",
+    "The local and remote review histories had identical trees but different commit lineages, while the successful CI belonged only to the remote lineage."
+  ],
+  "failureRecord": {
+    "mistakenCompletion": "A successful clean-room CI run was nearly treated as sufficient even though the completion claim and its validator still had semantic and provenance bypasses.",
+    "skippedChecks": [
+      "scope wording consistency",
+      "required snapshot binding set",
+      "CI API provenance binding",
+      "validator and workflow freeze",
+      "exact canonical status assertions",
+      "raw normalized Preview HTML preservation",
+      "single remote commit lineage"
+    ],
+    "expectationGap": "A human expects the saved checkpoint claim, the evidence, and the automated judge to describe the same recoverable object and resist a convenient self-authored PASS.",
+    "rootCause": "The first reconstruction strengthened runtime testing faster than it strengthened claim semantics and evidence provenance.",
+    "reuse": "Keep the exact runtime snapshot, 17-path manifest, successful CI run, raw local evidence, Vercel rebuild, and honest legacy limitations.",
+    "discardOrRebuild": "Replace the Acceptance and final validator contract, narrow the scope name everywhere, bind CI through GitHub's API, capture raw Preview HTML, and continue only from remote commit lineage 5792be4."
+  },
+  "nextRoundHypothesis": "A third-round Acceptance that names only the deployed browser runtime source and deployment inputs, freezes its judge before final review, and API-binds CI can support a defensible Step 1A PASS without claiming player-save or physical-device capabilities."
+}

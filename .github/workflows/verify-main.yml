@@ -5,38 +5,14 @@ on:
     branches: [main]
   push:
     branches: [main]
-    paths:
-      - README.md
-      - AGENTS.md
-      - BASELINE_V082.md
-      - QUALITY_GATE.md
-      - PROJECT_HANDOVER.md
-      - PROJECT_STATUS.json
-      - quality-reviews/**
-      - .github/baselines/**
-      - .vercelignore
-      - vercel.json
-      - index.html
-      - styles.css
-      - game-data.js
-      - game-core.js
-      - app.js
-      - sw.js
-      - manifest.webmanifest
-      - assets/v080/**
-      - assets/v082/**
-      - assets/fonts/**
-      - assets/icons/**
-      - tests/**
-      - scripts/build_v080_art.py
-      - .github/workflows/verify-main.yml
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: cats-v082-main-qa
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -46,12 +22,62 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
-      - name: Clean checkout of the archived V0.8.2 source/runtime
+      - name: Assert primary checkout provenance
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          test -n "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Resolve immutable Step 1 verification kit
+        id: step1
+        run: |
+          set -euo pipefail
+          ROUND=quality-reviews/step-1-legacy-baseline/round-003.json
+          discover_path_introductions() {
+            while read -r COMMIT PARENTS; do
+              if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
+                continue
+              fi
+              INTRODUCED=true
+              for PARENT in $PARENTS; do
+                if git cat-file -e "$PARENT:$ROUND" 2>/dev/null; then
+                  INTRODUCED=false
+                  break
+                fi
+              done
+              if [ "$INTRODUCED" = "true" ]; then
+                printf '%s\n' "$COMMIT"
+              fi
+            done < <(git rev-list --parents HEAD)
+          }
+          mapfile -t SEALS < <(discover_path_introductions | sort -u)
+          test "${#SEALS[@]}" -le 1
+          if [ "${#SEALS[@]}" -eq 1 ]; then
+            test "$(git rev-list --parents -n 1 "${SEALS[0]}" | wc -w)" -eq 2
+          fi
+          if [ "${#SEALS[@]}" -eq 1 ] && [ "${SEALS[0]}" != "$(git rev-parse HEAD)" ]; then
+            git merge-base --is-ancestor "${SEALS[0]}" HEAD
+            git worktree add --detach "$GITHUB_WORKSPACE/sealed-step1" "${SEALS[0]}"
+            echo "kit=sealed-step1" >> "$GITHUB_OUTPUT"
+            echo "historical=true" >> "$GITHUB_OUTPUT"
+            echo "seal=${SEALS[0]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "kit=." >> "$GITHUB_OUTPUT"
+            echo "historical=false" >> "$GITHUB_OUTPUT"
+            echo "seal=${SEALS[0]:-}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Clean checkout of the immutable V0.8.2 commit
+        if: steps.step1.outputs.historical != 'true'
         uses: actions/checkout@v4
         with:
-          ref: archive/v0.8.2-legacy-baseline
+          ref: 727b8d00c281e7539117da5ded7309ea01c7e516
           fetch-depth: 0
           path: recovered-v082
 
@@ -64,6 +90,7 @@ jobs:
           python-version: '3.12'
 
       - name: Repository handover and source contracts
+        working-directory: ${{ steps.step1.outputs.kit }}
         run: |
           set -euo pipefail
           test -s AGENTS.md
@@ -85,7 +112,7 @@ jobs:
           grep -qx 'assets/v080/r1/' .vercelignore
           grep -qx 'assets/v080/\*.webp' .vercelignore
           test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
-          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-step-1-baseline.mjs"
+          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "capture-v082-preview.mjs living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-step-1-baseline.mjs"
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
           python - <<'PY'
           import json
@@ -104,6 +131,7 @@ jobs:
           PY
 
       - name: Vertical tower source and raster contracts
+        working-directory: ${{ steps.step1.outputs.kit }}
         run: |
           set -euo pipefail
           python -m pip install --quiet pillow
@@ -111,6 +139,7 @@ jobs:
           node --check game-core.js
           node --check app.js
           node --check sw.js
+          node --check tests/capture-v082-preview.mjs
           node --check tests/living-tower-v080.mjs
           node --check tests/step-1-normal-flow.mjs
           node --check tests/step-1-service-worker.mjs
@@ -201,20 +230,200 @@ jobs:
           print('V0.8.2 Pixel R2/R3 raster, font, and icon contracts passed')
           PY
 
-      - name: GitHub recovery ref and live runtime manifest
+      - name: Bind unexpired CI records and downloaded artifacts before seal
+        working-directory: ${{ steps.step1.outputs.kit }}
         env:
+          GH_TOKEN: ${{ github.token }}
+          HISTORICAL_STEP1_MODE: ${{ steps.step1.outputs.historical }}
+        run: |
+          set -euo pipefail
+          if [ "$HISTORICAL_STEP1_MODE" = "true" ]; then
+            echo "Historical descendant mode: C3 already performed the time-limited API and artifact checks."
+            exit 0
+          fi
+          AUTH=(-H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
+          ROUND=quality-reviews/step-1-legacy-baseline/round-003.json
+          discover_path_introductions() {
+            while read -r COMMIT PARENTS; do
+              if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
+                continue
+              fi
+              INTRODUCED=true
+              for PARENT in $PARENTS; do
+                if git cat-file -e "$PARENT:$ROUND" 2>/dev/null; then
+                  INTRODUCED=false
+                  break
+                fi
+              done
+              if [ "$INTRODUCED" = "true" ]; then
+                printf '%s\n' "$COMMIT"
+              fi
+            done < <(git rev-list --parents HEAD)
+          }
+          mapfile -t SEALS < <(discover_path_introductions | sort -u)
+          test "${#SEALS[@]}" -le 1
+          if [ "${#SEALS[@]}" -eq 1 ]; then
+            test "$(git rev-list --parents -n 1 "${SEALS[0]}" | wc -w)" -eq 2
+          fi
+          if [ "${#SEALS[@]}" -eq 1 ] && [ "${SEALS[0]}" != "$(git rev-parse HEAD)" ]; then
+            git merge-base --is-ancestor "${SEALS[0]}" HEAD
+            echo "Historical descendant mode: C3 already performed the time-limited API and artifact checks."
+            exit 0
+          fi
+
+          verify_record() {
+            local EVIDENCE="$1"
+            local RAW_BINDING="$2"
+            local LABEL="$3"
+            local RUN_ID RUN_NUMBER RUN_ATTEMPT WORKFLOW_ID PR_NUMBER BASE_BRANCH BASE_SHA HEAD_BRANCH HEAD_SHA HEAD_TREE
+            local CHECKOUT_MODE CHECKOUT_SHA CHECKOUT_TREE CHECKOUT_PARENTS JOB_ID JOB_NAME JOB_STARTED_AT JOB_COMPLETED_AT ARTIFACT_ID ARTIFACT_NAME ARTIFACT_SIZE
+            local ARTIFACT_DIGEST ARTIFACT_CREATED_AT ARTIFACT_EXPIRES_AT ARTIFACT_FILE_COUNT PREFIX ZIP_PATH
+            RUN_ID=$(jq -r '.runId' "$EVIDENCE")
+            RUN_NUMBER=$(jq -r '.runNumber' "$EVIDENCE")
+            RUN_ATTEMPT=$(jq -r '.runAttempt' "$EVIDENCE")
+            WORKFLOW_ID=$(jq -r '.workflowId' "$EVIDENCE")
+            PR_NUMBER=$(jq -r '.pullRequest.number' "$EVIDENCE")
+            BASE_BRANCH=$(jq -r '.pullRequest.baseBranch' "$EVIDENCE")
+            BASE_SHA=$(jq -r '.pullRequest.baseSha' "$EVIDENCE")
+            HEAD_BRANCH=$(jq -r '.pullRequest.headBranch' "$EVIDENCE")
+            HEAD_SHA=$(jq -r '.pullRequest.headSha' "$EVIDENCE")
+            HEAD_TREE=$(jq -r '.pullRequest.headTree' "$EVIDENCE")
+            CHECKOUT_MODE=$(jq -r '.checkout.mode' "$EVIDENCE")
+            CHECKOUT_SHA=$(jq -r '.checkout.sha' "$EVIDENCE")
+            CHECKOUT_TREE=$(jq -r '.checkout.tree' "$EVIDENCE")
+            JOB_ID=$(jq -r '.job.id' "$EVIDENCE")
+            JOB_NAME=$(jq -r '.job.name' "$EVIDENCE")
+            JOB_STARTED_AT=$(jq -r '.job.startedAt' "$EVIDENCE")
+            JOB_COMPLETED_AT=$(jq -r '.job.completedAt' "$EVIDENCE")
+            ARTIFACT_ID=$(jq -r '.artifact.id' "$EVIDENCE")
+            ARTIFACT_NAME=$(jq -r '.artifact.name' "$EVIDENCE")
+            ARTIFACT_SIZE=$(jq -r '.artifact.sizeBytes' "$EVIDENCE")
+            ARTIFACT_DIGEST=$(jq -r '.artifact.digest' "$EVIDENCE")
+            ARTIFACT_CREATED_AT=$(jq -r '.artifact.createdAt' "$EVIDENCE")
+            ARTIFACT_EXPIRES_AT=$(jq -r '.artifact.expiresAt' "$EVIDENCE")
+            ARTIFACT_FILE_COUNT=$(jq -r '.artifact.fileCount' "$EVIDENCE")
+            PREFIX="/tmp/cats-${LABEL}-${RUN_ID}"
+            ZIP_PATH="${PREFIX}.zip"
+
+            curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT" > "${PREFIX}-run.json"
+            jq -e \
+              --argjson run "$RUN_ID" --argjson runNumber "$RUN_NUMBER" --argjson runAttempt "$RUN_ATTEMPT" \
+              --argjson workflow "$WORKFLOW_ID" --argjson pr "$PR_NUMBER" --arg baseBranch "$BASE_BRANCH" \
+              --arg baseSha "$BASE_SHA" --arg headBranch "$HEAD_BRANCH" --arg headSha "$HEAD_SHA" \
+              --arg name "Verify Cat's Tower baseline and quality records" '
+              .id==$run and .run_number==$runNumber and .run_attempt==$runAttempt and
+              .workflow_id==$workflow and .head_sha==$headSha and .head_branch==$headBranch and
+              .name==$name and .event=="pull_request" and .status=="completed" and .conclusion=="success" and
+              any(.pull_requests[]?; .number==$pr and .base.ref==$baseBranch and .base.sha==$baseSha and .head.ref==$headBranch and .head.sha==$headSha)
+            ' "${PREFIX}-run.json"
+
+            curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" > "${PREFIX}-jobs.json"
+            jq -e --argjson id "$JOB_ID" --arg name "$JOB_NAME" \
+              --arg started "$JOB_STARTED_AT" --arg completed "$JOB_COMPLETED_AT" '
+              any(.jobs[];
+                .id==$id and .name==$name and .status=="completed" and .conclusion=="success" and
+                .started_at==$started and .completed_at==$completed)
+            ' "${PREFIX}-jobs.json"
+            jq -n -e --slurpfile evidence "$EVIDENCE" --slurpfile jobs "${PREFIX}-jobs.json" --argjson id "$JOB_ID" '
+              [$evidence[0].job.requiredSteps[] | {name, conclusion}] as $required |
+              [$jobs[0].jobs[] | select(.id==$id) | .steps[] | {name, conclusion}] as $actual |
+              all($required[]; . as $wanted | any($actual[]; .name==$wanted.name and .conclusion==$wanted.conclusion))
+            '
+
+            curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts?per_page=100" > "${PREFIX}-artifacts.json"
+            test "$(date -u +%s)" -lt "$(date -u -d "$ARTIFACT_EXPIRES_AT" +%s)"
+            jq -e \
+              --argjson id "$ARTIFACT_ID" --arg name "$ARTIFACT_NAME" --argjson size "$ARTIFACT_SIZE" \
+              --arg digest "$ARTIFACT_DIGEST" --arg created "$ARTIFACT_CREATED_AT" --arg expires "$ARTIFACT_EXPIRES_AT" '
+              any(.artifacts[];
+                .id==$id and .name==$name and .size_in_bytes==$size and .digest==$digest and
+                .created_at==$created and .expires_at==$expires and .expired==false)
+            ' "${PREFIX}-artifacts.json"
+            curl -fsSL -L "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID/zip" > "$ZIP_PATH"
+            test "$(stat -c %s "$ZIP_PATH")" -eq "$ARTIFACT_SIZE"
+            test "$(sha256sum "$ZIP_PATH" | cut -d' ' -f1)" = "${ARTIFACT_DIGEST#sha256:}"
+            test "$(unzip -Z1 "$ZIP_PATH" | wc -l)" -eq "$ARTIFACT_FILE_COUNT"
+
+            jq -e '
+              (.rawReports | length) == 10 and
+              ([.rawReports[].artifactMember] | unique | length) == 10 and
+              ([.rawReports[].path] | unique | length) == 10 and
+              all(.rawReports[]; (.sha256 | test("^[a-f0-9]{64}$")))
+            ' quality-reviews/step-1-legacy-baseline/evidence/browser-qa.json
+            jq -r '.rawReports[] | [.artifactMember,.sha256,.path] | @tsv' \
+              quality-reviews/step-1-legacy-baseline/evidence/browser-qa.json > "${PREFIX}-raw-reports.tsv"
+            test "$(wc -l < "${PREFIX}-raw-reports.tsv")" -eq 10
+            while IFS=$'\t' read -r MEMBER EXPECTED_SHA LOCAL_PATH; do
+              test "$(unzip -Z1 "$ZIP_PATH" | grep -Fxc "$MEMBER")" -eq 1
+              unzip -p "$ZIP_PATH" "$MEMBER" > "${PREFIX}-member.json"
+              jq -e '.passed==true' "${PREFIX}-member.json"
+              if [ "$RAW_BINDING" = "true" ]; then
+                test "$(sha256sum "${PREFIX}-member.json" | cut -d' ' -f1)" = "$EXPECTED_SHA"
+                cmp -s "${PREFIX}-member.json" "$LOCAL_PATH"
+              fi
+            done < "${PREFIX}-raw-reports.tsv"
+
+            test "$(git rev-parse "$HEAD_SHA^{tree}")" = "$HEAD_TREE"
+            test "$CHECKOUT_TREE" = "$HEAD_TREE"
+            test "$(jq '.checkout.contentDiffFromHead | length' "$EVIDENCE")" -eq 0
+            if [ "$CHECKOUT_MODE" = "pull-request-head" ]; then
+              test "$CHECKOUT_SHA" = "$HEAD_SHA"
+              test "$(jq -r '.checkout.ref' "$EVIDENCE")" = "$HEAD_SHA"
+            elif [ "$CHECKOUT_MODE" = "pull-request-merge" ] && [ "$RAW_BINDING" = "true" ]; then
+              CHECKOUT_PARENTS=$(jq -c '.checkout.parents' "$EVIDENCE")
+              curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/git/commits/$CHECKOUT_SHA" > "${PREFIX}-checkout-commit.json"
+              jq -e --arg sha "$CHECKOUT_SHA" --arg tree "$CHECKOUT_TREE" --argjson parents "$CHECKOUT_PARENTS" '
+                .sha==$sha and .tree.sha==$tree and ([.parents[].sha] == $parents)
+              ' "${PREFIX}-checkout-commit.json"
+              curl -fsSL -L "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/jobs/$JOB_ID/logs" > "${PREFIX}-job.log"
+              grep -Fq "$CHECKOUT_SHA" "${PREFIX}-job.log"
+              grep -Fq "refs/remotes/pull/$PR_NUMBER/merge" "${PREFIX}-job.log"
+            else
+              echo "Unsupported checkout provenance for $LABEL: $CHECKOUT_MODE" >&2
+              exit 1
+            fi
+            git merge-base --is-ancestor "$HEAD_SHA" HEAD
+          }
+
+          verify_record quality-reviews/step-1-legacy-baseline/evidence/ci-run.json true raw-source
+          if [ -f quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json ]; then
+            verify_record quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json false acceptance
+          fi
+          if [ -f quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json ]; then
+            verify_record quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json false candidate
+          fi
+
+      - name: GitHub recovery ref and live runtime manifest
+        working-directory: ${{ steps.step1.outputs.kit }}
+        env:
+          CATS_REPO_ROOT: ${{ github.workspace }}
           CATS_BASELINE_DIR: ${{ github.workspace }}/recovered-v082
-        run: node tests/verify-step-1-baseline.mjs --remote --live
+          HISTORICAL_STEP1_MODE: ${{ steps.step1.outputs.historical }}
+        run: |
+          if [ "$HISTORICAL_STEP1_MODE" = "true" ]; then
+            env -u CATS_BASELINE_DIR node tests/verify-step-1-baseline.mjs
+          else
+            node tests/verify-step-1-baseline.mjs --remote --live
+          fi
 
       - name: Install mobile browser QA runtime
+        working-directory: ${{ steps.step1.outputs.kit }}
         run: |
           npm install --no-save --no-package-lock playwright@1.60.0
           npx playwright install --with-deps chromium webkit
 
       - name: Chromium and WebKit vertical tower loop QA
+        working-directory: ${{ steps.step1.outputs.kit }}
+        env:
+          HISTORICAL_STEP1_MODE: ${{ steps.step1.outputs.historical }}
         run: |
           set -euo pipefail
-          python3 -m http.server 4173 --directory recovered-v082 >/tmp/cats-v082-http.log 2>&1 &
+          if [ "$HISTORICAL_STEP1_MODE" = "true" ]; then
+            RUNTIME_DIR="$PWD"
+          else
+            RUNTIME_DIR="${{ github.workspace }}/recovered-v082"
+          fi
+          python3 -m http.server 4173 --directory "$RUNTIME_DIR" >/tmp/cats-v082-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
@@ -372,6 +581,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cats-v082-step-1-recovery-evidence
-          path: test-results
-          if-no-files-found: warn
+          path: ${{ steps.step1.outputs.kit }}/test-results
+          if-no-files-found: error
           retention-days: 30

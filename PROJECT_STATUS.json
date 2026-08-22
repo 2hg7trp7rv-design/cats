@@ -15,7 +15,7 @@
   "preparation": [
     {
       "order": 1,
-      "name": "legacy-baseline-save-point",
+      "name": "legacy-v082-source-runtime-byte-checkpoint",
       "status": "IN_PROGRESS"
     },
     {
@@ -74,7 +74,17 @@
     "remoteArchiveBranchCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
     "remoteArchiveBranchProtected": false,
     "selfContainedRuntimeSnapshot": ".github/baselines/v0.8.2",
-    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-002.json",
+    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-003.json",
+    "scopeName": "V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint",
+    "retainedObject": {
+      "servedPaths": 17,
+      "uniqueRuntimeSourceFiles": 16,
+      "deploymentInputFiles": 2,
+      "verificationInputFiles": 2,
+      "snapshotEntries": 20,
+      "wholeRepositoryBackup": false,
+      "offProviderBackup": false
+    },
     "remoteTagPublished": false,
     "remoteTagBlocker": "connected-github-capability-has-no-tag-ref-or-release-write",
     "historicalDeployment": {
@@ -434,12 +444,15 @@
     "unknownProvenanceAssetsAllowedInProduction": false
   },
   "legacyV082Verification": {
-    "chromium390x844": "passed-in-step-1-reconstruction",
-    "chromium375x667": "passed-in-step-1-reconstruction",
-    "webkit390x844": "not-run",
-    "webkit375x667": "not-run",
-    "normalMotionUiFlow": "passed-in-chromium-emulation",
-    "serviceWorkerOnlineOffline": "passed-in-chromium-emulation",
+    "githubActionsRun": 32578260669,
+    "githubActionsHead": "5792be4a0cee37e540747233fd2921ab5f0db392",
+    "githubActionsConclusion": "success-but-round-2-quality-judgment-failed",
+    "chromium390x844": "passed-in-clean-checkout-ci",
+    "chromium375x667": "passed-in-clean-checkout-ci",
+    "webkit390x844": "passed-in-clean-checkout-ci",
+    "webkit375x667": "passed-in-clean-checkout-ci",
+    "normalMotionUiFlow": "passed-in-chromium-and-webkit-clean-checkout-ci",
+    "serviceWorkerOnlineOffline": "passed-in-chromium-clean-checkout-ci",
     "cachedResponseSha256": "15-of-15-core-cache-entries-passed",
     "futureSchemaRawNonOverwrite": "passed",
     "midCombatRosterNonPersistence": "reproduced-and-documented",
@@ -468,7 +481,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "publish-step-1-evidence-branch-run-chromium-and-webkit-ci-and-rejudge",
+  "nextAction": "freeze-round-3-acceptance-run-clean-checkout-ci-and-independent-rejudgment",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",

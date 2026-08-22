@@ -4,13 +4,19 @@
 
 更新日: 2026-08-22
 
+工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED
+
+工程1A正式名称: V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint
+
+工程1A対象外: whole-repository backup / player-save backup / physical-iPhone approval / Production alias switch
+
 対象: スマートフォン縦持ち Web / PWA
 
 最終商品範囲: 1つの塔・1F〜100F
 
 最初の制作範囲: 1F〜10Fのみ
 
-本書の製品内容は削除・改変せず候補仕様として保持する。ただし、新しい完成判定による再検証前のため、工程1「現行版の保存点」が品質Gateを`PASS`するまで、本書と後続工程を完成扱いしない。
+本書の製品内容は削除・改変せず候補仕様として保持する。ただし、新しい完成判定による再検証前のため、工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointが品質Gateを`PASS`するまで、本書と後続工程を完成扱いしない。
 
 ## 0. この文書の役割
 
@@ -891,9 +897,9 @@ P0・P1を根拠なくP2へ降格しない。降格には再現結果、影響�
 
 コード修正は、ユーザーが決めた準備工程の完了後に開始する。
 
-工程1が品質Gateを`PASS`するまで、工程2・3の旧成果は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降を完成扱いまたは新規着手しない。工程1合格後は工程2、工程3の順で現行Gateを再実行し、それぞれが`PASS`になった後だけ次へ進む。
+工程1Aが品質Gateを`PASS`するまで、工程2・3の旧成果は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降を完成扱いまたは新規着手しない。工程1A合格後は工程2、工程3の順で現行Gateを再実行し、それぞれが`PASS`になった後だけ次へ進む。
 
-1. 現行版の保存点 — `IN_PROGRESS`
+1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`
 2. この100F正本仕様書 — `PENDING_REVALIDATION`
 3. 1〜10F完全設計 — `PENDING_REVALIDATION`
 4. 9画面の完成見本 — `NOT_STARTED`

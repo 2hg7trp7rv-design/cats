@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 2,
+  "checkedDate": "2026-08-22",
+  "repository": "2hg7trp7rv-design/cats_tower",
+  "workflowName": "Verify Cat's Tower baseline and quality records",
+  "workflowId": 335561992,
+  "workflowPath": ".github/workflows/verify-main.yml",
+  "runId": 32578260669,
+  "runNumber": 21,
+  "runAttempt": 1,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "pullRequest": {
+    "number": 4,
+    "baseBranch": "main",
+    "baseSha": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+    "baseTree": "833d014051ef005eb0378c1b1149942a4f3e5f74",
+    "headBranch": "codex/restart-step-1-baseline",
+    "headSha": "5792be4a0cee37e540747233fd2921ab5f0db392",
+    "headTree": "d2f6b71c50e85f4b098de38187bbb01c5d0aa471"
+  },
+  "checkout": {
+    "mode": "pull-request-merge",
+    "ref": "refs/pull/4/merge",
+    "sha": "bf146bf9e38d21759c9f74f12f49fc860ac80739",
+    "tree": "d2f6b71c50e85f4b098de38187bbb01c5d0aa471",
+    "parents": [
+      "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+      "5792be4a0cee37e540747233fd2921ab5f0db392"
+    ],
+    "contentDiffFromHead": [],
+    "provenance": "GitHub Actions job log for job 97043692522 and fetched refs/pull/4/merge"
+  },
+  "job": {
+    "id": 97043692522,
+    "name": "vertical-tower-qa",
+    "status": "completed",
+    "conclusion": "success",
+    "startedAt": "2026-08-22T14:17:22Z",
+    "completedAt": "2026-08-22T14:22:22Z",
+    "requiredSteps": [
+      { "name": "Clean checkout of the archived V0.8.2 source/runtime", "conclusion": "success" },
+      { "name": "Repository handover and source contracts", "conclusion": "success" },
+      { "name": "Vertical tower source and raster contracts", "conclusion": "success" },
+      { "name": "GitHub recovery ref and live runtime manifest", "conclusion": "success" },
+      { "name": "Chromium and WebKit vertical tower loop QA", "conclusion": "success" },
+      { "name": "Upload V0.8.2 vertical tower evidence", "conclusion": "success" }
+    ]
+  },
+  "artifact": {
+    "id": 9477168517,
+    "name": "cats-v082-step-1-recovery-evidence",
+    "sizeBytes": 71617830,
+    "digest": "sha256:f91ed1fbff5397ff61332272619901f77d9628f9086484401e7c93c193496766",
+    "fileCount": 94,
+    "createdAt": "2026-08-22T14:22:20Z",
+    "expiresAt": "2026-09-21T14:22:17Z",
+    "fileCountEvidence": "job log plus downloaded ZIP central directory",
+    "supplementaryOnly": true
+  },
+  "runtime": {
+    "node": "22.23.2",
+    "playwright": "1.60.0",
+    "chromium": "148.0.7778.96",
+    "chromiumBuild": 1223,
+    "webkit": "26.4",
+    "webkitBuild": 2287
+  },
+  "runtimeProofBoundary": "Runtime versions and assertedResults are supported by the preserved job log/artifact and current clean-checkout re-execution. They are not described as fields authenticated directly by the GitHub run metadata API.",
+  "assertedResults": {
+    "cleanArchiveCheckout": "PASS",
+    "sourceAndRasterContracts": "PASS",
+    "remoteArchiveAndLive17PathManifest": "PASS",
+    "deterministicLoopChromium390x844": "PASS",
+    "deterministicLoopChromium375x667": "PASS",
+    "deterministicLoopWebKit390x844": "PASS",
+    "deterministicLoopWebKit375x667": "PASS",
+    "normalUiChromium390x844": "PASS",
+    "normalUiChromium375x667": "PASS",
+    "normalUiWebKit390x844": "PASS",
+    "normalUiWebKit375x667": "PASS",
+    "serviceWorkerChromium390x844": "PASS",
+    "serviceWorkerChromium375x667": "PASS",
+    "durableReloadNineteenFields": "PASS",
+    "cacheKeysAndBodies15Of15": "PASS",
+    "futureSchemaRawNonOverwrite": "PASS",
+    "offlineShell": "PASS"
+  },
+  "apiVerification": {
+    "requiredAtC1C2C3": true,
+    "artifactMustExistAndBeUnexpiredBeforeSeal": true,
+    "downloadedZipAndTenRawMembersMustMatch": true,
+    "historicalDescendantsSkipTimeLimitedApi": true,
+    "afterExpiry": "Only descendants of the already verified C3 seal may skip the historical API query; the committed raw reports, snapshot, and fresh browser execution remain durable."
+  }
+}

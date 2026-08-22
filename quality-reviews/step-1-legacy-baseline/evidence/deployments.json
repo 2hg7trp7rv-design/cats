@@ -27,6 +27,12 @@
     "commit": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
     "commitParent": "727b8d00c281e7539117da5ded7309ea01c7e516",
     "tree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+    "commitObjectWitness": {
+      "path": "quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-commit-object.b64",
+      "encoding": "base64",
+      "decodedBytes": 314,
+      "encodedFileSha256": "985ac31582f9f57b37c82d57a43fd4a9a755a6dd6726d3cebc7e8c446d5246ca"
+    },
     "treeEqualsBaseline": true,
     "deploymentId": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
     "url": "https://catstower-r2xy45s33-shinyaaas-projects.vercel.app/",

@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "browserName": "chromium",
+  "browserName": "webkit",
   "targetUrl": "http://127.0.0.1:4173/",
   "viewport": {
     "width": 390,
@@ -113,18 +113,18 @@
   "screenshots": [
     {
       "name": "01-title.png",
-      "bytes": 475532,
-      "sha256": "d6653d9213a3736b5dea86fa4e666c18a36bf5c9bcf97fa7ac83a4267355935b"
+      "bytes": 498524,
+      "sha256": "01a3985a529f32547c5d3aef0880eb85ce44f5497333aa65cf544da5668600a6"
     },
     {
       "name": "02-active-battle.png",
-      "bytes": 316520,
-      "sha256": "601c4b7bd8aa865b58c0fda5f2a5ef16d3cc0e2178282e476919b87637d64a99"
+      "bytes": 312445,
+      "sha256": "f4d6a3c264deb6a87bad4e1eea108f6b62b484046dac791d41822eabb9d5695b"
     },
     {
       "name": "03-reloaded.png",
-      "bytes": 293402,
-      "sha256": "c4c8df2a665d89fa27362ede9b54bc9147cbfa4c9639e8f9c554e1ab697077c7"
+      "bytes": 303773,
+      "sha256": "054a7763b49fd07d6c75d052b07879fc0e3794fb10f3d172748664f8db99f904"
     }
   ],
   "errors": [],

@@ -1,7 +1,11 @@
 {
   "schemaVersion": 1,
   "retrievedDate": "2026-08-22",
+  "recheckedAt": "2026-08-22T15:28:51Z",
   "source": "Vercel deployment API through the connected project",
+  "connectorAuthentication": "authenticated connected-project access",
+  "cryptographicResponseSignatureStored": false,
+  "proceduralIndependentRecheckRequired": true,
   "project": {
     "id": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
     "name": "cats_tower",

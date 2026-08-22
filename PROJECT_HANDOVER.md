@@ -10,13 +10,19 @@ Canonical branch: `main`
 
 固定Vercel URL: <https://cats-tau-dusky.vercel.app/>
 
+工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED
+
+工程1A正式名称: V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint
+
+工程1A対象外: whole-repository backup / player-save backup / physical-iPhone approval / Production alias switch
+
 ## 1. 最初に理解する結論
 
 製品方針は、V0.8.2の10F完結版から「1つの塔・100F」へ変更された。
 
 ただし、100F分の素材やデータを一括生成しない。最初に1〜10Fを完全な商品スライスとして作り、実移動、接敵、複数敵、ショップ選択、猫解放、塔スクロール、夜明け、保存、物理iPhone QAを合格させる。11F以降はその後に10F単位で制作する。
 
-現在は新しい完成判定に従って工程1「現行版の保存点」からやり直している。source/runtime checkpointを再検証中で、ゲームruntimeの変更は0件である。工程2と工程3の旧成果物は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降はまだ開始しない。
+新しい完成判定は、工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointから適用する。工程1Aによるゲームruntimeの変更は0件である。工程2と工程3の旧成果物は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降は工程2・3の合格前に開始しない。
 
 ## 2. 文書の権限
 
@@ -32,13 +38,13 @@ Canonical branch: `main`
 
 旧文書、現行コード、古いテストに「10F終了」「11F禁止」「3F食堂・5F共同部屋固定」「ショップ不要」と書かれていても、新製品仕様としては失効している。現行V0.8.2の挙動を説明する履歴としてのみ扱う。
 
-## 3. 工程1・現行版の保存点
+## 3. 工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint
 
-V0.8.2をコード修正前の比較・復旧checkpoint候補として再検証している。GitHubの現在の`origin/main`、V0.8.2 baseline commit、履歴上のdeployment、現在の固定Productionは別々に扱う。
+V0.8.2はコード修正前の比較・復旧checkpointである。GitHubの現在の`origin/main`、V0.8.2 baseline commit、履歴上のdeployment、現在の固定Productionは別々に扱う。
 
 | 項目 | 値 |
 |---|---|
-| 工程1状態 | `IN_PROGRESS` — source/runtime checkpointを再検証中 |
+| 工程1A状態 | `IN_PROGRESS` — 配信runtime sourceとdeployment inputsを再検証中 |
 | 現在の`origin/main` | `76c49e9fca82a4c0f6922de8f93ea3b4e57289f6` |
 | baseline候補commit | `727b8d00c281e7539117da5ded7309ea01c7e516` |
 | baseline GitHub | <https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516> |
@@ -46,14 +52,14 @@ V0.8.2をコード修正前の比較・復旧checkpoint候補として再検証�
 | 現在の固定Production | `dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az` / `76c49e9` / `READY` |
 | 固定Production URL | <https://cats-tau-dusky.vercel.app/> |
 | runtime照合 | baseline候補と現在の固定Productionがbyte単位で一致 |
-| 工程1再構成によるゲームruntime変更 | 0件 |
+| 工程1A再構成によるゲームruntime変更 | 0件 |
 | fresh recovery Vercel Preview | `dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV` / baseline同一tree / `READY` |
 | 物理iPhone / ChatGPT内ブラウザ / standalone PWA | 未検証 |
 | player save backup | 利用不可。削除・回復不能に破損した実ユーザー`localStorage`は復元不可 |
 | 1〜10F Preview Ready | false |
 | 100F Product Production Ready | false |
 
-remote archive branch `archive/v0.8.2-legacy-baseline`はbaseline候補commitを指す。ローカルannotated tag `v0.8.2-legacy-baseline`はあるがremote tagは未反映である。fresh recovery Previewでは非HTML 15経路が直接一致し、HTML 2経路はVercel Preview Toolbar注入行だけを除いて一致した。旧成果物は削除せず候補として残し、全CIと独立再審査が合格するまでは工程1を`PASS`としない。
+remote archive branch `archive/v0.8.2-legacy-baseline`はbaseline候補commitを指す。ローカルannotated tag `v0.8.2-legacy-baseline`はあるがremote tagは未反映である。fresh recovery Previewでは非HTML 15経路が直接一致し、各HTMLはbaseline bytesの直後にdeployment-bound Vercel Preview Toolbar suffixが1回だけ追加されたことを確認した。旧成果物は削除せず候補として残し、全CIと独立再審査が合格するまでは工程1Aを`PASS`としない。
 
 ## 4. 新しい製品定義
 
@@ -239,14 +245,14 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 - 10F完了と11F防止
 - schema2保存
 
-保存点で確認済みだった範囲:
+当初の保存点判定で確認済みだった範囲:
 
 - Chromium 390×844 / 375×667のsource E2Eと目視証跡
 - 猫6種の接地、formation、回復、完了再読込
 - 敵のhit、defeat、階遷移
 - `PROJECT_STATUS.json` parseとR3画像decode
 
-未確認だった範囲:
+当初の保存点判定で未確認だった範囲:
 
 - WebKit 390×844 / 375×667
 - 通常速度動画
@@ -254,17 +260,19 @@ Gate B前の総量上限は、名前付き猫2、一時増援1、通常敵2、�
 - Service Worker更新
 - 精密バランス
 
+工程1A Round 3の候補証拠では、WebKit 390×844 / 375×667の1F〜10F deterministic loopと通常motionの開始・戦闘・再読込、ChromiumのService Worker有効・offline復旧を再実行し、raw reportもrepositoryに保持した。ただし通常速度の物理端末録画、物理iPhone Safari、ChatGPT内ブラウザ、standalone PWA、精密バランスは依然として未確認である。
+
 過去のChromium結果を新版100Fの証拠へ流用しない。
 
 ## 16. 次に行うこと
 
-工程1のsource/runtime checkpointを完成させる。作成済みのfresh recovery Vercel Previewを含め、GitHub archive ref、runtime manifest、通常導線、保存、Service Worker、offline復旧、既知の制限、固定Productionとのbyte一致をCIと独立監査で再確認する。物理iPhoneは未検証として分離し、確認済みと書かない。
+工程1Aでは、作成済みのfresh recovery Vercel Previewを含め、GitHub archive ref、runtime manifest、通常導線、保存、Service Worker、offline復旧、既知の制限、固定Productionとのbyte一致をCIと独立監査で再確認する。物理iPhoneは未検証として分離し、確認済みと書かない。
 
-工程1が新しい完成判定で`PASS`になるまで工程2へ進まない。工程2の`MASTER_SPEC.md`と工程3の`FLOORS_1_10_DESIGN.md`は削除せず候補として保持するが、現在の判定は`PENDING_REVALIDATION`である。工程4以降とゲーム本体コード修正は`NOT_STARTED`のままとする。
+工程1Aが新しい完成判定で`PASS`になるまで工程2へ進まない。工程2の`MASTER_SPEC.md`と工程3の`FLOORS_1_10_DESIGN.md`は削除せず候補として保持するが、現在の判定は`PENDING_REVALIDATION`である。工程4以降とゲーム本体コード修正は`NOT_STARTED`のままとする。
 
 ## 17. コード修正前の全順序
 
-1. 現行版の保存点 — `IN_PROGRESS`
+1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`
 2. 100F正本仕様書 — `PENDING_REVALIDATION`
 3. 1〜10F完全設計 — `PENDING_REVALIDATION`
 4. 9画面の完成見本 — `NOT_STARTED`

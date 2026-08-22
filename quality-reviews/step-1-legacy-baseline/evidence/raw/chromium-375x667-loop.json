@@ -1,7 +1,7 @@
 {
   "passed": true,
   "browserName": "chromium",
-  "targetUrl": "http://127.0.0.1:4176/",
+  "targetUrl": "http://127.0.0.1:4173/",
   "version": "0.8.2",
   "gameplaySchema": 2,
   "viewport": {
@@ -26,8 +26,8 @@
       "hash": 2081776926
     },
     "fallbackFingerprint": {
-      "ink": 4009,
-      "hash": 795470575
+      "ink": 6619,
+      "hash": 3696609167
     }
   },
   "v082Assets": [
@@ -124,11 +124,11 @@
           "helper"
         ],
         "backgrounds": [
-          "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/cats-cast-r3.png\")",
-          "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/cats-cast-r3.png\")",
-          "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/cats-cast-r3.png\")",
-          "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/cats-cast-r3.png\")",
-          "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/cats-cast-r3.png\")"
+          "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/cats-cast-r3.png\")",
+          "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/cats-cast-r3.png\")"
         ]
       },
       "helperHueVisual": {
@@ -499,7 +499,7 @@
       "visual": {
         "enemy": "black-feather-barrier",
         "character": "barrier",
-        "spriteBackground": "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/enemies-r3.png\")"
+        "spriteBackground": "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/enemies-r3.png\")"
       },
       "ground": {
         "enemy": "black-feather-barrier",
@@ -534,7 +534,7 @@
     "normalEnemy": {
       "enemy": "owl",
       "character": "owl",
-      "spriteBackground": "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/enemies-r3.png\")",
+      "spriteBackground": "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/enemies-r3.png\")",
       "ground": {
         "enemy": "owl",
         "phase": "moving",
@@ -552,7 +552,7 @@
       "width": 108.75,
       "height": 108.75,
       "intersectsViewport": true,
-      "spriteBackground": "url(\"http://127.0.0.1:4176/assets/v082/pixel-r3/enemies-r3.png\")",
+      "spriteBackground": "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/enemies-r3.png\")",
       "ground": {
         "enemy": "boss",
         "phase": "moving",
@@ -683,11 +683,11 @@
   "evidence": [
     {
       "name": "00-settings-paused.png",
-      "sha256": "ded90cabeb5b9016983fcbb17d59b7aa63e6d211cc97e182cd158c4753dd2231"
+      "sha256": "cc339de1c43add881fec2775053d8208b1fc2f65d11fa72cebf5f764747a4699"
     },
     {
       "name": "00-title.png",
-      "sha256": "2c4b8b14a0c82b3eb70cd8553bd111bc42559d4d0b8d8a10ddf4d7022c5fb19e"
+      "sha256": "6a9a6128e984028f6beff7c3f97856783ada634d882a602a46e41b3667ffc37f"
     },
     {
       "name": "01-auto-climb.png",

@@ -1,12 +1,12 @@
 {
   "passed": true,
-  "browserName": "chromium",
+  "browserName": "webkit",
   "targetUrl": "http://127.0.0.1:4173/",
   "version": "0.8.2",
   "gameplaySchema": 2,
   "viewport": {
-    "width": 390,
-    "height": 844,
+    "width": 375,
+    "height": 667,
     "deviceScaleFactor": 3,
     "reducedMotion": "reduce"
   },
@@ -22,12 +22,12 @@
     "fontByteLength": 1039792,
     "fontSignature": "wOF2",
     "customFingerprint": {
-      "ink": 7070,
-      "hash": 2081776926
+      "ink": 7226,
+      "hash": 1624462593
     },
     "fallbackFingerprint": {
-      "ink": 6619,
-      "hash": 3696609167
+      "ink": 6609,
+      "hash": 2071410606
     }
   },
   "v082Assets": [
@@ -147,78 +147,78 @@
             "kind": "helper-calico",
             "frame": "attack",
             "footRatio": 0.8038674033149171,
-            "foot": 558.5921286904351,
+            "foot": 437.88907163841293,
             "visible": {
-              "left": 30.145977209944753,
-              "top": 526.7458752373964,
-              "right": 71.22902279005524,
-              "bottom": 559.832891811982
+              "left": 28.993093922651934,
+              "top": 407.2592373842692,
+              "right": 68.50690607734806,
+              "bottom": 439.08244180415875
             }
           },
           {
             "kind": "toto",
             "frame": "attack",
             "footRatio": 0.8149171270718232,
-            "foot": 558.594834891472,
+            "foot": 437.8237262536149,
             "visible": {
-              "left": 74.4193283839779,
-              "top": 514.004602168805,
-              "right": 124.4556716160221,
-              "bottom": 564.2111619137927
+              "left": 71.52325300353667,
+              "top": 394.941129568532,
+              "right": 119.64341874939302,
+              "bottom": 443.2249693475376
             }
           },
           {
             "kind": "helper-gray",
             "frame": "attack",
             "footRatio": 0.8038674033149171,
-            "foot": 558.5921286904351,
+            "foot": 437.88907163841293,
             "visible": {
-              "left": 127.64597720994475,
-              "top": 526.7458752373964,
-              "right": 168.72902279005524,
-              "bottom": 559.832891811982
+              "left": 122.74309392265194,
+              "top": 407.2592373842692,
+              "right": 162.25690607734805,
+              "bottom": 439.08244180415875
             }
           },
           {
             "kind": "luna",
             "frame": "attack",
             "footRatio": 0.8895027624309392,
-            "foot": 558.5939179309823,
+            "foot": 438.0019696483296,
             "visible": {
-              "left": 171.7273825966851,
-              "top": 515.6866320193802,
-              "right": 222.1476174033149,
-              "bottom": 558.5939179309823
+              "left": 165.19198895027625,
+              "top": 396.73643097429647,
+              "right": 213.68301104972375,
+              "bottom": 438.0019696483296
             }
           },
           {
             "kind": "helper-tabby",
             "frame": "attack",
             "footRatio": 0.8038674033149171,
-            "foot": 558.5921286904351,
+            "foot": 437.88907163841293,
             "visible": {
-              "left": 225.14597720994476,
-              "top": 526.7458752373964,
-              "right": 266.22902279005524,
-              "bottom": 559.832891811982
+              "left": 216.49309392265192,
+              "top": 407.2592373842692,
+              "right": 256.00690607734805,
+              "bottom": 439.08244180415875
             }
           },
           {
             "kind": "mugi",
             "frame": "attack",
             "footRatio": 0.8024861878453039,
-            "foot": 558.5926419252849,
+            "foot": 437.75578990957354,
             "visible": {
-              "left": 270.078125,
-              "top": 506.2836381269423,
-              "right": 330.515625,
-              "bottom": 558.5926419252849
+              "left": 259.75,
+              "top": 387.44501642891055,
+              "right": 317.875,
+              "bottom": 437.75578990957354
             }
           }
         ],
-        "footSpread": 0.0027062010369718337,
-        "groundRatio": 0.8799847299073309,
-        "minimumGap": 2.99835980662985,
+        "footSpread": 0.24617973875604093,
+        "groundRatio": 0.8799398571126922,
+        "minimumGap": 2.8100828729281773,
         "contained": true
       },
       "alignmentPhaseMatrix": {
@@ -226,146 +226,146 @@
           {
             "kind": "mugi",
             "phase": "idle",
-            "bodyFoot": 558.592132399754,
-            "gap": 0.007242600246058828
+            "bodyFoot": 437.7564881045515,
+            "gap": 0.13788689544850286
           },
           {
             "kind": "mugi",
             "phase": "moving",
-            "bodyFoot": 558.5926419252849,
-            "gap": 0.006733074715157272
+            "bodyFoot": 437.75578990957354,
+            "gap": 0.13858509042648848
           },
           {
             "kind": "mugi",
             "phase": "attacking",
-            "bodyFoot": 558.5926419252849,
-            "gap": 0.006733074715157272
+            "bodyFoot": 437.75578990957354,
+            "gap": 0.13858509042648848
           },
           {
             "kind": "mugi",
             "phase": "celebrating",
-            "bodyFoot": 558.5926419252849,
-            "gap": 0.006733074715157272
+            "bodyFoot": 437.75578990957354,
+            "gap": 0.13858509042648848
           },
           {
             "kind": "luna",
             "phase": "idle",
-            "bodyFoot": 558.5947026205326,
-            "gap": 0.004672379467365317
+            "bodyFoot": 438.00168554822386,
+            "gap": -0.10731054822383612
           },
           {
             "kind": "luna",
             "phase": "moving",
-            "bodyFoot": 558.5939179309823,
-            "gap": 0.005457069017666072
+            "bodyFoot": 438.0019696483296,
+            "gap": -0.10759464832955246
           },
           {
             "kind": "luna",
             "phase": "attacking",
-            "bodyFoot": 558.5939179309823,
-            "gap": 0.005457069017666072
+            "bodyFoot": 438.0019696483296,
+            "gap": -0.10759464832955246
           },
           {
             "kind": "luna",
             "phase": "celebrating",
-            "bodyFoot": 558.5939179309823,
-            "gap": 0.005457069017666072
+            "bodyFoot": 438.0019696483296,
+            "gap": -0.10759464832955246
           },
           {
             "kind": "toto",
             "phase": "idle",
-            "bodyFoot": 558.5956122466872,
-            "gap": 0.00376275331279885
+            "bodyFoot": 437.8251663123705,
+            "gap": 0.06920868762949794
           },
           {
             "kind": "toto",
             "phase": "moving",
-            "bodyFoot": 558.594834891472,
-            "gap": 0.004540108527976372
+            "bodyFoot": 437.8237262536149,
+            "gap": 0.07064874638513174
           },
           {
             "kind": "toto",
             "phase": "attacking",
-            "bodyFoot": 558.594834891472,
-            "gap": 0.004540108527976372
+            "bodyFoot": 437.8237262536149,
+            "gap": 0.07064874638513174
           },
           {
             "kind": "toto",
             "phase": "celebrating",
-            "bodyFoot": 558.5909696968879,
-            "gap": 0.00840530311211296
+            "bodyFoot": 437.820269505622,
+            "gap": 0.07410549437804548
           },
           {
             "kind": "helper-tabby",
             "phase": "idle",
-            "bodyFoot": 558.5939708730792,
-            "gap": 0.005404126920780072
+            "bodyFoot": 437.8908263148524,
+            "gap": 0.003548685147620745
           },
           {
             "kind": "helper-tabby",
             "phase": "moving",
-            "bodyFoot": 558.5921239694837,
-            "gap": 0.007251030516272294
+            "bodyFoot": 437.88902358587274,
+            "gap": 0.0053514141272899
           },
           {
             "kind": "helper-tabby",
             "phase": "attacking",
-            "bodyFoot": 558.5921286904351,
-            "gap": 0.007246309564948206
+            "bodyFoot": 437.8890716384129,
+            "gap": 0.005303361587152722
           },
           {
             "kind": "helper-tabby",
             "phase": "celebrating",
-            "bodyFoot": 558.5952209135445,
-            "gap": 0.004154086455514516
+            "bodyFoot": 437.8920426342369,
+            "gap": 0.002332365763152211
           },
           {
             "kind": "helper-gray",
             "phase": "idle",
-            "bodyFoot": 558.5939708730792,
-            "gap": 0.005404126920780072
+            "bodyFoot": 437.8908263148524,
+            "gap": 0.003548685147620745
           },
           {
             "kind": "helper-gray",
             "phase": "moving",
-            "bodyFoot": 558.5921239694837,
-            "gap": 0.007251030516272294
+            "bodyFoot": 437.88902358587274,
+            "gap": 0.0053514141272899
           },
           {
             "kind": "helper-gray",
             "phase": "attacking",
-            "bodyFoot": 558.5921286904351,
-            "gap": 0.007246309564948206
+            "bodyFoot": 437.8890716384129,
+            "gap": 0.005303361587152722
           },
           {
             "kind": "helper-gray",
             "phase": "celebrating",
-            "bodyFoot": 558.5952209135445,
-            "gap": 0.004154086455514516
+            "bodyFoot": 437.8920426342369,
+            "gap": 0.002332365763152211
           },
           {
             "kind": "helper-calico",
             "phase": "idle",
-            "bodyFoot": 558.5939708730792,
-            "gap": 0.005404126920780072
+            "bodyFoot": 437.8908263148524,
+            "gap": 0.003548685147620745
           },
           {
             "kind": "helper-calico",
             "phase": "moving",
-            "bodyFoot": 558.5921239694837,
-            "gap": 0.007251030516272294
+            "bodyFoot": 437.88902358587274,
+            "gap": 0.0053514141272899
           },
           {
             "kind": "helper-calico",
             "phase": "attacking",
-            "bodyFoot": 558.5921286904351,
-            "gap": 0.007246309564948206
+            "bodyFoot": 437.8890716384129,
+            "gap": 0.005303361587152722
           },
           {
             "kind": "helper-calico",
             "phase": "celebrating",
-            "bodyFoot": 558.5952209135445,
-            "gap": 0.004154086455514516
+            "bodyFoot": 437.8920426342369,
+            "gap": 0.002332365763152211
           }
         ],
         "enemies": [
@@ -373,117 +373,117 @@
             "enemy": "crow",
             "phase": "idle",
             "expectedHover": 6,
-            "bodyFoot": 552.5995250818022,
-            "hoverGap": 5.99984991819781
+            "bodyFoot": 431.9515038181722,
+            "hoverGap": 5.9428711818277975
           },
           {
             "enemy": "crow",
             "phase": "moving",
             "expectedHover": 6,
-            "bodyFoot": 552.5995250818022,
-            "hoverGap": 5.99984991819781
+            "bodyFoot": 431.9515038181722,
+            "hoverGap": 5.9428711818277975
           },
           {
             "enemy": "crow",
             "phase": "attacking",
             "expectedHover": 6,
-            "bodyFoot": 552.5892375270839,
-            "hoverGap": 6.010137472916085
+            "bodyFoot": 431.94105280346105,
+            "hoverGap": 5.953322196538977
           },
           {
             "enemy": "crow",
             "phase": "defeated",
             "expectedHover": 6,
-            "bodyFoot": 552.5962556067018,
-            "hoverGap": 6.0031193932982205
+            "bodyFoot": 431.9465512315477,
+            "hoverGap": 5.947823768452338
           },
           {
             "enemy": "owl",
             "phase": "idle",
             "expectedHover": 6,
-            "bodyFoot": 552.5898744361835,
-            "hoverGap": 6.009500563816459
+            "bodyFoot": 431.85118650994906,
+            "hoverGap": 6.043188490050966
           },
           {
             "enemy": "owl",
             "phase": "moving",
             "expectedHover": 6,
-            "bodyFoot": 552.5930688341679,
-            "hoverGap": 6.006306165832143
+            "bodyFoot": 431.85530351670405,
+            "hoverGap": 6.03907148329597
           },
           {
             "enemy": "owl",
             "phase": "attacking",
             "expectedHover": 6,
-            "bodyFoot": 552.5960612428781,
-            "hoverGap": 6.003313757121873
+            "bodyFoot": 431.85557193650726,
+            "hoverGap": 6.0388030634927645
           },
           {
             "enemy": "owl",
             "phase": "defeated",
             "expectedHover": 6,
-            "bodyFoot": 552.5919836897876,
-            "hoverGap": 6.00739131021237
+            "bodyFoot": 431.8539413536451,
+            "hoverGap": 6.040433646354927
           },
           {
             "enemy": "black-feather-barrier",
             "phase": "idle",
             "expectedHover": 4,
-            "bodyFoot": 554.598060228548,
-            "hoverGap": 4.00131477145203
+            "bodyFoot": 433.82272153401243,
+            "hoverGap": 4.071653465987595
           },
           {
             "enemy": "black-feather-barrier",
             "phase": "moving",
             "expectedHover": 4,
-            "bodyFoot": 554.598060228548,
-            "hoverGap": 4.00131477145203
+            "bodyFoot": 433.82272153401243,
+            "hoverGap": 4.071653465987595
           },
           {
             "enemy": "black-feather-barrier",
             "phase": "attacking",
             "expectedHover": 4,
-            "bodyFoot": 554.598060228548,
-            "hoverGap": 4.00131477145203
+            "bodyFoot": 433.82272153401243,
+            "hoverGap": 4.071653465987595
           },
           {
             "enemy": "black-feather-barrier",
             "phase": "defeated",
             "expectedHover": 4,
-            "bodyFoot": 554.598060228548,
-            "hoverGap": 4.00131477145203
+            "bodyFoot": 433.82272153401243,
+            "hoverGap": 4.071653465987595
           },
           {
             "enemy": "boss",
             "phase": "idle",
             "expectedHover": 6,
-            "bodyFoot": 552.5885535814485,
-            "hoverGap": 6.010821418551473
+            "bodyFoot": 431.9551796254532,
+            "hoverGap": 5.939195374546841
           },
           {
             "enemy": "boss",
             "phase": "moving",
             "expectedHover": 6,
-            "bodyFoot": 552.5957950992479,
-            "hoverGap": 6.003579900752129
+            "bodyFoot": 431.95684308636913,
+            "hoverGap": 5.937531913630892
           },
           {
             "enemy": "boss",
             "phase": "attacking",
             "expectedHover": 6,
-            "bodyFoot": 552.5913716521711,
-            "hoverGap": 6.00800334782889
+            "bodyFoot": 431.9583215871569,
+            "hoverGap": 5.936053412843137
           },
           {
             "enemy": "boss",
             "phase": "defeated",
             "expectedHover": 6,
-            "bodyFoot": 552.5885535814485,
-            "hoverGap": 6.010821418551473
+            "bodyFoot": 431.9551796254532,
+            "hoverGap": 5.939195374546841
           }
         ],
-        "maximumCatGroundError": 0.00840530311211296,
-        "maximumEnemyHoverError": 0.010821418551472561
+        "maximumCatGroundError": 0.13858509042648848,
+        "maximumEnemyHoverError": 0.0716534659875947
       }
     },
     "firstKillReward": 15,
@@ -505,9 +505,9 @@
         "enemy": "black-feather-barrier",
         "phase": "attacking",
         "footRatio": 0.8646408839779005,
-        "ground": 558.599375,
-        "visibleFoot": 554.598060228548,
-        "hoverGap": 4.00131477145203
+        "ground": 437.894375,
+        "visibleFoot": 433.82272153401243,
+        "hoverGap": 4.071653465987595
       }
     },
     "dawn": {
@@ -526,9 +526,9 @@
         "enemy": "crow",
         "phase": "moving",
         "footRatio": 0.6640360766629086,
-        "ground": 558.599375,
-        "visibleFoot": 552.5995250818022,
-        "hoverGap": 5.99984991819781
+        "ground": 437.894375,
+        "visibleFoot": 431.9515038181722,
+        "hoverGap": 5.9428711818277975
       }
     },
     "normalEnemy": {
@@ -539,9 +539,9 @@
         "enemy": "owl",
         "phase": "moving",
         "footRatio": 0.8314917127071824,
-        "ground": 558.599375,
-        "visibleFoot": 552.5930688341679,
-        "hoverGap": 6.006306165832143
+        "ground": 437.894375,
+        "visibleFoot": 431.8553035167041,
+        "hoverGap": 6.039071483295913
       }
     },
     "firstNightBoss": {
@@ -549,17 +549,17 @@
       "character": "boss",
       "phase": "moving",
       "opacity": 1,
-      "width": 113.09375,
-      "height": 113.09371948242188,
+      "width": 108.75,
+      "height": 108.75,
       "intersectsViewport": true,
       "spriteBackground": "url(\"http://127.0.0.1:4173/assets/v082/pixel-r3/enemies-r3.png\")",
       "ground": {
         "enemy": "boss",
         "phase": "moving",
         "footRatio": 0.7707182320441989,
-        "ground": 558.599375,
-        "visibleFoot": 552.5957950992479,
-        "hoverGap": 6.003579900752129
+        "ground": 437.894375,
+        "visibleFoot": 431.95684308636913,
+        "hoverGap": 5.937531913630892
       },
       "entryFormation": {
         "count": 6,
@@ -574,12 +574,12 @@
         "phases": [
           "moving"
         ],
-        "minimumGap": 2.99835980662985,
+        "minimumGap": 2.8100828729281773,
         "contained": true
       },
       "entryFormationSweep": {
         "samples": 12,
-        "minimumGap": 2.99835980662985,
+        "minimumGap": 2.8100828729281773,
         "allContained": true
       }
     },
@@ -607,7 +607,7 @@
         "phases": [
           "celebrating"
         ],
-        "minimumGap": 2.99835980662985,
+        "minimumGap": 2.8100828729281773,
         "contained": true
       }
     },
@@ -643,7 +643,7 @@
         "phases": [
           "celebrating"
         ],
-        "minimumGap": 2.99835980662985,
+        "minimumGap": 2.8100828729281773,
         "contained": true
       }
     },
@@ -683,75 +683,75 @@
   "evidence": [
     {
       "name": "00-settings-paused.png",
-      "sha256": "880f5e55c8d35a99e581a62f113762fbb295b99b02419ea5dab7de83f91bf1d4"
+      "sha256": "5b177f9ab567240f5be45cb1764fa6e80eef3389dc607b672e0ee15e7de37892"
     },
     {
       "name": "00-title.png",
-      "sha256": "5c4bb21ea87667376b20d253a97a951f0f35a96f874d79eff5836ef1f531e5c3"
+      "sha256": "85d995d3399d9a38b95914ced2944528d586fdf6198191f2ee59bb2b031aa2e2"
     },
     {
       "name": "01-auto-climb.png",
-      "sha256": "5bea68bc36a0e356ac6fc8564ad4c46629cf5d2773466e125b673242b43f3a18"
+      "sha256": "9f09b4fac3855beffa3300fa37518cebfd8f7d09a3c25d0106b78140971b4833"
     },
     {
       "name": "02-full-party-rally.png",
-      "sha256": "e742a7f2663f3dc55dca563b14edfc157b51cd4f254cd79105acefcb73a14983"
+      "sha256": "0eb3658c6a18c81a0e485b2d18cf95e6eb4f965f7c0060584a69358176af1b21"
     },
     {
       "name": "02-tap-dispatch.png",
-      "sha256": "d5eaee22f9198d81c32f1412a7c0ed359c5633c4e567b2028d06f3d114edf612"
+      "sha256": "2daeafca76bd88634ccbdc715815ac5bbdc77697b5d0753611b0c61a74e69cf9"
     },
     {
       "name": "03-upgrade-panel.png",
-      "sha256": "b51ee0da29987ebffed2252df7d0acaa75f926a7aaeea8e7e6a59c99b70f80f6"
+      "sha256": "50f2e8c19ee608b4f8524979188de2f96b263b6d0c16be378cfc568fe074190c"
     },
     {
       "name": "04-floor-conquered.png",
-      "sha256": "390993e2882eb1d7280cb61e402d8572593a94e758ddc46b12e66d180ab3f061"
+      "sha256": "cad10494ed60a63ed4de476b3b8b271c7d46e2b7b7e1a80b5ec6f035b93d21b1"
     },
     {
       "name": "05-food-support-full.png",
-      "sha256": "209347492ec13019c92a48e11d10e31b4eaacc1d58e40640f58745bb40d37bd0"
+      "sha256": "f1193ae14586b7abe8b1ab1640216ef7978290a63dec1818bfd0064106840d2c"
     },
     {
       "name": "05-food-support-sheet.png",
-      "sha256": "1018a548eecb3d9b3563cc569b15dbdf8ecbed1dc3ede7fc009ae75466bc34cd"
+      "sha256": "9708795a4f7c343d60aa6be29f799836db5bf26bff0cf0225a7db9457acf7380"
     },
     {
       "name": "06-shared-room-full.png",
-      "sha256": "a875d3b6559d806eeb03c2540302db5c373fc3fa9277e6215f57de3628826bc4"
+      "sha256": "44bf8025538cd33a1d8445bc9893ab6b1fcf7ea58690662474fb8340f53b1eb6"
     },
     {
       "name": "06-shared-room-sheet.png",
-      "sha256": "0e5d2a04ece23c1ff58c30aa1d3b7a5ff7ff5d4f9cf2bcf07c62dd2c860ed81e"
+      "sha256": "a51039310a3f3d39cfb3d827318fa7afc790c53bf46519a8ce81efbfa3527a9c"
     },
     {
       "name": "07-wall.png",
-      "sha256": "cb0e586fcce8fc0183fbc9f7b2fd959fcdb14e50463b59da5fca70945f70c81b"
+      "sha256": "5ee938380fe7bf8314862843515256a508fad8bb22b68b6ab57c4683dbd4582c"
     },
     {
       "name": "08-dawn-actions.png",
-      "sha256": "e97a325d47bf9f43236eebca08173a8c2fc6e26fc1e9a70d2014ec0a4fd0480a"
+      "sha256": "cc4fe5dae32c50bbd05eee48fd44802cfe43e42720aae3cc017ce7cb8d2d2dd2"
     },
     {
       "name": "08-dawn-preview-full.png",
-      "sha256": "b3c7f601de4f81a4facace50fb6cd448e315e56cc15449b2611c50e2589a0d24"
+      "sha256": "fbad0634f0a925605b28d89eff1e14bd07d314ee3c1fbb254cd3f4d90e7184b3"
     },
     {
       "name": "08-dawn-preview-sheet.png",
-      "sha256": "b39ad964041e8d04be4598d43d5738d481293f6675d38ca25b01d799cdfb999a"
+      "sha256": "e5b0059ebc725272c491b058c1ad8bca1523d8f71f3b4c57579a83194c467a45"
     },
     {
       "name": "09-faster-replay.png",
-      "sha256": "4d1f41dc54a0c08e980a2899ff6bfd23041d365e33d3109286e6855d50e073a9"
+      "sha256": "6bc3d08953df1ba904f91119e25ae30c1f4ddfeb74944876f80d7e462f48d3e9"
     },
     {
       "name": "10-first-night-boss.png",
-      "sha256": "c330f7ca65725dfc8b8d021f6aafb5eefd8ccb3040275fbc161dd4a4439bb5dd"
+      "sha256": "3933b19df104cbf673b6fe48f8d8a6cc91e93c271267032d802585f8dcf26720"
     },
     {
       "name": "11-first-night-clear.png",
-      "sha256": "38ed0039fb14bfe26d371a37c01d81c79cf1b6f883577efbed2f3b712f0bdcbe"
+      "sha256": "28c0ed6031a7756ee0b4349c28decf09cb444e54897134bfa1e266594ce779d3"
     }
   ],
   "errors": [],

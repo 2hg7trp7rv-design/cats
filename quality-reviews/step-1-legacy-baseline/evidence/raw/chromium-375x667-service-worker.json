@@ -1,7 +1,7 @@
 {
   "passed": true,
   "browserName": "chromium",
-  "targetUrl": "http://127.0.0.1:4183/",
+  "targetUrl": "http://127.0.0.1:4173/",
   "viewport": {
     "width": 375,
     "height": 667
@@ -14,6 +14,23 @@
       "cats-tower-v082-pixel-tower-r3"
     ],
     "expectedName": "cats-tower-v082-pixel-tower-r3",
+    "keys": [
+      "/",
+      "/app.js?v=082r3",
+      "/assets/fonts/noto-sans-jp-700-ja.woff2",
+      "/assets/icons/icon-192.png",
+      "/assets/icons/icon-512.png",
+      "/assets/v080/pixel-r2/crow-sprites-r2.png",
+      "/assets/v080/pixel-r2/mugi-sprites-r2.png",
+      "/assets/v080/pixel-r2/tower-night-r2.png",
+      "/assets/v082/pixel-r3/cats-cast-r3.png",
+      "/assets/v082/pixel-r3/enemies-r3.png",
+      "/game-core.js?v=082r3",
+      "/game-data.js?v=082r3",
+      "/index.html",
+      "/manifest.webmanifest",
+      "/styles.css?v=082r3"
+    ],
     "paths": [
       "/",
       "/app.js",
@@ -31,7 +48,9 @@
       "/manifest.webmanifest",
       "/styles.css"
     ],
-    "controlled": true
+    "controlled": true,
+    "actualEntryCount": 15,
+    "expectedEntryCount": 15
   },
   "schema2Reload": {
     "currentFloor": 5,
@@ -46,8 +65,10 @@
     "unitCountBefore": 6,
     "unitCountAfter": 0
   },
+  "cacheEntrySetVerified": true,
   "cachedResponseHashesVerified": 15,
   "futureSchemaPreserved": true,
+  "futureSchemaRawBytesUnchanged": true,
   "obsoleteCacheRemoved": true,
   "offline": {
     "title": "Cat's tower",
