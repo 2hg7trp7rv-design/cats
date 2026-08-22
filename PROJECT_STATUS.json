@@ -4,7 +4,7 @@
   "project": "Cat's Tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
-  "documentationBranch": "codex/100f-master-spec",
+  "documentationBranch": "main",
   "productSourceOfTruth": "MASTER_SPEC.md",
   "projectStage": "preproduction",
   "codeChangesStarted": false,
@@ -20,7 +20,7 @@
     {
       "order": 2,
       "name": "100f-master-specification",
-      "status": "IN_PROGRESS"
+      "status": "PASS"
     },
     {
       "order": 3,
@@ -436,7 +436,7 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "complete-audit-publish-the-draft-pr-and-merge-the-100f-master-spec-to-main-then-mark-step-2-pass-before-starting-floor-1-through-10-design-without-changing-gameplay-code",
+  "nextAction": "start-floor-1-through-10-complete-design-without-changing-gameplay-code",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",
