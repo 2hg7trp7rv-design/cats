@@ -34,11 +34,120 @@ jobs:
           test -n "$(git rev-parse HEAD^{tree})"
           test -z "$(git status --porcelain --untracked-files=all)"
 
+      - name: Capture immutable invocation provenance
+        id: ci_invocation
+        env:
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_REPOSITORY: ${{ github.repository }}
+          CI_WORKFLOW_NAME: ${{ github.workflow }}
+          CI_WORKFLOW_REF: ${{ github.workflow_ref }}
+          CI_WORKFLOW_COMMIT_SHA: ${{ github.workflow_sha }}
+          CI_EVENT: ${{ github.event_name }}
+          CI_RUN_ID: ${{ github.run_id }}
+          CI_RUN_NUMBER: ${{ github.run_number }}
+          CI_RUN_ATTEMPT: ${{ github.run_attempt }}
+          CI_JOB_NAME: ${{ github.job }}
+          CI_REF: ${{ github.ref }}
+          CI_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          INVOCATION_SHA=$(git rev-parse HEAD)
+          INVOCATION_TREE=$(git rev-parse HEAD^{tree})
+          test "$INVOCATION_SHA" = "$EXPECTED_HEAD_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          if ! git cat-file -e "$CI_WORKFLOW_COMMIT_SHA^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$CI_WORKFLOW_COMMIT_SHA"
+          fi
+          WORKFLOW_BLOB_SHA=$(git rev-parse "$CI_WORKFLOW_COMMIT_SHA:.github/workflows/verify-main.yml")
+          case "$CI_EVENT" in
+            pull_request)
+              jq -e '
+                .number > 0 and
+                (.pull_request.base.ref | type=="string" and length>0) and
+                (.pull_request.base.sha | test("^[a-f0-9]{40}$")) and
+                (.pull_request.head.ref | type=="string" and length>0) and
+                (.pull_request.head.sha | test("^[a-f0-9]{40}$"))
+              ' "$GITHUB_EVENT_PATH" >/dev/null
+              INVOCATION_REF=$(jq -r '.pull_request.head.sha' "$GITHUB_EVENT_PATH")
+              jq '{
+                kind: "pull_request",
+                pullRequest: {
+                  number: .number,
+                  baseBranch: .pull_request.base.ref,
+                  baseSha: .pull_request.base.sha,
+                  headBranch: .pull_request.head.ref,
+                  headSha: .pull_request.head.sha
+                },
+                push: null,
+                workflowDispatch: null
+              }' "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/cats-ci-event-context.json"
+              ;;
+            push)
+              jq -e '
+                (.ref | type=="string" and length>0) and
+                (.before | test("^[a-f0-9]{40}$")) and
+                (.after | test("^[a-f0-9]{40}$"))
+              ' "$GITHUB_EVENT_PATH" >/dev/null
+              INVOCATION_REF=$(jq -r '.after' "$GITHUB_EVENT_PATH")
+              jq '{
+                kind: "push",
+                pullRequest: null,
+                push: {ref: .ref, before: .before, after: .after},
+                workflowDispatch: null
+              }' "$GITHUB_EVENT_PATH" > "$RUNNER_TEMP/cats-ci-event-context.json"
+              ;;
+            workflow_dispatch)
+              INVOCATION_REF="$CI_SHA"
+              jq -n --arg ref "$CI_REF" --arg sha "$CI_SHA" '{
+                kind: "workflow_dispatch",
+                pullRequest: null,
+                push: null,
+                workflowDispatch: {ref: $ref, sha: $sha}
+              }' > "$RUNNER_TEMP/cats-ci-event-context.json"
+              ;;
+            *)
+              echo "Unsupported event for CI provenance: $CI_EVENT" >&2
+              exit 1
+              ;;
+          esac
+          test "$INVOCATION_REF" = "$INVOCATION_SHA"
+          jq -n \
+            --arg repository "$CI_REPOSITORY" --arg workflowName "$CI_WORKFLOW_NAME" \
+            --arg workflowPath ".github/workflows/verify-main.yml" --arg workflowRef "$CI_WORKFLOW_REF" \
+            --arg workflowCommitSha "$CI_WORKFLOW_COMMIT_SHA" --arg workflowBlobSha "$WORKFLOW_BLOB_SHA" \
+            --arg generator "workflow-steps:Capture immutable invocation provenance+Finalize event-time CI provenance" \
+            --arg sourceBoundary "frozen-workflow-generated record; not a GitHub-signed attestation" \
+            --arg event "$CI_EVENT" --slurpfile eventContext "$RUNNER_TEMP/cats-ci-event-context.json" \
+            --argjson runId "$CI_RUN_ID" --argjson runNumber "$CI_RUN_NUMBER" \
+            --argjson runAttempt "$CI_RUN_ATTEMPT" --arg jobName "$CI_JOB_NAME" \
+            --arg invocationSha "$INVOCATION_SHA" --arg invocationTree "$INVOCATION_TREE" \
+            --arg invocationRef "$INVOCATION_REF" '{
+              schemaVersion: 1,
+              repository: $repository,
+              workflowName: $workflowName,
+              workflowPath: $workflowPath,
+              workflowRef: $workflowRef,
+              workflowCommitSha: $workflowCommitSha,
+              workflowBlobSha: $workflowBlobSha,
+              generator: $generator,
+              sourceBoundary: $sourceBoundary,
+              event: $event,
+              eventContext: $eventContext[0],
+              runId: $runId,
+              runNumber: $runNumber,
+              runAttempt: $runAttempt,
+              jobName: $jobName,
+              invocationCheckout: {sha: $invocationSha, tree: $invocationTree, ref: $invocationRef}
+            }
+          ' > "$RUNNER_TEMP/cats-ci-invocation.json"
+          INVOCATION_RECORD_SHA=$(sha256sum "$RUNNER_TEMP/cats-ci-invocation.json" | cut -d' ' -f1)
+          echo "sha256=$INVOCATION_RECORD_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Resolve immutable Step 1 verification kit
         id: step1
         run: |
           set -euo pipefail
-          ROUND=quality-reviews/step-1-legacy-baseline/round-003.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-004.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
@@ -72,6 +181,39 @@ jobs:
             echo "historical=false" >> "$GITHUB_OUTPUT"
             echo "seal=${SEALS[0]:-}" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Finalize event-time CI provenance
+        id: ci_provenance
+        env:
+          EXPECTED_INVOCATION_SHA256: ${{ steps.ci_invocation.outputs.sha256 }}
+          HISTORICAL_STEP1_MODE: ${{ steps.step1.outputs.historical }}
+        run: |
+          set -euo pipefail
+          test "$(sha256sum "$RUNNER_TEMP/cats-ci-invocation.json" | cut -d' ' -f1)" = "$EXPECTED_INVOCATION_SHA256"
+          KIT_DIR="$GITHUB_WORKSPACE/${{ steps.step1.outputs.kit }}"
+          KIT_SHA=$(git -C "$KIT_DIR" rev-parse HEAD)
+          KIT_TREE=$(git -C "$KIT_DIR" rev-parse HEAD^{tree})
+          if [ "$HISTORICAL_STEP1_MODE" = "true" ]; then
+            KIT_MODE=historical-seal
+            RUNTIME_MODE=sealed-c3-runtime
+            RUNTIME_SHA="$KIT_SHA"
+            RUNTIME_TREE="$KIT_TREE"
+          else
+            KIT_MODE=current-head
+            RUNTIME_MODE=immutable-baseline-checkout
+            RUNTIME_SHA=727b8d00c281e7539117da5ded7309ea01c7e516
+            RUNTIME_TREE=c508c58b0bb1b3fa591eefe143aab2dd6eac9271
+          fi
+          jq \
+            --arg kitMode "$KIT_MODE" --arg kitSha "$KIT_SHA" --arg kitTree "$KIT_TREE" \
+            --arg runtimeMode "$RUNTIME_MODE" --arg runtimeSha "$RUNTIME_SHA" --arg runtimeTree "$RUNTIME_TREE" '
+            . + {
+              verificationKit: {mode: $kitMode, sha: $kitSha, tree: $kitTree},
+              servedRuntime: {mode: $runtimeMode, sha: $runtimeSha, tree: $runtimeTree}
+            }
+          ' "$RUNNER_TEMP/cats-ci-invocation.json" > "$RUNNER_TEMP/cats-ci-provenance.json"
+          PROVENANCE_SHA=$(sha256sum "$RUNNER_TEMP/cats-ci-provenance.json" | cut -d' ' -f1)
+          echo "sha256=$PROVENANCE_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Clean checkout of the immutable V0.8.2 commit
         if: steps.step1.outputs.historical != 'true'
@@ -112,7 +254,8 @@ jobs:
           grep -qx 'assets/v080/r1/' .vercelignore
           grep -qx 'assets/v080/\*.webp' .vercelignore
           test "$(find .github/workflows -maxdepth 1 -type f -printf '%f\n' | sort)" = "verify-main.yml"
-          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "capture-v082-preview.mjs living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-step-1-baseline.mjs"
+          test "$(find tests -maxdepth 1 -type f -printf '%f\n' | sort | paste -sd' ' -)" = "capture-v082-preview.mjs living-tower-v080.mjs step-1-normal-flow.mjs step-1-service-worker.mjs verify-ci-artifact.mjs verify-step-1-baseline.mjs"
+          node --check tests/verify-ci-artifact.mjs
           test "$(find scripts -maxdepth 1 -type f -printf '%f\n' | sort)" = "build_v080_art.py"
           python - <<'PY'
           import json
@@ -242,7 +385,7 @@ jobs:
             exit 0
           fi
           AUTH=(-H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
-          ROUND=quality-reviews/step-1-legacy-baseline/round-003.json
+          ROUND=quality-reviews/step-1-legacy-baseline/round-004.json
           discover_path_introductions() {
             while read -r COMMIT PARENTS; do
               if ! git cat-file -e "$COMMIT:$ROUND" 2>/dev/null; then
@@ -270,6 +413,41 @@ jobs:
             echo "Historical descendant mode: C3 already performed the time-limited API and artifact checks."
             exit 0
           fi
+
+          verify_failed_round_three() {
+            local FAILURE=quality-reviews/step-1-legacy-baseline/round-003.json
+            local RUN_ID RUN_NUMBER RUN_ATTEMPT WORKFLOW_ID JOB_ID JOB_NAME EVENT HEAD_BRANCH HEAD_SHA STARTED_AT COMPLETED_AT FAILED_STEP PREFIX
+            RUN_ID=$(jq -r '.failedCi.runId' "$FAILURE")
+            RUN_NUMBER=$(jq -r '.failedCi.runNumber' "$FAILURE")
+            RUN_ATTEMPT=$(jq -r '.failedCi.runAttempt' "$FAILURE")
+            WORKFLOW_ID=$(jq -r '.failedCi.workflowId' "$FAILURE")
+            JOB_ID=$(jq -r '.failedCi.jobId' "$FAILURE")
+            JOB_NAME=$(jq -r '.failedCi.jobName' "$FAILURE")
+            EVENT=$(jq -r '.failedCi.event' "$FAILURE")
+            HEAD_BRANCH=$(jq -r '.failedCi.headBranch' "$FAILURE")
+            HEAD_SHA=$(jq -r '.failedCi.headSha' "$FAILURE")
+            STARTED_AT=$(jq -r '.failedCi.startedAt' "$FAILURE")
+            COMPLETED_AT=$(jq -r '.failedCi.completedAt' "$FAILURE")
+            FAILED_STEP=$(jq -r '.failedCi.failedStep' "$FAILURE")
+            PREFIX="/tmp/cats-round3-failure-$RUN_ID"
+            curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT" > "${PREFIX}-run.json"
+            jq -e \
+              --argjson run "$RUN_ID" --argjson runNumber "$RUN_NUMBER" --argjson attempt "$RUN_ATTEMPT" \
+              --argjson workflow "$WORKFLOW_ID" --arg event "$EVENT" --arg headBranch "$HEAD_BRANCH" --arg headSha "$HEAD_SHA" '
+              .id==$run and .run_number==$runNumber and .run_attempt==$attempt and .workflow_id==$workflow and
+              .event==$event and .head_branch==$headBranch and .head_sha==$headSha and
+              .status=="completed" and .conclusion=="failure"
+            ' "${PREFIX}-run.json"
+            curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" > "${PREFIX}-jobs.json"
+            jq -e \
+              --argjson id "$JOB_ID" --arg name "$JOB_NAME" --arg started "$STARTED_AT" \
+              --arg completed "$COMPLETED_AT" --arg failedStep "$FAILED_STEP" '
+              any(.jobs[];
+                .id==$id and .name==$name and .status=="completed" and .conclusion=="failure" and
+                .started_at==$started and .completed_at==$completed and
+                any(.steps[]; .name==$failedStep and .conclusion=="failure"))
+            ' "${PREFIX}-jobs.json"
+          }
 
           verify_record() {
             local EVIDENCE="$1"
@@ -308,13 +486,11 @@ jobs:
             curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT" > "${PREFIX}-run.json"
             jq -e \
               --argjson run "$RUN_ID" --argjson runNumber "$RUN_NUMBER" --argjson runAttempt "$RUN_ATTEMPT" \
-              --argjson workflow "$WORKFLOW_ID" --argjson pr "$PR_NUMBER" --arg baseBranch "$BASE_BRANCH" \
-              --arg baseSha "$BASE_SHA" --arg headBranch "$HEAD_BRANCH" --arg headSha "$HEAD_SHA" \
+              --argjson workflow "$WORKFLOW_ID" --arg headBranch "$HEAD_BRANCH" --arg headSha "$HEAD_SHA" \
               --arg name "Verify Cat's Tower baseline and quality records" '
               .id==$run and .run_number==$runNumber and .run_attempt==$runAttempt and
               .workflow_id==$workflow and .head_sha==$headSha and .head_branch==$headBranch and
-              .name==$name and .event=="pull_request" and .status=="completed" and .conclusion=="success" and
-              any(.pull_requests[]?; .number==$pr and .base.ref==$baseBranch and .base.sha==$baseSha and .head.ref==$headBranch and .head.sha==$headSha)
+              .name==$name and .event=="pull_request" and .status=="completed" and .conclusion=="success"
             ' "${PREFIX}-run.json"
 
             curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/attempts/$RUN_ATTEMPT/jobs?per_page=100" > "${PREFIX}-jobs.json"
@@ -330,6 +506,12 @@ jobs:
               all($required[]; . as $wanted | any($actual[]; .name==$wanted.name and .conclusion==$wanted.conclusion))
             '
 
+            CREATED_EPOCH=$(date -u -d "$ARTIFACT_CREATED_AT" +%s)
+            STARTED_EPOCH=$(date -u -d "$JOB_STARTED_AT" +%s)
+            COMPLETED_EPOCH=$(date -u -d "$JOB_COMPLETED_AT" +%s)
+            test "$CREATED_EPOCH" -ge "$STARTED_EPOCH"
+            test "$CREATED_EPOCH" -le "$COMPLETED_EPOCH"
+
             curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/runs/$RUN_ID/artifacts?per_page=100" > "${PREFIX}-artifacts.json"
             test "$(date -u +%s)" -lt "$(date -u -d "$ARTIFACT_EXPIRES_AT" +%s)"
             jq -e \
@@ -342,7 +524,96 @@ jobs:
             curl -fsSL -L "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID/zip" > "$ZIP_PATH"
             test "$(stat -c %s "$ZIP_PATH")" -eq "$ARTIFACT_SIZE"
             test "$(sha256sum "$ZIP_PATH" | cut -d' ' -f1)" = "${ARTIFACT_DIGEST#sha256:}"
-            test "$(unzip -Z1 "$ZIP_PATH" | wc -l)" -eq "$ARTIFACT_FILE_COUNT"
+            python - "$ZIP_PATH" "$ARTIFACT_FILE_COUNT" <<'PY'
+          import sys
+          from pathlib import PurePosixPath
+          from zipfile import ZipFile
+          archive, expected_count = sys.argv[1], int(sys.argv[2])
+          with ZipFile(archive) as zipped:
+            names = zipped.namelist()
+          assert len(names) == expected_count, (len(names), expected_count)
+          assert len(names) == len(set(names)), 'duplicate ZIP member name'
+          for name in names:
+            candidate = PurePosixPath(name)
+            assert name and not candidate.is_absolute(), name
+            assert '..' not in candidate.parts and '.' not in candidate.parts, name
+            assert '\\' not in name and '//' not in name, name
+          PY
+
+            if [ "$RAW_BINDING" = "true" ]; then
+              test "$ARTIFACT_FILE_COUNT" -eq 94
+            else
+              test "$ARTIFACT_FILE_COUNT" -eq 95
+            fi
+
+            if [ "$RAW_BINDING" = "false" ]; then
+              local PROVENANCE_MEMBER PROVENANCE_SHA WORKFLOW_COMMIT_SHA WORKFLOW_BLOB_SHA WORKFLOW_TREE_SHA
+              PROVENANCE_MEMBER=$(jq -r '.artifact.provenanceMember' "$EVIDENCE")
+              PROVENANCE_SHA=$(jq -r '.artifact.provenanceMemberSha256' "$EVIDENCE")
+              test "$PROVENANCE_MEMBER" = "ci-provenance.json"
+              test "$(unzip -Z1 "$ZIP_PATH" | grep -Fxc "$PROVENANCE_MEMBER")" -eq 1
+              unzip -p "$ZIP_PATH" "$PROVENANCE_MEMBER" > "${PREFIX}-ci-provenance.json"
+              test "$(sha256sum "${PREFIX}-ci-provenance.json" | cut -d' ' -f1)" = "$PROVENANCE_SHA"
+              jq -j '.artifact.provenanceMemberRaw' "$EVIDENCE" > "${PREFIX}-recorded-ci-provenance.json"
+              cmp -s "${PREFIX}-ci-provenance.json" "${PREFIX}-recorded-ci-provenance.json"
+              python - "${PREFIX}-ci-provenance.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          def reject_duplicates(pairs):
+            result = {}
+            for key, value in pairs:
+              if key in result:
+                raise ValueError(f'duplicate object key: {key}')
+              result[key] = value
+            return result
+
+          json.loads(Path(sys.argv[1]).read_text(encoding='utf-8'), object_pairs_hook=reject_duplicates)
+          PY
+              jq -e \
+                --arg repository "${{ github.repository }}" --arg workflowName "Verify Cat's Tower baseline and quality records" \
+                --arg workflowPath ".github/workflows/verify-main.yml" --argjson runId "$RUN_ID" \
+                --argjson runNumber "$RUN_NUMBER" --argjson runAttempt "$RUN_ATTEMPT" --arg jobName "$JOB_NAME" \
+                --argjson pr "$PR_NUMBER" --arg baseBranch "$BASE_BRANCH" --arg baseSha "$BASE_SHA" \
+                --arg headBranch "$HEAD_BRANCH" --arg headSha "$HEAD_SHA" --arg checkoutSha "$CHECKOUT_SHA" \
+                --arg checkoutTree "$CHECKOUT_TREE" --arg baselineSha "727b8d00c281e7539117da5ded7309ea01c7e516" \
+                --arg baselineTree "c508c58b0bb1b3fa591eefe143aab2dd6eac9271" '
+                (keys == ["event","eventContext","generator","invocationCheckout","jobName","repository","runAttempt","runId","runNumber","schemaVersion","servedRuntime","sourceBoundary","verificationKit","workflowBlobSha","workflowCommitSha","workflowName","workflowPath","workflowRef"]) and
+                (.eventContext | keys == ["kind","pullRequest","push","workflowDispatch"]) and
+                (.eventContext.pullRequest | keys == ["baseBranch","baseSha","headBranch","headSha","number"]) and
+                (.invocationCheckout | keys == ["ref","sha","tree"]) and
+                (.verificationKit | keys == ["mode","sha","tree"]) and
+                (.servedRuntime | keys == ["mode","sha","tree"]) and
+                .schemaVersion==1 and .repository==$repository and .workflowName==$workflowName and
+                .workflowPath==$workflowPath and .event=="pull_request" and .runId==$runId and
+                .runNumber==$runNumber and .runAttempt==$runAttempt and .jobName==$jobName and
+                .eventContext.kind=="pull_request" and .eventContext.push==null and
+                .eventContext.workflowDispatch==null and .eventContext.pullRequest.number==$pr and
+                .eventContext.pullRequest.baseBranch==$baseBranch and .eventContext.pullRequest.baseSha==$baseSha and
+                .eventContext.pullRequest.headBranch==$headBranch and .eventContext.pullRequest.headSha==$headSha and
+                .invocationCheckout.sha==$checkoutSha and .invocationCheckout.tree==$checkoutTree and
+                .invocationCheckout.ref==$headSha and .verificationKit.mode=="current-head" and
+                .verificationKit.sha==$headSha and .verificationKit.tree==$checkoutTree and
+                .servedRuntime.mode=="immutable-baseline-checkout" and .servedRuntime.sha==$baselineSha and
+                .servedRuntime.tree==$baselineTree and
+                .generator=="workflow-steps:Capture immutable invocation provenance+Finalize event-time CI provenance" and
+                .sourceBoundary=="frozen-workflow-generated record; not a GitHub-signed attestation" and
+                (.workflowCommitSha | test("^[a-f0-9]{40}$")) and
+                (.workflowBlobSha | test("^[a-f0-9]{40}$")) and
+                (.workflowRef | endswith("/.github/workflows/verify-main.yml@refs/pull/" + ($pr|tostring) + "/merge"))
+              ' "${PREFIX}-ci-provenance.json"
+              WORKFLOW_COMMIT_SHA=$(jq -r '.workflowCommitSha' "${PREFIX}-ci-provenance.json")
+              WORKFLOW_BLOB_SHA=$(jq -r '.workflowBlobSha' "${PREFIX}-ci-provenance.json")
+              test "$(git rev-parse "$HEAD_SHA:.github/workflows/verify-main.yml")" = "$WORKFLOW_BLOB_SHA"
+              curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/git/commits/$WORKFLOW_COMMIT_SHA" > "${PREFIX}-workflow-commit.json"
+              WORKFLOW_TREE_SHA=$(jq -r '.tree.sha' "${PREFIX}-workflow-commit.json")
+              test -n "$WORKFLOW_TREE_SHA"
+              curl -fsSL "${AUTH[@]}" "https://api.github.com/repos/${{ github.repository }}/git/trees/$WORKFLOW_TREE_SHA?recursive=1" > "${PREFIX}-workflow-tree.json"
+              jq -e --arg blob "$WORKFLOW_BLOB_SHA" '
+                .truncated==false and any(.tree[]; .path==".github/workflows/verify-main.yml" and .type=="blob" and .sha==$blob)
+              ' "${PREFIX}-workflow-tree.json"
+            fi
 
             jq -e '
               (.rawReports | length) == 10 and
@@ -385,6 +656,7 @@ jobs:
             git merge-base --is-ancestor "$HEAD_SHA" HEAD
           }
 
+          verify_failed_round_three
           verify_record quality-reviews/step-1-legacy-baseline/evidence/ci-run.json true raw-source
           if [ -f quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json ]; then
             verify_record quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json false acceptance
@@ -575,6 +847,22 @@ jobs:
                 assert sw['errors']==[]
           print('deterministic vertical tower and visual evidence contracts passed')
           PY
+
+      - name: Attach captured CI provenance
+        working-directory: ${{ steps.step1.outputs.kit }}
+        env:
+          EXPECTED_PROVENANCE_SHA256: ${{ steps.ci_provenance.outputs.sha256 }}
+          EXPECTED_INVOCATION_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)" = "$EXPECTED_INVOCATION_HEAD"
+          git -C "$GITHUB_WORKSPACE" diff --quiet
+          git -C "$GITHUB_WORKSPACE" diff --cached --quiet
+          test "$(sha256sum "$RUNNER_TEMP/cats-ci-provenance.json" | cut -d' ' -f1)" = "$EXPECTED_PROVENANCE_SHA256"
+          mkdir -p test-results
+          install -m 0644 "$RUNNER_TEMP/cats-ci-provenance.json" test-results/ci-provenance.json
+          cmp -s "$RUNNER_TEMP/cats-ci-provenance.json" test-results/ci-provenance.json
+          test "$(sha256sum test-results/ci-provenance.json | cut -d' ' -f1)" = "$EXPECTED_PROVENANCE_SHA256"
 
       - name: Upload V0.8.2 vertical tower evidence
         if: always()

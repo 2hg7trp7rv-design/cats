@@ -14,7 +14,13 @@ const targetRoot = path.resolve(process.env.CATS_BASELINE_DIR || kitRoot);
 const baselineCommit = '727b8d00c281e7539117da5ded7309ea01c7e516';
 const baselineTree = 'c508c58b0bb1b3fa591eefe143aab2dd6eac9271';
 const archiveRef = 'refs/heads/archive/v0.8.2-legacy-baseline';
-const roundThreePath = 'quality-reviews/step-1-legacy-baseline/round-003.json';
+const failedRoundThreeCommit = '830b32d4b0d26abebe7354b8db9d8dd3b21c203f';
+const failedRoundThreeTree = 'e45815ef4f17496019a2442ef5dbe958ecdb2768';
+const failedRoundThreeAcceptancePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-003.json';
+const failedRoundThreeAcceptanceBlob = '347ddd8cae160364835a043a45376b6ac6b97888';
+const failedRoundThreeAcceptanceSha256 = '1c7bcb9f2e71f27e3a03de2e85ef3ea16e89be0f736a4e6aa52842c66f0d4100';
+const failedRoundThreePath = 'quality-reviews/step-1-legacy-baseline/round-003.json';
+const sealRoundPath = 'quality-reviews/step-1-legacy-baseline/round-004.json';
 const futureImmutablePaths = [
   '.github/baselines/v0.8.2',
   'quality-reviews/step-1-legacy-baseline',
@@ -194,8 +200,8 @@ assert.deepEqual(
 
 assert.equal(kitGit(['rev-parse', '--is-shallow-repository']).trim(), 'false', 'Step 1 verification requires full Git history');
 assert.equal(kitGit(['replace', '-l']).trim(), '', 'Git replace refs are forbidden during Step 1 verification');
-const reachableSealCommits = reachablePathIntroductions(roundThreePath);
-assert(reachableSealCommits.length <= 1, 'round-003 was added more than once in reachable history');
+const reachableSealCommits = reachablePathIntroductions(sealRoundPath);
+assert(reachableSealCommits.length <= 1, 'round-004 was added more than once in reachable history');
 if (process.env.CATS_SEAL_COMMIT) {
   assert.equal(reachableSealCommits.length, 1, 'An injected seal commit is forbidden when no unique reachable seal exists');
   assert.equal(process.env.CATS_SEAL_COMMIT, reachableSealCommits[0], 'An injected seal commit differs from the unique reachable seal');
@@ -227,8 +233,8 @@ if (process.env.CATS_SEALED_REENTRY === '1') {
 // verifier from the historical seal instead of comparing the future HEAD to V0.8.2.
 if (sealCommit && currentHead !== sealCommit) {
   const frozenAcceptance = parseJsonStrict(kitGit([
-    'show', `${sealCommit}:quality-reviews/step-1-legacy-baseline/acceptance-round-003.json`,
-  ], 'utf8'), 'sealed acceptance-round-003.json');
+    'show', `${sealCommit}:quality-reviews/step-1-legacy-baseline/acceptance-round-004.json`,
+  ], 'utf8'), 'sealed acceptance-round-004.json');
   assert.deepEqual(frozenAcceptance.futureImmutablePaths, futureImmutablePaths);
   assert.deepEqual(frozenAcceptance.futureRequiredQualityGateClaims, futureRequiredQualityGateClaims);
   assert.equal(frozenAcceptance.futureNormativeKernel.arbitraryNaturalLanguageSemanticCompletenessClaimed, false);
@@ -317,7 +323,7 @@ if (sealCommit && currentHead !== sealCommit) {
 }
 
 const sealedRound = sealCommit
-  ? parseJsonStrict(kitGit(['show', `${sealCommit}:${roundThreePath}`], 'utf8'), 'sealed round-003.json')
+  ? parseJsonStrict(kitGit(['show', `${sealCommit}:${sealRoundPath}`], 'utf8'), 'sealed round-004.json')
   : null;
 const contentCommit = sealedRound?.reviewTargetCommit || currentHead;
 
@@ -985,6 +991,79 @@ async function readOptionalJson(relativePath) {
   }
 }
 
+function assertExactKeys(value, expected, label) {
+  assert(value && typeof value === 'object' && !Array.isArray(value), `${label} must be an object`);
+  assert.deepEqual(Object.keys(value).sort(), [...expected].sort(), `${label} keys differ from the frozen schema`);
+}
+
+function validateCiProvenance(record, role) {
+  assert.equal(record.artifact.provenanceMember, 'ci-provenance.json');
+  assert.match(record.artifact.provenanceMemberSha256, /^[a-f0-9]{64}$/);
+  assert.equal(typeof record.artifact.provenanceMemberRaw, 'string');
+  assert.equal(
+    sha256(Buffer.from(record.artifact.provenanceMemberRaw, 'utf8')),
+    record.artifact.provenanceMemberSha256,
+    `${role} provenance raw bytes do not match their SHA-256`,
+  );
+  const provenance = parseJsonStrict(record.artifact.provenanceMemberRaw, `${role} ci-provenance.json raw bytes`);
+  assertExactKeys(provenance, [
+    'schemaVersion', 'repository', 'workflowName', 'workflowPath', 'workflowRef', 'workflowCommitSha',
+    'workflowBlobSha', 'generator', 'sourceBoundary', 'event', 'eventContext', 'runId', 'runNumber',
+    'runAttempt', 'jobName', 'invocationCheckout', 'verificationKit', 'servedRuntime',
+  ], `${role} provenance`);
+  assertExactKeys(provenance.eventContext, ['kind', 'pullRequest', 'push', 'workflowDispatch'], `${role} eventContext`);
+  assertExactKeys(provenance.eventContext.pullRequest, [
+    'number', 'baseBranch', 'baseSha', 'headBranch', 'headSha',
+  ], `${role} pull-request event context`);
+  assertExactKeys(provenance.invocationCheckout, ['sha', 'tree', 'ref'], `${role} invocation checkout`);
+  assertExactKeys(provenance.verificationKit, ['mode', 'sha', 'tree'], `${role} verification kit`);
+  assertExactKeys(provenance.servedRuntime, ['mode', 'sha', 'tree'], `${role} served runtime`);
+  assert.equal(provenance.schemaVersion, 1);
+  assert.equal(provenance.repository, record.repository);
+  assert.equal(provenance.workflowName, record.workflowName);
+  assert.equal(provenance.workflowPath, record.workflowPath);
+  assert.match(provenance.workflowRef, new RegExp(`/.github/workflows/verify-main\\.yml@refs/pull/${record.pullRequest.number}/merge$`, 'u'));
+  assert.match(provenance.workflowCommitSha, /^[a-f0-9]{40}$/);
+  assert.equal(
+    provenance.workflowBlobSha,
+    kitGit(['rev-parse', `${record.pullRequest.headSha}:.github/workflows/verify-main.yml`]).trim(),
+    `${role} provenance does not bind the protected workflow blob`,
+  );
+  assert.equal(provenance.generator, 'workflow-steps:Capture immutable invocation provenance+Finalize event-time CI provenance');
+  assert.equal(provenance.sourceBoundary, 'frozen-workflow-generated record; not a GitHub-signed attestation');
+  assert.equal(provenance.event, 'pull_request');
+  assert.equal(provenance.eventContext.kind, 'pull_request');
+  assert.equal(provenance.eventContext.push, null);
+  assert.equal(provenance.eventContext.workflowDispatch, null);
+  assert.deepEqual(provenance.eventContext.pullRequest, {
+    number: record.pullRequest.number,
+    baseBranch: record.pullRequest.baseBranch,
+    baseSha: record.pullRequest.baseSha,
+    headBranch: record.pullRequest.headBranch,
+    headSha: record.pullRequest.headSha,
+  });
+  assert.equal(provenance.runId, record.runId);
+  assert.equal(provenance.runNumber, record.runNumber);
+  assert.equal(provenance.runAttempt, record.runAttempt);
+  assert.equal(provenance.jobName, record.job.name);
+  assert.deepEqual(provenance.invocationCheckout, {
+    sha: record.checkout.sha,
+    tree: record.checkout.tree,
+    ref: record.pullRequest.headSha,
+  });
+  assert.deepEqual(provenance.verificationKit, {
+    mode: 'current-head',
+    sha: record.pullRequest.headSha,
+    tree: record.pullRequest.headTree,
+  });
+  assert.deepEqual(provenance.servedRuntime, {
+    mode: 'immutable-baseline-checkout',
+    sha: baselineCommit,
+    tree: baselineTree,
+  });
+  return provenance;
+}
+
 function validateCiRecord(record, role, expectedHead = null) {
   assert.equal(record.schemaVersion, 2);
   if (role === 'raw-source') assert([undefined, 'raw-source'].includes(record.role));
@@ -1027,13 +1106,16 @@ function validateCiRecord(record, role, expectedHead = null) {
   if (role !== 'raw-source') {
     const requiredStepNames = [
       'Assert primary checkout provenance',
+      'Capture immutable invocation provenance',
       'Resolve immutable Step 1 verification kit',
+      'Finalize event-time CI provenance',
       'Clean checkout of the immutable V0.8.2 commit',
       'Repository handover and source contracts',
       'Vertical tower source and raster contracts',
       'Bind unexpired CI records and downloaded artifacts before seal',
       'GitHub recovery ref and live runtime manifest',
       'Chromium and WebKit vertical tower loop QA',
+      'Attach captured CI provenance',
       'Upload V0.8.2 vertical tower evidence',
     ];
     const recordedSteps = new Map(record.job.requiredSteps.map(step => [step.name, step.conclusion]));
@@ -1045,9 +1127,21 @@ function validateCiRecord(record, role, expectedHead = null) {
   assert.equal(record.artifact.name, 'cats-v082-step-1-recovery-evidence');
   assert(Number.isInteger(record.artifact.id) && record.artifact.id > 0);
   assert(Number.isInteger(record.artifact.sizeBytes) && record.artifact.sizeBytes > 0);
-  assert.equal(record.artifact.fileCount, 94);
+  assert.equal(record.artifact.fileCount, role === 'raw-source' ? 94 : 95);
+  assert(
+    Date.parse(record.artifact.createdAt) >= Date.parse(record.job.startedAt)
+      && Date.parse(record.artifact.createdAt) <= Date.parse(record.job.completedAt),
+    `${role} artifact is not bound to its matched job interval`,
+  );
   assert(Date.parse(record.artifact.createdAt) < Date.parse(record.artifact.expiresAt));
   assert.equal(record.artifact.supplementaryOnly, true);
+  if (role === 'raw-source') {
+    assert.equal(Object.hasOwn(record.artifact, 'provenanceMember'), false);
+    assert.equal(Object.hasOwn(record.artifact, 'provenanceMemberSha256'), false);
+    assert.equal(Object.hasOwn(record.artifact, 'provenanceMemberRaw'), false);
+  } else {
+    validateCiProvenance(record, role);
+  }
   return record;
 }
 
@@ -1074,14 +1168,68 @@ assert.equal(roundTwoFailure.reviewTargetCommit, '5792be4a0cee37e540747233fd2921
 assert.equal(roundTwoFailure.overallStatus, 'FAIL');
 assert(roundTwoFailure.materialBlockers.length >= 8, 'Round 2 failure did not preserve its material findings');
 
-const acceptanceRelativePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-003.json';
+const roundThreeFailure = parseJsonStrict(await readFile(
+  path.join(kitRoot, failedRoundThreePath),
+  'utf8',
+), 'round-003.json');
+assert.equal(roundThreeFailure.schemaVersion, 1);
+assert.equal(roundThreeFailure.artifactId, 'step-1-legacy-baseline');
+assert.equal(roundThreeFailure.round, 3);
+assert.equal(roundThreeFailure.reviewTargetCommit, failedRoundThreeCommit);
+assert.equal(roundThreeFailure.reviewTargetTree, failedRoundThreeTree);
+assert.equal(roundThreeFailure.overallStatus, 'FAIL');
+assert.deepEqual(roundThreeFailure.failedCi, {
+  runId: 32582804569,
+  runNumber: 22,
+  runAttempt: 1,
+  workflowId: 335561992,
+  jobId: 97054600919,
+  jobName: 'vertical-tower-qa',
+  event: 'pull_request',
+  headBranch: 'codex/restart-step-1-baseline',
+  headSha: failedRoundThreeCommit,
+  status: 'completed',
+  conclusion: 'failure',
+  artifactCount: 0,
+  artifactCountAuthority: 'historical observation at failed attempt completion only; later rerun artifacts do not alter attempt 1 failure and are not a live completion dependency',
+  startedAt: '2026-08-22T15:48:26Z',
+  completedAt: '2026-08-22T15:48:41Z',
+  failedStep: 'Bind unexpired CI records and downloaded artifacts before seal',
+});
+assert.deepEqual(roundThreeFailure.failedAcceptance, {
+  path: failedRoundThreeAcceptancePath,
+  commit: failedRoundThreeCommit,
+  blobSha1: failedRoundThreeAcceptanceBlob,
+  sha256: failedRoundThreeAcceptanceSha256,
+});
+assert.equal(kitGit(['rev-parse', `${failedRoundThreeCommit}^{commit}`]).trim(), failedRoundThreeCommit);
+assert.equal(kitGit(['rev-parse', `${failedRoundThreeCommit}^{tree}`]).trim(), failedRoundThreeTree);
+kitGit(['merge-base', '--is-ancestor', failedRoundThreeCommit, 'HEAD']);
+assert.equal(
+  kitGit(['rev-parse', `${failedRoundThreeCommit}:${failedRoundThreeAcceptancePath}`]).trim(),
+  failedRoundThreeAcceptanceBlob,
+);
+const failedRoundThreeAcceptanceBytes = kitGit(['show', `${failedRoundThreeCommit}:${failedRoundThreeAcceptancePath}`], null);
+assert.equal(sha256(failedRoundThreeAcceptanceBytes), failedRoundThreeAcceptanceSha256);
+assert.equal(
+  sha256(await readFile(path.join(kitRoot, failedRoundThreeAcceptancePath))),
+  failedRoundThreeAcceptanceSha256,
+  'Round 3 Acceptance bytes were rewritten during the Round 4 rebuild',
+);
+assert(roundThreeFailure.materialBlockers.length >= 2);
+assert.equal(roundThreeFailure.observedApiBehavior.historicalRunId, 32578260669);
+assert.equal(roundThreeFailure.observedApiBehavior.historicalRunHeadSha, '5792be4a0cee37e540747233fd2921ab5f0db392');
+assert.equal(roundThreeFailure.observedApiBehavior.embeddedPullRequestHeadShaAfterC1, '830b32d4b0d26abebe7354b8db9d8dd3b21c203f');
+assert.equal(roundThreeFailure.rebuildDecision.nextAcceptance, 'acceptance-round-004.json');
+
+const acceptanceRelativePath = 'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json';
 const strengthenedAcceptanceBytes = await readFile(path.join(kitRoot, acceptanceRelativePath));
 const strengthenedAcceptance = parseJsonStrict(
   strengthenedAcceptanceBytes.toString('utf8'),
   acceptanceRelativePath,
 );
 assert.equal(strengthenedAcceptance.artifactId, 'step-1-legacy-baseline');
-assert.equal(strengthenedAcceptance.acceptanceRevision, 3);
+assert.equal(strengthenedAcceptance.acceptanceRevision, 4);
 assert.equal(strengthenedAcceptance.scopeName, 'Step 1A — V0.8.2 deployed browser-runtime source and deployment-input byte checkpoint');
 const requiredAcceptanceIds = [
   'S1', 'S2', 'S3', 'S4', 'S5', 'D1', 'D2', 'D3', 'D4', 'D5', 'R1', 'R2', 'R3', 'R4',
@@ -1119,12 +1267,53 @@ assert.deepEqual(strengthenedAcceptance.externalMetadataAuthenticity, {
   mitigation: "Freeze the exact C1 metadata record, independently re-query the fresh deployment after C1, bind that check in the runtime critic's target-specific verbatim response, and separately verify the sealed raw deployment responses.",
   claimBoundary: 'This is procedurally cross-checked provider metadata plus recalculable response evidence, not a cryptographically signed Vercel attestation.',
 });
+assert.deepEqual(strengthenedAcceptance.ciProvenanceContract, {
+  member: 'ci-provenance.json',
+  appliesToRecordRoles: ['acceptance', 'candidate'],
+  rawSourceArtifactFileCount: 94,
+  expectedArtifactFileCount: 95,
+  requiredFields: [
+    'schemaVersion', 'repository', 'workflowName', 'workflowPath', 'workflowRef', 'workflowCommitSha',
+    'workflowBlobSha', 'generator', 'sourceBoundary', 'event', 'eventContext.kind', 'runId',
+    'runNumber', 'runAttempt', 'jobName', 'invocationCheckout.sha', 'invocationCheckout.tree',
+    'invocationCheckout.ref', 'verificationKit.mode', 'verificationKit.sha', 'verificationKit.tree',
+    'servedRuntime.mode', 'servedRuntime.sha', 'servedRuntime.tree',
+  ],
+  eventContextUnion: {
+    pull_request: ['number', 'baseBranch', 'baseSha', 'headBranch', 'headSha'],
+    push: ['ref', 'before', 'after'],
+    workflow_dispatch: ['ref', 'sha'],
+  },
+  rawBytesStoredInCiRecord: true,
+  rawField: 'artifact.provenanceMemberRaw',
+  mutableHistoricalApiFields: ['pull_requests[]'],
+  runHeadAuthority: 'The Actions run-level id, attempt, workflow, event, head_sha, and head_branch are the historical run authority. No field under the related pull_requests[] array, including number, refs, or SHAs, is used as historical authority.',
+  eventTimeAuthority: 'For new C1/C2 runs, the primary checkout step immediately captures the event-specific context, exact HEAD/tree, run identity, github.workflow_ref, github.workflow_sha, and actual workflow blob before resolving another kit or executing repository test code. A second step only appends the verification-kit and served-runtime identities. The final raw bytes are copied without regeneration into the artifact and then into the next immutable CI record, bound by member SHA-256 and provider artifact digest.',
+  claimBoundary: 'ci-provenance.json is generated by the frozen workflow from GitHub event context and the checked-out Git objects. It is not a GitHub-signed attestation; trust comes from the frozen generator, exact-head workflow execution, downloaded artifact digest, durable raw-byte copy, and cross-checks against run/job APIs.',
+});
+assert.deepEqual(strengthenedAcceptance.externalArtifactVerifier, {
+  path: 'tests/verify-ci-artifact.mjs',
+  input: ['strict duplicate-key-free provider inspection JSON', 'downloaded provider artifact ZIP'],
+  providerBindings: [
+    'run id/attempt/workflow/event/head/status', 'job id/attempt/interval/steps',
+    'artifact id/digest/size/expiry', 'workflow commit/tree/path/blob',
+  ],
+  archiveBindings: [
+    'exact 95 entries', 'unique safe member names', 'exactly one ci-provenance.json',
+    'ZIP SHA-256 equals provider digest',
+  ],
+  supportedEvents: ['pull_request', 'push', 'workflow_dispatch'],
+  requiredExternalUses: ['C3 pull-request-head artifact', 'merged main push artifact'],
+  output: 'machine-readable PASS summary binding run, attempt, job, artifact, event, head, artifact digest, provenance SHA-256, verification kit, and served runtime',
+});
 
 const requiredProtectedPaths = [
   '.github/baselines/v0.8.2/MANIFEST.json',
   '.github/baselines/v0.8.2/RESTORE.md',
   '.github/workflows/verify-main.yml',
   'QUALITY_GATE.md',
+  'quality-reviews/step-1-legacy-baseline/acceptance-round-003.json',
+  'quality-reviews/step-1-legacy-baseline/round-003.json',
   'quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-commit-object.b64',
   'quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-preview-capture.json',
   'quality-reviews/step-1-legacy-baseline/evidence/runtime-manifest.json',
@@ -1140,6 +1329,7 @@ const requiredProtectedPaths = [
   'quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-loop.json',
   'quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-normal-flow.json',
   'tests/capture-v082-preview.mjs',
+  'tests/verify-ci-artifact.mjs',
   'tests/verify-step-1-baseline.mjs',
 ];
 assert.deepEqual(strengthenedAcceptance.protectedFiles.map(item => item.path).sort(), [...requiredProtectedPaths].sort());
@@ -1150,20 +1340,20 @@ for (const protectedFile of strengthenedAcceptance.protectedFiles) {
 }
 
 const criticPathsByRole = {
-  'adversarial-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-003-adversarial-critic.json',
-  'repository-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-003-repository-critic.json',
-  'runtime-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-003-runtime-critic.json',
+  'adversarial-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-adversarial-critic.json',
+  'repository-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-repository-critic.json',
+  'runtime-critic': 'quality-reviews/step-1-legacy-baseline/audits/round-004-runtime-critic.json',
 };
 const canonicalMarkdownPaths = [
   'README.md', 'AGENTS.md', 'MASTER_SPEC.md', 'FLOORS_1_10_DESIGN.md', 'PROJECT_HANDOVER.md', 'BASELINE_V082.md',
 ];
 const acceptanceCiPath = 'quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json';
 const candidateCiPath = 'quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json';
-const finalJudgePath = 'quality-reviews/step-1-legacy-baseline/audits/round-003-final-judge.json';
+const finalJudgePath = 'quality-reviews/step-1-legacy-baseline/audits/round-004-final-judge.json';
 const requiredCandidatePaths = [acceptanceCiPath, 'quality-reviews/step-1-legacy-baseline/evidence/clean-recovery.json', ...Object.values(criticPathsByRole)].sort();
 const requiredSealPaths = [
   'AGENTS.md', 'BASELINE_V082.md', 'FLOORS_1_10_DESIGN.md', 'MASTER_SPEC.md', 'PROJECT_HANDOVER.md',
-  'PROJECT_STATUS.json', 'README.md', candidateCiPath, finalJudgePath, roundThreePath,
+  'PROJECT_STATUS.json', 'README.md', candidateCiPath, finalJudgePath, sealRoundPath,
 ].sort();
 assert.deepEqual([...strengthenedAcceptance.candidateAllowedPaths].sort(), requiredCandidatePaths);
 assert.deepEqual([...strengthenedAcceptance.sealAllowedPaths].sort(), requiredSealPaths);
@@ -1193,7 +1383,7 @@ assert.equal(
 assert.deepEqual(strengthenedAcceptance.futureImmutablePaths, futureImmutablePaths);
 assert.deepEqual(strengthenedAcceptance.futureRequiredQualityGateClaims, futureRequiredQualityGateClaims);
 assert.deepEqual(strengthenedAcceptance.futureNormativeKernel, {
-  authorityPath: 'quality-reviews/step-1-legacy-baseline/acceptance-round-003.json',
+  authorityPath: 'quality-reviews/step-1-legacy-baseline/acceptance-round-004.json',
   authorityRetention: 'The full quality-reviews/step-1-legacy-baseline Git tree is immutable at descendants of C3 when the verifier runs, so this kernel cannot be overridden by a current Markdown edit.',
   qualityLoopAuthority: 'futureRequiredQualityGateClaims is the non-overridable machine-readable minimum; current QUALITY_GATE.md is an evolvable mirror that must retain every exact claim.',
   step1StatusAuthority: 'The sealed PROJECT_STATUS legacyBaseline and legacyV082Verification objects plus the exact preparation[0] object {order:1,name:legacy-v082-source-runtime-byte-checkpoint,status:PASS} are authoritative; that entry must be unique by name and order, and current canonical Markdown files must retain one structured PASS marker and checklist row.',
@@ -1248,10 +1438,12 @@ assert.deepEqual(
 assert.deepEqual(strengthenedAcceptance.externalCompletionStopConditions, [
   'the remote pull-request head equals C3',
   'the exact C3 head completes this workflow successfully',
+  'the exact C3 workflow artifact is resolved through the provider API, downloaded, and its ci-provenance.json raw bytes, hash, event context, checkout, workflow generator, verification kit, and served runtime all match the C3 run and Git objects',
   'the C3 Vercel Preview reaches READY and serves the expected documentation-only tree',
   'the PR is merged without squashing or rebasing so C1, C2, and C3 remain ancestors of main',
   'the resulting main head has the same Git tree as C3, so the merge adds no unreviewed content and every canonical Step 1 blob equals its sealed C3 blob',
   'the exact resulting main head completes the main push workflow successfully in historical-seal mode',
+  'the exact resulting main push artifact is resolved through the provider API, downloaded, and its push-event ci-provenance.json raw bytes, hash, checkout, workflow generator, historical verification kit, and sealed served runtime all match the main run and Git objects',
   'the remote archive ref still resolves to the exact baseline commit at completion-report time',
   'the fixed Production URL is rechecked after merge; no Production alias switch is performed',
 ]);
@@ -1299,6 +1491,7 @@ if (phase === 'seal') {
 }
 
 if (acceptanceCommit) {
+  assert.equal(singleParent(acceptanceCommit, 'Round 4 C1'), failedRoundThreeCommit, 'Round 4 C1 is not the direct child of failed Round 3 C1');
   const frozenAcceptance = kitGit(['show', `${acceptanceCommit}:${acceptanceRelativePath}`], null);
   assert.equal(sha256(frozenAcceptance), sha256(strengthenedAcceptanceBytes), 'Acceptance changed after C1');
   for (const protectedFile of strengthenedAcceptance.protectedFiles) {
@@ -1554,7 +1747,7 @@ if (phase === 'seal') {
   );
 
   assert.equal(finalReview.artifactId, 'step-1-legacy-baseline');
-  assert.equal(finalReview.round, 3);
+  assert.equal(finalReview.round, 4);
   assert.equal(finalReview.reviewTargetCommit, candidateCommit);
   assert.equal(finalReview.reviewTargetTree, kitGit(['rev-parse', `${candidateCommit}^{tree}`]).trim());
   assert.equal(finalReview.overallStatus, 'PASS');
@@ -1596,7 +1789,9 @@ if (phase === 'seal') {
     requiredBeforeCompletionReport: true,
     recordedInsideSeal: false,
     exactC3PullRequestHeadCiRequired: true,
+    exactC3ArtifactProvenanceInspectionRequired: true,
     mergedMainPushCiRequired: true,
+    mergedMainArtifactProvenanceInspectionRequired: true,
     mergedMainMustContainC1C2C3: true,
     mergedMainTreeMustEqualC3Tree: true,
   });
