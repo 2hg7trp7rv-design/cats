@@ -1,371 +1,447 @@
 {
-  "schemaVersion": 2,
-  "updatedDate": "2026-08-20",
-  "project": "Cat's tower",
+  "statusDocumentSchemaVersion": 3,
+  "updatedDate": "2026-08-22",
+  "project": "Cat's Tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
+  "documentationBranch": "codex/100f-master-spec",
+  "productSourceOfTruth": "MASTER_SPEC.md",
+  "projectStage": "preproduction",
+  "codeChangesStarted": false,
+  "firstTenPreviewReady": false,
+  "hundredFloorProductReady": false,
   "productionUrl": "https://cats-tau-dusky.vercel.app/",
-  "stateSeparation": {
-    "releaseSource": "v0.8.2-canonical-source-at-this-main-commit",
-    "githubMain": "v0.8.2-canonical-source-at-this-main-commit",
-    "fixedProduction": "vercel-auto-deploy-target-live-state-requires-external-verification",
-    "doNotConflate": true
-  },
-  "canonicalReleaseVersion": "0.8.2",
-  "canonicalReleaseBuild": "v082-pixel-tower-gameplay-redesign",
-  "v082DevelopmentBaseCommit": "7d486189cccbdb58aeb209432f1782d5393915ef",
-  "v082SourceQaStatus": "chromium-two-viewport-qa-and-visual-audit-passed-webkit-and-device-qa-pending",
-  "githubMainContainsV082": true,
-  "v082ProductionReady": false,
-  "productionDeliveryMode": "vercel-production-auto-deploy-from-main",
-  "productionVerificationPolicy": "verify-live-version-build-service-worker-r3-assets-and-github-commit-after-each-deploy",
-  "dynamicDeploymentIdsStoredInReleaseCommit": false,
-  "vercelProjectId": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
-  "vercelTeamId": "team_6odZCZQ1QxjzhPdC9sgEtoCM",
-  "gameplaySchema": 2,
-  "save": {
-    "key": "cats-tower-v080",
-    "legacyKey": "cats-tower-v01",
-    "schema1BackupKey": "cats-tower-v080-schema1-backup",
-    "schemaContinuesInV082": true,
-    "corruptJsonRecovery": "fresh-schema2-state",
-    "futureSchemaHandling": "protect-and-do-not-overwrite",
-    "legacyMigration": {
-      "coins": "coins",
-      "stock": "fish",
-      "specialization": "specialization",
-      "mugiMood": "mugiMood",
-      "memories": "memories",
-      "hasPlayed": "hasPlayed",
-      "sound": "sound",
-      "firstNightDone": "legacyFirstNightDone-and-history-memory"
-    },
-    "v082NormalizedFields": [
-      "completed",
-      "pendingFloor",
-      "floorTransitionRemainingMs",
-      "floorTransitionStage"
-    ],
-    "legacyPostBossNormalization": "active-current-floor-above-10-clamps-to-completed-floor-10-historical-best-only-clamps-without-rewinding-post-dawn-run"
-  },
-  "v082ProductDefinition": {
-    "genre": "mobile-portrait-vertical-idle-incremental-rpg",
-    "artDirection": "warm-retro-pixel-art-night-tower",
-    "towerBoard": [
-      "next-unconquered-floor",
-      "current-battle-floor",
-      "conquered-support-floor"
-    ],
-    "floorCausality": [
-      "enemy-defeated",
-      "victory-hold",
-      "cats-ascending",
-      "next-floor-entered"
-    ],
-    "tapMeaning": "dispatch-reinforcement-or-rally-with-zero-direct-damage",
-    "partyCapacityProgression": [
-      4,
-      5,
-      6
-    ],
-    "visibleUnitCap": 6,
-    "rallyDurationMs": 6000,
-    "rallyCooldownMs": 14000,
-    "restaurantFloor": 3,
-    "roomFloor": 5,
-    "wallFloor": 8,
-    "dawnFloor": 8,
-    "firstNightBossFloor": 10,
-    "maximumPlayableFloor": 10,
-    "sheetsPauseSimulation": true,
-    "uniqueRosterKinds": 6,
-    "recoveryQueueReservesKindSlot": true
-  },
-  "v082Cast": {
-    "namedCats": [
-      {
-        "id": "mugi",
-        "role": "frontline",
-        "unlockFloor": 1
-      },
-      {
-        "id": "luna",
-        "role": "ranged",
-        "unlockFloor": 2
-      },
-      {
-        "id": "toto",
-        "role": "support",
-        "unlockFloor": 5
-      }
-    ],
-    "helpers": [
-      {
-        "id": "helper-tabby",
-        "role": "frontline"
-      },
-      {
-        "id": "helper-gray",
-        "role": "ranged"
-      },
-      {
-        "id": "helper-calico",
-        "role": "support"
-      }
-    ],
-    "helperArtLimitation": "three-kinds-share-one-r3-helper-row-with-hue-variation"
-  },
-  "v082Enemies": [
+  "preparation": [
     {
-      "id": "crow",
-      "name": "夜ガラス",
-      "use": "normal-rotation",
-      "art": "pixel-r2"
+      "order": 1,
+      "name": "legacy-baseline-save-point",
+      "status": "PASS"
     },
     {
-      "id": "owl",
-      "name": "夜フクロウ",
-      "use": "normal-rotation",
-      "art": "pixel-r3"
+      "order": 2,
+      "name": "100f-master-specification",
+      "status": "IN_PROGRESS"
     },
     {
-      "id": "black-feather-barrier",
-      "name": "黒羽の結界",
-      "use": "floor-8-wall",
-      "art": "pixel-r3"
+      "order": 3,
+      "name": "floors-1-through-10-complete-design",
+      "status": "NOT_STARTED"
     },
     {
-      "id": "great-crow",
-      "name": "クロバネ",
-      "use": "floor-10-boss",
-      "art": "pixel-r3"
+      "order": 4,
+      "name": "nine-screen-final-mockups",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 5,
+      "name": "motion-storyboards",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 6,
+      "name": "art-bible",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 7,
+      "name": "small-pilot-asset-set",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 8,
+      "name": "save-and-100f-data-design",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 9,
+      "name": "qa-acceptance-matrix",
+      "status": "NOT_STARTED"
+    },
+    {
+      "order": 10,
+      "name": "code-rewrite",
+      "status": "NOT_STARTED"
     }
   ],
-  "v082ImplementedFeatures": [
-    "three-layer vertical tower board",
-    "automatic role-based cat dispatch and combat",
-    "Mugi Luna Toto and three helper definitions",
-    "crow and owl normal-enemy rotation",
-    "floor-8 black-feather barrier",
-    "floor-10 dedicated Kurobane boss",
-    "tap reinforcement with zero direct damage",
-    "six-second rally when the party is full",
-    "floor-3 restaurant delivery with temporary attack-speed support and coins",
-    "floor-5 shared-room recovery and same-kind redeployment",
-    "defeat victory ascent and floor-entry transition stages",
-    "all modal sheets pause the live simulation",
-    "floor-10 completion state that prevents floor-11 progression",
-    "r3 cast and enemy atlases connected to runtime",
-    "six unique formation kinds with recovery-slot reservation and fixed helper colors",
-    "frontline-priority enemy targeting with ranged-support fallback only when no frontline is attacking",
-    "six-kind celebrating roster reunion immediately at completion and after completed-save reload",
-    "defeated-enemy continuity through victory and ascent with transient animation-class preservation",
-    "stable public spawn result reasons for completed and full-roster states",
-    "source-atlas-independent body-foot alignment across every cat and enemy phase",
-    "schema2 save-key continuity and legacy post-boss normalization"
-  ],
-  "v082RuntimeArt": {
-    "legacyPixelR2Directory": "assets/v080/pixel-r2",
-    "tower": "assets/v080/pixel-r2/tower-night-r2.png",
-    "mugiSpriteSheet": "assets/v080/pixel-r2/mugi-sprites-r2.png",
-    "crowSpriteSheet": "assets/v080/pixel-r2/crow-sprites-r2.png",
-    "pixelR3Directory": "assets/v082/pixel-r3",
-    "castAtlas": {
-      "path": "assets/v082/pixel-r3/cats-cast-r3.png",
-      "dimensions": "1448x1086",
-      "format": "RGBA PNG",
-      "grid": "4x3",
-      "cell": "362x362",
-      "rows": [
-        "luna",
-        "toto",
-        "helper"
-      ]
-    },
-    "enemyAtlas": {
-      "path": "assets/v082/pixel-r3/enemies-r3.png",
-      "dimensions": "1448x1086",
-      "format": "RGBA PNG",
-      "grid": "4x3",
-      "cell": "362x362",
-      "rows": [
-        "owl",
-        "barrier",
-        "great-crow"
-      ]
-    },
-    "legacyR1Plush": "history-only-not-runtime-not-fallback-not-cache"
+  "legacyBaseline": {
+    "version": "0.8.2",
+    "build": "v082-pixel-tower-gameplay-redesign",
+    "commit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "commitUrl": "https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516",
+    "localAnnotatedTag": "v0.8.2-legacy-baseline",
+    "remoteTagPublished": false,
+    "remoteTagBlocker": "git-https-credentials-unavailable-and-connected-github-api-has-no-tag-ref-write",
+    "vercelDeploymentId": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
+    "vercelDeploymentState": "READY",
+    "vercelRuntimeCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "fixedUrlHttpStatus": 200,
+    "role": "comparison-and-recovery-baseline-not-the-100f-target",
+    "productionReady": false
   },
-  "verification": {
-    "publishedV081": {
-      "gameCoreSyntax": true,
-      "deterministicCoreSmoke": true,
-      "tapDirectDamageIsZero": true,
-      "floor8WallCoreSmoke": true,
-      "coreReplayTimeSecondsBeforeDawn": 61.3,
-      "coreReplayTimeSecondsAfterDawn": 44.6,
-      "coreReplayTimeRatio": 0.728,
-      "browserReplayTimeMsBeforeDawn": 60700,
-      "browserReplayTimeMsAfterDawn": 43900,
-      "browserReplayTimeRatio": 0.7232289950576606,
-      "chromiumAndWebKitMatrix": "passed-at-390x844-and-375x667",
-      "evidenceVisualAudit": "64-of-64-images-visually-audited",
-      "productionRuntimeFiles": "13-of-13-http-200-and-etag-matched",
-      "productionExcludedPaths": "tests-handover-documents-r1-and-living-tower-art-returned-http-404"
+  "approvedRequirements": {
+    "genre": "mobile-portrait-idle-incremental-rpg",
+    "oneLine": "summon cats, reclaim a 100-floor tower, and turn conquered rooms into a living network of shops and deliveries that supports the frontline",
+    "towerFloorMinimum": 1,
+    "towerFloorMaximum": 100,
+    "floor101Exists": false,
+    "initialProductionFloorMinimum": 1,
+    "initialProductionFloorMaximum": 10,
+    "directTapDamage": 0,
+    "shopChoiceOnConqueredCommercialFloorsRequired": true,
+    "publicDeterministicCatUnlocksRequired": true,
+    "conqueredAndUnconqueredFloorBrowsingRequired": true,
+    "actualCatTravelAndContactRequired": true,
+    "multipleEnemiesRequired": true,
+    "dawnPreservesBlueprintsRequired": true,
+    "forcedAdsAllowed": false,
+    "gachaAllowed": false,
+    "energySystemAllowed": false
+  },
+  "hundredFloorRuntimeImplementation": {
+    "implemented": false,
+    "runtimeVersion": "0.8.2",
+    "actualCatTravel": false,
+    "multipleEnemies": false,
+    "continuousHundredFloorBrowsing": false,
+    "selectableConqueredFloorShops": false
+  },
+  "districts": [
+    {
+      "id": "district.01",
+      "floors": [1, 10],
+      "name": "灰かぶり入口市場"
     },
-    "v082SourceQa": {
-      "sourceImplementationInspected": true,
-      "documentationUpdated": true,
-      "projectStatusJsonParse": true,
-      "sourceSyntax": "passed-for-app-game-data-game-core-service-worker-and-e2e",
-      "r3AtlasDimensionsAndAlpha": "generated-and-inspected-before-runtime-placement",
-      "precisionBalanceSimulation": "deferred-until-after-webkit-and-normal-motion-validation",
-      "chromium390x844": "passed-all-e2e-with-18-evidence-images-visually-audited",
-      "webkit390x844": "not-run-for-v0.8.2",
-      "chromium375x667": "passed-all-e2e-with-18-evidence-images-visually-audited",
-      "webkit375x667": "not-run-for-v0.8.2",
-      "chromiumEvidenceImagesTotal": 36,
-      "evidenceVisualAudit": "36-of-36-chromium-images-audited-webkit-pending",
-      "integratedVisualQa": {
-        "http": "passed",
-        "console": "passed",
-        "overflow": "passed",
-        "tapTargets": "passed",
-        "sheetPause": "passed"
-      },
-      "sixUnitOverlapFix": "fixed-formation-recovery-slot-reservation-and-kind-fixed-helper-colors-re-audited-passed",
-      "recoveryRosterRegression": {
-        "waitingUnitCount": 5,
-        "maximumSameKindCountWhileWaiting": 1,
-        "recoveredUnitCount": 6,
-        "allSixKindsExactlyOnceAfterRecovery": true,
-        "recoveryQueueCountAfterReturn": 0
-      },
-      "roleTargetRegression": "frontline-priority-passed-and-non-frontline-fallback-passed",
-      "spawnApiReasonRegression": "unit-cap-and-completed-public-reasons-preserved",
-      "transitionEnemyPhaseRegression": "defeated-through-victory-and-ascent-moving-only-after-floor-entry",
-      "normalMotionTransientClassProbe": "enemy-hit-and-defeat-animation-classes-preserved-across-render",
-      "completedSaveVictoryRoster": "six-unique-celebrating-kinds-reunited-immediately-with-recovery-zero-and-restored-after-reload",
-      "floorCharacterAlignment": {
-        "sourceFloorAnchorPercents": [95.1, 80.62, 66.99, 53.77, 40.43, 27.21],
-        "partyGroundPercent": 88,
-        "partyBodyFootSpreadCssPx": {
-          "390x844": 0.002706201,
-          "375x667": 0.002586744
-        },
-        "partyBodyFootGroundRatio": {
-          "390x844": 0.87998473,
-          "375x667": 0.879986106
-        },
-        "minimumVisibleAlphaBoundingBoxGapCssPx": {
-          "390x844": 2.99836,
-          "375x667": 2.872583
-        },
-        "sampledEnemyHoverGapCssPx": {
-          "390x844": {
-            "crow": 5.99985,
-            "owl": 6.006306,
-            "barrier": 4.001315,
-            "boss": 6.00358
-          },
-          "375x667": {
-            "crow": 5.9982,
-            "owl": 6.004404,
-            "barrier": 3.999601,
-            "boss": 6.001771
-          }
-        },
-        "atlasPhaseAnchorMatrix": {
-          "catCharacterPhasePairs": 24,
-          "enemyCharacterPhasePairs": 16,
-          "maximumCatGroundErrorCssPx": {
-            "390x844": 0.008405304,
-            "375x667": 0.006448024
-          },
-          "maximumEnemyHoverErrorCssPx": {
-            "390x844": 0.010821419,
-            "375x667": 0.008744936
-          }
-        },
-        "totoAttackBodyFootExcludesShieldEffect": true,
-        "totoAttackEffectIncludedInClippingAndGapChecks": true,
-        "bossFloorEntryFormationSweep": {
-          "sampleIntervalMs": 100,
-          "samplesPerViewport": 12,
-          "minimumGapCssPx": {
-            "390x844": 2.99836,
-            "375x667": 2.872583
-          },
-          "allSixKindsUniqueAndContained": true
-        },
-        "floorMatrixVisualAudit": "floors-1-through-10-passed-at-390x844-and-375x667"
-      },
-      "settingsFactsFix": "fixed-and-re-audited-passed",
-      "floor10CompletionSheetRestore": "confirmed",
-      "normalMotionVideo": "not-run-for-v0.8.2",
-      "physicalIPhone": "not-verified",
-      "githubMain": "canonical-source-in-this-main-commit",
-      "productionDeployment": "external-verification-required-after-main-push",
-      "productionRuntimeHash": "verify-current-vercel-githubCommitSha-against-current-main-head"
+    {
+      "id": "district.02",
+      "floors": [11, 20],
+      "name": "焔の大厨房"
+    },
+    {
+      "id": "district.03",
+      "floors": [21, 30],
+      "name": "水没貯水区"
+    },
+    {
+      "id": "district.04",
+      "floors": [31, 40],
+      "name": "歯車工房"
+    },
+    {
+      "id": "district.05",
+      "floors": [41, 50],
+      "name": "苔庭温室"
+    },
+    {
+      "id": "district.06",
+      "floors": [51, 60],
+      "name": "亡霊書庫"
+    },
+    {
+      "id": "district.07",
+      "floors": [61, 70],
+      "name": "雷鳴鳥舎"
+    },
+    {
+      "id": "district.08",
+      "floors": [71, 80],
+      "name": "氷結宝物庫"
+    },
+    {
+      "id": "district.09",
+      "floors": [81, 90],
+      "name": "月鏡宮"
+    },
+    {
+      "id": "district.10",
+      "floors": [91, 100],
+      "name": "黒羽王座"
+    }
+  ],
+  "districtFloorPattern": {
+    "floorNumberFormula": {
+      "base": "(districtNumber - 1) * 10",
+      "x1ThroughX9": "base + relativeFloor",
+      "x0": "base + 10"
+    },
+    "x1": "entrance-and-supply",
+    "x2": "shop",
+    "x3": "support",
+    "x4": "shop",
+    "x5": "cat-rescue-and-room",
+    "x6": "shop-and-multi-wave",
+    "x7": "support-and-special-event",
+    "x8": "shop-and-district-wall",
+    "x9": "elite-and-three-relic-choice",
+    "x0": "multi-phase-boss-and-district-hub",
+    "totals": {
+      "shopFloors": 40,
+      "supportFloors": 20,
+      "catRooms": 10,
+      "entranceAndSupplyFloors": 10,
+      "relicFloors": 10,
+      "bossHubs": 10
     }
   },
-  "physicalIPhoneVerified": false,
-  "publishedV081ProductionReady": true,
-  "precisionBalanceSimulationCompleted": false,
-  "notCompleted": [
-    "precision balance simulation for v0.8.2",
-    "WebKit QA and visual audit at 390x844 and 375x667",
-    "normal-speed transition video review",
-    "physical iPhone Safari ChatGPT in-app browser and PWA validation",
-    "distinct production atlas rows for every helper variant",
-    "strict multi-tab writer-lock or revision arbitration before the first competing save",
-    "cloud save monetization and live events"
-  ],
-  "nextPriority": [
-    "verify current GitHub Actions and Vercel deployment metadata for the current main commit",
-    "run WebKit QA at 390x844 and 375x667",
-    "visually audit the WebKit evidence",
-    "validate normal-speed flows on a physical iPhone",
-    "run precision balance simulation later as a separate tuning stage",
-    "declare Production Ready only after the remaining production gates pass"
-  ],
-  "history": {
-    "v081": {
-      "definition": "published pixel-tower vertical-slice baseline",
-      "sourceSnapshot": "0c4c191624b6ffca45c9da91f065d5b9fe49c36a",
-      "featureIntegration": "3b0bc6a88ab3a1ee2aa11ed2b588f7c0eeb8eb19",
-      "webkitViewportFix": "5d16682e51b974e4b3f72a3ceb7a58c229e827f7",
-      "documentationBaseline": "7d486189cccbdb58aeb209432f1782d5393915ef",
-      "production": {
-        "build": "v081-pixel-tower-r2-p3",
-        "runtimeCommit": "ebe26884f9e4500d8e755f0b4fae328ef208c6b6",
-        "deploymentId": "dpl_6PqJBdQX4mEdZ8xkg28tMfWtP6Cm",
-        "actionsRunId": 32091801556,
-        "actionsJobId": 95575301315,
-        "actionsArtifactId": 9308695207,
-        "actionsArtifactDigest": "sha256:9aeae35d058572a4b4edc9d56c42b566f7a9e59781819aebd1748328e1845737"
-      }
-    },
-    "v082": {
-      "definition": "tower-board and gameplay redesign based on v0.8.1 device-video findings",
-      "publicStatus": "github-main-release-source-vercel-live-state-external-production-ready-gates-remain"
-    }
+  "firstTenFloorMinimumScope": {
+    "namedCats": 4,
+    "temporaryHelperRolesMinimum": 3,
+    "normalEnemies": 6,
+    "eliteEnemies": 2,
+    "districtWallEncounters": 1,
+    "districtWallCountsAsAdditionalEnemySpecies": false,
+    "threePhaseBosses": 1,
+    "selectableShops": 4,
+    "supportFacilities": 2,
+    "continuousTowerBrowsing": true,
+    "shopPlacementAndReconfiguration": true,
+    "conditionalCatUnlock": true,
+    "actualMovementContactAndStairClimb": true,
+    "dawnWithThreeChoices": true,
+    "midCombatSaveRestore": true
   },
-  "doNotReturnTo": [
-    "old v0.9.x",
-    "v0.8.0 Living Tower management loop as the main game",
-    "R1 plush dollhouse art as canonical runtime art",
-    "fish bell box three-choice night shift",
-    "restaurant inventory service or fish-slide minigames as mandatory progression",
-    "cat mood management as mandatory progression",
-    "direct tap damage",
-    "static room cards presented as a vertical tower",
-    "twelve identical Mugi sprites piled into one lane",
-    "a disabled main action while the party is full",
-    "instant enemy replacement without victory and ascent beats",
-    "important progression behind an open sheet",
-    "floor-11 progression after the first-night boss",
-    "claiming physical iPhone verification without evidence",
-    "claiming v0.8.2 is Production Ready without WebKit normal-motion device PWA and balance evidence"
+  "finalContentTargets": {
+    "namedCatsMaximum": 12,
+    "activeNamedCatMaximum": 6,
+    "visibleTemporaryHelpersRange": [12, 16],
+    "normalEnemies": 30,
+    "eliteEnemies": 10,
+    "districtBosses": 9,
+    "finalBosses": 1,
+    "shops": 10,
+    "supportFacilityTypes": 4,
+    "districtWallEncounterCount": 10,
+    "districtWallsAreAdditionalEnemySpecies": false
+  },
+  "hundredFloorCompletionScope": {
+    "requiredAtProductReady": [
+      "clear-record",
+      "collection-summary",
+      "normal-rerun"
+    ],
+    "additionalPostgameModesRequiredAtProductReady": false,
+    "futurePostgameModeMayBeApprovedAfterProductReady": 1
+  },
+  "assetProductionLimits": {
+    "beforeGateBAbsoluteTotals": {
+      "namedCats": 2,
+      "temporaryHelperTypes": 1,
+      "normalEnemies": 2,
+      "eliteEnemies": 1,
+      "bossPhaseTests": 1,
+      "floorBackgrounds": 1,
+      "shops": 1
+    },
+    "secondBatchBeforeGateBAllowed": false,
+    "gateCPreproductionTotalCap": "first-ten-floor-minimum-scope",
+    "batchLimitsDoNotOverrideGateTotals": true
+  },
+  "shops": [
+    "shop.staff-reception",
+    "shop.fish-diner",
+    "shop.claw-forge",
+    "shop.toy-workshop",
+    "shop.cat-clinic",
+    "shop.delivery-warehouse",
+    "shop.observatory",
+    "shop.lantern-store",
+    "shop.nap-inn",
+    "shop.curio-gallery"
+  ],
+  "supportFacilities": [
+    "support.training-ground",
+    "support.rest-nest",
+    "support.supply-lift",
+    "support.request-board"
+  ],
+  "interactionAcceptance": {
+    "primaryFeedbackTargetMs": 100,
+    "catTravelBattleWidthPercentRange": [30, 45],
+    "catTravelDurationMsRange": [650, 1000],
+    "impactSynchronizationToleranceMs": 50,
+    "hitStopMsRange": [50, 80],
+    "floorTransitionMsRange": [1600, 2200],
+    "mainTouchTargetPtMinimum": 44,
+    "groundAnchorToleranceCssPx": 2,
+    "stateAnchorToleranceCssPx": 2,
+    "unintendedScaleDifferencePercentMaximum": 15,
+    "reinforcementGestureTrials": 50,
+    "reinforcementGestureErrorsAllowed": 0,
+    "scrollGestureTrials": 50,
+    "scrollGestureErrorsAllowed": 0,
+    "holdToAutoCallThresholdMs": 400,
+    "holdToAutoCallRequiredForProgress": false,
+    "holdMustCancelOnPointerUpScrollOrPause": true
+  },
+  "towerRendering": {
+    "cameraModes": [
+      "battle-follow",
+      "tower-browse"
+    ],
+    "simulationContinuesDuringTowerBrowse": true,
+    "maximumRenderedFloorShells": 13,
+    "allHundredFloorsInDomAllowed": false,
+    "offscreenAnimationAllowed": false,
+    "districtAssetLazyLoadingRequired": true
+  },
+  "canonicalScreens": [
+    "title-and-resume",
+    "battle-follow",
+    "tower-browse",
+    "floor-clear-slot-confirmation",
+    "shop-selection-and-reconfiguration",
+    "cat-roster-and-unlocks",
+    "upgrades-and-build",
+    "dawn",
+    "district-clear-and-hundred-floor-completion"
+  ],
+  "saveDirection": {
+    "currentKey": "cats-tower-v080",
+    "currentGameplaySchema": 2,
+    "targetKey": "cats-tower-v100",
+    "targetGameplaySchema": 3,
+    "schema2RawBackupRequired": true,
+    "schema2RawBackupKey": "cats-tower-v080-schema2-raw-backup",
+    "legacyKeyWriteAllowedByNewRuntime": false,
+    "migrationMustBeIdempotent": true,
+    "downgradeRecoveryTestRequired": true,
+    "legacyTenFloorClearBecomesHundredFloorClear": false,
+    "stableIdsRequired": true,
+    "futureSchemaOverwriteAllowed": false,
+    "savePartitions": [
+      "profile",
+      "run",
+      "tower",
+      "runtime",
+      "system"
+    ],
+    "offlineCanClearFloors": false,
+    "offlineCanDefeatBosses": false,
+    "offlineCanUnlockCats": false,
+    "initialOfflineCapHours": 8
+  },
+  "saveLifetimePartitions": {
+    "persistentBlueprintPartition": "profile",
+    "persistentBossRelicPartition": "profile",
+    "activeTowerStatePartition": "tower",
+    "blueprintEffectsActiveBeforeReconquest": false
+  },
+  "legacyCodeReuse": {
+    "candidates": [
+      "fixed-step-update",
+      "event-bus",
+      "future-schema-protection",
+      "offline-cap-principle",
+      "pwa-and-qa-foundation"
+    ],
+    "mustReplace": [
+      "six-fixed-character-coordinates",
+      "single-enemy-model",
+      "hard-ten-floor-cap",
+      "shared-cat-level",
+      "fixed-floor-3-and-floor-5-only-facilities",
+      "fixed-three-slice-tower-ui",
+      "mixed-old-sprite-standards",
+      "css-tail-override-pile"
+    ]
+  },
+  "productionGates": {
+    "massProduceFloors11Through100BeforeFirstTenPass": false,
+    "gateCRequiredBeforeThirdPartyTest": true,
+    "gateD1RequiredBeforeFloors11Through20": true,
+    "oneGateMayAuthorizeOnlyOneDistrict": true,
+    "floors21Through100RequireRepeatedDistrictGates": true,
+    "gateCAloneAuthorizesMassProduction": false,
+    "normalMotionRequired": true,
+    "reducedMotionRequired": true,
+    "physicalIPhoneRequired": true,
+    "chatGptInAppBrowserRequired": true,
+    "pwaUpdateRequired": true,
+    "saveMigrationRequired": true,
+    "productionDeploymentReadyAloneIsSufficient": false,
+    "gateEIsFirstTenPreviewOnly": true,
+    "gateFRequiredForHundredFloorProductReady": true,
+    "gateFRequiresGateEPass": true,
+    "hundredFloorProductReadyRequiresFirstTenPreviewReady": true,
+    "gateEAndGateFMustUseSameCommitAndDeployment": true
+  },
+  "gateCPerformance": {
+    "viewports": [
+      "375x667",
+      "390x844",
+      "430x932"
+    ],
+    "physicalIPhoneStandardBattleSeconds": 30,
+    "medianFpsMinimum": 55,
+    "p95FrameTimeMsMaximum": 32,
+    "stallsOver100MsAllowed": 0,
+    "primaryInputP95MsMaximum": 100,
+    "coldTransferMbMaximum": 4,
+    "maximumRenderedFloorShells": 13,
+    "towerRoundTripsForLeakTest": 50
+  },
+  "gateD1ThirdPartyTest": {
+    "newPlayersMinimum": 10,
+    "developersAndExistingPlayersExcluded": true,
+    "externalInstructionsAllowed": false,
+    "understandCoreLoopMinimum": 8,
+    "explainShopDifferenceMinimum": 7,
+    "browseConqueredFloorsMinimum": 7,
+    "actuallyStartSecondRunMinimum": 6,
+    "unableToUnderstandGoalDropoutMaximum": 2,
+    "saveLossProgressBlockAndRewardDuplicationAllowed": 0,
+    "p0AndP1Allowed": 0,
+    "authorizesFloors": [11, 20]
+  },
+  "audioRequirements": {
+    "productionSoundRequiredForGateC": true,
+    "oscillatorOnlyPlaceholderAllowedAtGateC": false,
+    "muteMustPreserveVisualCausality": true
+  },
+  "originalityControls": {
+    "reverseEngineeringReferenceGameAllowed": false,
+    "tracingReferenceScreenshotsOrVideoAllowed": false,
+    "frameExactReproductionAllowed": false,
+    "visibleOriginalDifferencesRequiredPerBorrowedMechanic": 3,
+    "assetProvenanceAndLicenseLedgerRequired": true,
+    "unknownProvenanceAssetsAllowedInProduction": false
+  },
+  "legacyV082Verification": {
+    "chromium390x844": "passed-at-baseline-only",
+    "chromium375x667": "passed-at-baseline-only",
+    "webkit390x844": "not-run",
+    "webkit375x667": "not-run",
+    "normalMotionVideo": "not-run",
+    "physicalIPhone": "not-verified",
+    "chatGptInAppBrowser": "not-verified",
+    "pwaStandaloneAndUpdate": "not-verified",
+    "precisionBalanceSimulation": "deferred",
+    "mayBeReusedAsHundredFloorQaEvidence": false
+  },
+  "deferredToFloors1Through10Design": [
+    "exact-floor-by-floor-content",
+    "fourth-named-cat-name-role-and-unlock-condition",
+    "exact-four-initial-shops",
+    "exact-two-initial-support-facilities",
+    "six-normal-and-two-elite-enemy-roster",
+    "first-dawn-trigger-and-three-choices",
+    "tutorial-and-failure-diagnostic-copy"
+  ],
+  "deferredToBalanceSimulation": [
+    "enemy-hp-and-attack-curves",
+    "coin-price-curves",
+    "shop-multipliers",
+    "cat-growth-curves",
+    "dawn-speedup-ratio",
+    "offline-income-amount",
+    "final-floor-clear-times",
+    "three-build-balance"
+  ],
+  "nextAction": "complete-audit-publish-the-draft-pr-and-merge-the-100f-master-spec-to-main-then-mark-step-2-pass-before-starting-floor-1-through-10-design-without-changing-gameplay-code",
+  "researchCheckedDate": "2026-08-22",
+  "statusVocabulary": [
+    "NOT_STARTED",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "PASS"
   ]
 }
