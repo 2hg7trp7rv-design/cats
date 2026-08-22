@@ -58,14 +58,21 @@ jobs:
           import json
           from pathlib import Path
           status=json.loads(Path('PROJECT_STATUS.json').read_text())
-          assert status['canonicalReleaseVersion']=='0.8.2'
-          assert status['canonicalReleaseBuild']=='v082-pixel-tower-gameplay-redesign'
-          assert status['githubMainContainsV082'] is True
-          assert status['v082ProductionReady'] is False
+          assert status['statusDocumentSchemaVersion']==3
+          assert status['project']=="Cat's Tower"
+          assert status['projectStage']=='preproduction'
+          assert status['codeChangesStarted'] is False
+          assert status['firstTenPreviewReady'] is False
+          assert status['hundredFloorProductReady'] is False
+          assert status['legacyBaseline']['version']=='0.8.2'
+          assert status['legacyBaseline']['build']=='v082-pixel-tower-gameplay-redesign'
+          assert status['legacyBaseline']['productionReady'] is False
+          assert status['legacyBaseline']['commit']=='727b8d00c281e7539117da5ded7309ea01c7e516'
           assert status['canonicalBranch']=='main'
-          assert status['physicalIPhoneVerified'] is False
           assert status['productionUrl']=='https://cats-tau-dusky.vercel.app/'
-          assert status['history']['v081']['production']['runtimeCommit']=='ebe26884f9e4500d8e755f0b4fae328ef208c6b6'
+          assert status['legacyV082Verification']['physicalIPhone']=='not-verified'
+          assert status['nineScreenMockups']['status']=='IN_PROGRESS'
+          assert status['qualityGate']['activeArtifactId']=='step-4-nine-screen-mockups'
           print('handover contracts passed')
           PY
 
