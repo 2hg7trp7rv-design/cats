@@ -1,10 +1,10 @@
 # Cat's Tower — 9画面完成見本 正本
 
-判定: **PASS（静的デザイン正本）**  
-工程: 4/10「9画面の完成見本」  
-基準commit: `76c49e9fca82a4c0f6922de8f93ea3b4e57289f6`  
-基準フレーム: 390 × 844 CSS px  
-対象: スマートフォン縦持ち  
+- 判定: **PASS（静的デザイン正本）**
+- 工程: 4/10「9画面の完成見本」
+- 基準commit: `76c49e9fca82a4c0f6922de8f93ea3b4e57289f6`
+- 基準フレーム: 390 × 844 CSS px
+- 対象: スマートフォン縦持ち
 ゲーム本体コード変更: **なし**
 
 ## 1. この工程で確定すること
@@ -347,22 +347,14 @@ Chromiumのスマートフォン相当viewportで静的検査した。物理iPho
 
 ## 11. 公式ガイドから採用した要件
 
-- Apple Human Interface Guidelines — Game controls: 頻繁な操作の十分な大きさ、safe-area、押下反応  
-  https://developer.apple.com/design/human-interface-guidelines/game-controls
-- Apple Human Interface Guidelines — Layout: safe-areaとサイズクラス  
-  https://developer.apple.com/design/human-interface-guidelines/layout
-- Apple Human Interface Guidelines — Accessibility: 色以外の手掛かり、読みやすさ  
-  https://developer.apple.com/design/human-interface-guidelines/accessibility
-- W3C WCAG 2.2 — Target Size (Minimum): 操作対象の最低寸法  
-  https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum
-- W3C WCAG 2.2 — Target Size (Enhanced): 44 CSS px基準  
-  https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced
-- W3C WCAG 2.2 — Focus Not Obscured: 固定フッターでフォーカスを隠さない  
-  https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum
-- MDN — `touch-action`: 塔閲覧面を`pan-y`へ限定  
-  https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action
-- web.dev — Virtualize large lists: 100Fを全件常時描画しない  
-  https://web.dev/articles/virtualize-long-lists-react-window
+- [Apple Human Interface Guidelines — Game controls](https://developer.apple.com/design/human-interface-guidelines/game-controls): 頻繁な操作の十分な大きさ、safe-area、押下反応
+- [Apple Human Interface Guidelines — Layout](https://developer.apple.com/design/human-interface-guidelines/layout): safe-areaとサイズクラス
+- [Apple Human Interface Guidelines — Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility): 色以外の手掛かり、読みやすさ
+- [W3C WCAG 2.2 — Target Size (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum): 操作対象の最低寸法
+- [W3C WCAG 2.2 — Target Size (Enhanced)](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced): 44 CSS px基準
+- [W3C WCAG 2.2 — Focus Not Obscured](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum): 固定フッターでフォーカスを隠さない
+- [MDN — `touch-action`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/touch-action): 塔閲覧面を`pan-y`へ限定
+- [web.dev — Virtualize large lists](https://web.dev/articles/virtualize-long-lists-react-window): 100Fを全件常時描画しない
 
 ## 12. 工程5への引き渡し
 
