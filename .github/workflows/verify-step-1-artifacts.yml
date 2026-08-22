@@ -1,0 +1,212 @@
+name: Verify sealed Step 1 external CI artifacts
+
+on:
+  workflow_run:
+    workflows: ["Verify Cat's Tower baseline and quality records"]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-sealed-artifacts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Bind source main workflow run
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SOURCE_EVENT: ${{ github.event.workflow_run.event }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: |
+          set -euo pipefail
+          test "$SOURCE_EVENT" = "push"
+          test "$SOURCE_CONCLUSION" = "success"
+          test "$SOURCE_HEAD_BRANCH" = "main"
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$SOURCE_RUN_ID"
+          test "$SOURCE_RUN_ATTEMPT" -gt 0
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Resolve seal, audit mode, and exact C3 run when required
+        id: audit_mode
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          ROUND=quality-reviews/step-1-legacy-baseline/round-006.json
+          mapfile -t SEALS < <(
+            while read -r COMMIT PARENTS; do
+              git cat-file -e "$COMMIT:$ROUND" 2>/dev/null || continue
+              INTRODUCED=true
+              for PARENT in $PARENTS; do
+                if git cat-file -e "$PARENT:$ROUND" 2>/dev/null; then INTRODUCED=false; break; fi
+              done
+              if [ "$INTRODUCED" = "true" ]; then printf '%s\n' "$COMMIT"; fi
+            done < <(git rev-list --parents HEAD)
+          )
+          test "${#SEALS[@]}" -eq 1
+          C3_SHA=${SEALS[0]}
+          git merge-base --is-ancestor "$C3_SHA" HEAD
+          C3_TREE=$(git rev-parse "$C3_SHA^{tree}")
+          mapfile -t SEAL_MERGES < <(
+            while read -ra ROW; do
+              if [ "${#ROW[@]}" -ne 3 ] || [ "${ROW[2]}" != "$C3_SHA" ]; then continue; fi
+              if [ "$(git rev-parse "${ROW[0]}^{tree}")" != "$C3_TREE" ]; then continue; fi
+              if git merge-base --is-ancestor "$C3_SHA" "${ROW[1]}"; then continue; fi
+              printf '%s\n' "${ROW[0]}"
+            done < <(git rev-list --parents HEAD)
+          )
+          test "${#SEAL_MERGES[@]}" -eq 1
+          SEAL_MERGE=${SEAL_MERGES[0]}
+          git merge-base --is-ancestor "$SEAL_MERGE" HEAD
+          if [ "$(git rev-parse HEAD)" = "$SEAL_MERGE" ]; then
+            MODE=initial-main-seal
+            fetch_unfiltered_workflow_snapshot() {
+              local OUTPUT=$1
+              local PAGE=1
+              local EXPECTED_TOTAL=-1
+              local SEEN=0
+              : > "$OUTPUT"
+              while true; do
+                test "$PAGE" -le 1000
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/workflows/verify-main.yml/runs?per_page=100&page=$PAGE" \
+                  > "$RUNNER_TEMP/c3-runs-page.json"
+                local TOTAL_NOW
+                local COUNT
+                TOTAL_NOW=$(jq -er '.total_count | select(type=="number" and .>=0 and floor==.)' "$RUNNER_TEMP/c3-runs-page.json")
+                COUNT=$(jq -er '.workflow_runs | length' "$RUNNER_TEMP/c3-runs-page.json")
+                if [ "$EXPECTED_TOTAL" -eq -1 ]; then EXPECTED_TOTAL=$TOTAL_NOW; fi
+                test "$TOTAL_NOW" -eq "$EXPECTED_TOTAL"
+                jq -c '.workflow_runs[]' "$RUNNER_TEMP/c3-runs-page.json" >> "$OUTPUT"
+                SEEN=$((SEEN + COUNT))
+                if [ "$COUNT" -lt 100 ]; then break; fi
+                PAGE=$((PAGE + 1))
+              done
+              test "$SEEN" -eq "$EXPECTED_TOTAL"
+              test "$(jq -sr '[.[].id] | length' "$OUTPUT")" -eq "$SEEN"
+              test "$(jq -sr '[.[].id] | unique | length' "$OUTPUT")" -eq "$SEEN"
+            }
+            # Filtered workflow-run searches are capped at 1,000 by GitHub.
+            # Take two complete, unfiltered workflow-specific snapshots instead,
+            # fail on truncation/shifting, then apply the exact C3 predicates locally.
+            fetch_unfiltered_workflow_snapshot "$RUNNER_TEMP/c3-runs-a.ndjson"
+            fetch_unfiltered_workflow_snapshot "$RUNNER_TEMP/c3-runs-b.ndjson"
+            jq -r '[.id,.run_attempt] | @tsv' "$RUNNER_TEMP/c3-runs-a.ndjson" | sort -n -k1,1 > "$RUNNER_TEMP/c3-run-identities-a.tsv"
+            jq -r '[.id,.run_attempt] | @tsv' "$RUNNER_TEMP/c3-runs-b.ndjson" | sort -n -k1,1 > "$RUNNER_TEMP/c3-run-identities-b.tsv"
+            cmp -s "$RUNNER_TEMP/c3-run-identities-a.tsv" "$RUNNER_TEMP/c3-run-identities-b.tsv"
+            jq -r --arg sha "$C3_SHA" --arg workflow "Verify Cat's Tower baseline and quality records" '
+              select(
+                .head_sha==$sha
+                and .event=="pull_request"
+                and .workflow_id==335561992
+                and .name==$workflow
+              )
+              | [.id,.run_attempt] | @tsv
+            ' "$RUNNER_TEMP/c3-runs-a.ndjson" > "$RUNNER_TEMP/c3-run-candidates.tsv"
+            : > "$RUNNER_TEMP/c3-qualified-attempts.tsv"
+            while IFS=$'\t' read -r CANDIDATE_RUN_ID LATEST_ATTEMPT; do
+              test "$CANDIDATE_RUN_ID" -gt 0
+              test "$LATEST_ATTEMPT" -gt 0
+              for CANDIDATE_ATTEMPT in $(seq 1 "$LATEST_ATTEMPT"); do
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/attempts/$CANDIDATE_ATTEMPT" \
+                  > "$RUNNER_TEMP/c3-exact-run.json"
+                curl -fsSL \
+                  -H "Authorization: Bearer $GH_TOKEN" \
+                  -H 'Accept: application/vnd.github+json' \
+                  -H 'X-GitHub-Api-Version: 2022-11-28' \
+                  "https://api.github.com/repos/$GH_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/attempts/$CANDIDATE_ATTEMPT/jobs?per_page=100" \
+                  > "$RUNNER_TEMP/c3-exact-jobs.json"
+                jq -e '.total_count==(.jobs | length) and .total_count<=100' "$RUNNER_TEMP/c3-exact-jobs.json" >/dev/null
+                jq -e \
+                  --argjson run "$CANDIDATE_RUN_ID" \
+                  --argjson attempt "$CANDIDATE_ATTEMPT" \
+                  --arg workflow "Verify Cat's Tower baseline and quality records" \
+                  --arg sha "$C3_SHA" '
+                    .id==$run
+                    and .run_attempt==$attempt
+                    and .workflow_id==335561992
+                    and .name==$workflow
+                    and .event=="pull_request"
+                    and .head_sha==$sha
+                    and .status=="completed"
+                    and .conclusion=="success"
+                  ' "$RUNNER_TEMP/c3-exact-run.json" >/dev/null || continue
+                jq -e \
+                  --argjson run "$CANDIDATE_RUN_ID" \
+                  --argjson attempt "$CANDIDATE_ATTEMPT" \
+                  --arg sha "$C3_SHA" '
+                    [.jobs[] | select(
+                      .name=="vertical-tower-qa"
+                      and .run_id==$run
+                      and .run_attempt==$attempt
+                      and .head_sha==$sha
+                      and .status=="completed"
+                      and .conclusion=="success"
+                    )] | length==1
+                  ' "$RUNNER_TEMP/c3-exact-jobs.json" >/dev/null || continue
+                printf '%s\t%s\n' "$CANDIDATE_RUN_ID" "$CANDIDATE_ATTEMPT" >> "$RUNNER_TEMP/c3-qualified-attempts.tsv"
+              done
+            done < <(sort -n -k1,1 -k2,2 "$RUNNER_TEMP/c3-run-candidates.tsv" | uniq)
+            SELECTED=$(sort -n -k1,1 -k2,2 "$RUNNER_TEMP/c3-qualified-attempts.tsv" | tail -n 1)
+            test -n "$SELECTED"
+            IFS=$'\t' read -r C3_RUN_ID C3_RUN_ATTEMPT <<< "$SELECTED"
+            test "$C3_RUN_ID" -gt 0
+            test "$C3_RUN_ATTEMPT" -gt 0
+            echo "c3_run_id=$C3_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "c3_run_attempt=$C3_RUN_ATTEMPT" >> "$GITHUB_OUTPUT"
+          else
+            MODE=future-main
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "c3_sha=$C3_SHA" >> "$GITHUB_OUTPUT"
+          echo "seal_merge=$SEAL_MERGE" >> "$GITHUB_OUTPUT"
+
+      - name: Verify C3 pull-request artifact through GitHub API
+        if: steps.audit_mode.outputs.mode == 'initial-main-seal'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p external-audit-results
+          node tests/verify-ci-artifact.mjs c3-pr "${{ steps.audit_mode.outputs.c3_run_id }}" "${{ steps.audit_mode.outputs.c3_run_attempt }}" | tee external-audit-results/c3-pr.json
+
+      - name: Verify merged main artifact through GitHub API
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          set -euo pipefail
+          mkdir -p external-audit-results
+          MODE=${{ steps.audit_mode.outputs.mode }}
+          node tests/verify-ci-artifact.mjs "$MODE" "$SOURCE_RUN_ID" "$SOURCE_RUN_ATTEMPT" | tee "external-audit-results/$MODE.json"
+
+      - name: Upload external artifact audit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cats-step-1-external-artifact-audit-source-${{ github.event.workflow_run.id }}-${{ github.event.workflow_run.run_attempt }}-audit-${{ github.run_attempt }}
+          path: external-audit-results
+          if-no-files-found: error
+          retention-days: 30

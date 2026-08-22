@@ -1,0 +1,294 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "acceptanceRevision": 3,
+  "supersedes": "acceptance-round-002.json",
+  "revisionReason": "Round 2 proved that successful clean-room browser CI was still insufficient when the checkpoint claim was broader than the retained object and the judge, workflow, evidence provenance, and final review records could be weakened after the fact. Revision 3 narrows the claim, freezes the critical evaluator files, binds prior CI to GitHub API facts, preserves recalculable Preview responses, and restricts the final review diff.",
+  "scopeName": "Step 1A — V0.8.2 deployed browser-runtime source and deployment-input byte checkpoint",
+  "scope": [
+    "retain the exact 16 unique V0.8.2 source files that produce the 17 served browser-runtime and license paths",
+    "retain the exact .vercelignore and vercel.json deployment inputs used by the V0.8.2 tree",
+    "retain two baseline verification inputs needed to recalculate legacy raster and deterministic-loop expectations",
+    "prove the exact baseline commit and tree can be checked out, verified, served, and freshly built without changing a runtime or deployment-input byte",
+    "separate the historical deployment, the fixed Production target at audit time, and the fresh recovery Preview",
+    "record legacy defects and excluded capabilities without presenting this checkpoint as the 100-floor product or a whole-repository backup"
+  ],
+  "retainedObject": {
+    "baselineCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "baselineTree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+    "servedPaths": 17,
+    "uniqueRuntimeSourceFiles": 16,
+    "deploymentInputFiles": 2,
+    "verificationInputFiles": 2,
+    "selfContainedSnapshotEntries": 20,
+    "wholeRepositorySourceBackupClaimed": false
+  },
+  "separateCapabilities": [
+    {
+      "id": "1B-player-save-continuity",
+      "status": "UNAVAILABLE_IN_V082",
+      "reason": "V0.8.2 stores data only in browser localStorage and has no export, server backup, or recovery source for deleted or irrecoverably corrupted user data."
+    },
+    {
+      "id": "physical-iphone-standalone-pwa",
+      "status": "NOT_VERIFIED",
+      "reason": "Emulated Chromium and WebKit evidence is not physical-device evidence. Physical iPhone approval remains mandatory at the later product QA gate."
+    },
+    {
+      "id": "production-alias-switch-drill",
+      "status": "NOT_EXECUTED_BY_DESIGN",
+      "reason": "The public Production runtime was healthy and byte-identical. A real alias switch is externally visible and is not required for this deployed browser-runtime source and deployment-input byte checkpoint."
+    },
+    {
+      "id": "github-ruleset-required-workflow-enforcement",
+      "status": "NOT_CONFIGURED_AT_AUDIT",
+      "reason": "The repository reports main and the archive ref as unprotected, and the available connector cannot configure a ruleset or organization-level required workflow. The sealed verifier detects later tampering when the current workflow invokes it, but an authorized direct change could delete or short-circuit that bootstrap before it runs."
+    }
+  ],
+  "explicitExclusions": [
+    {
+      "id": "whole-repository-off-provider-backup",
+      "reason": "The snapshot is intentionally limited to deployed runtime source, deployment inputs, and two verification inputs. It is not an export of every repository file and does not survive simultaneous deletion of both the GitHub repository and Vercel project."
+    },
+    {
+      "id": "deleted-or-corrupt-player-save-recovery",
+      "reason": "No recoverable external player-save copy exists in V0.8.2."
+    },
+    {
+      "id": "physical-iphone-standalone-pwa-approval",
+      "reason": "This round uses browser engines and mobile viewports, not a controlled physical iPhone installation."
+    },
+    {
+      "id": "production-alias-switch",
+      "reason": "The public alias remains unchanged because runtime identity can be proven without an externally visible switch."
+    },
+    {
+      "id": "tamper-proof-github-workflow-bootstrap",
+      "reason": "An in-repository workflow cannot prove that it will run after an authorized user deletes or disables that same workflow. Tamper-proof bootstrap enforcement requires an external GitHub ruleset or required workflow that is not configured here."
+    }
+  ],
+  "requirements": [
+    { "id": "S1", "gate": "G1", "condition": "The baseline commit and tree resolve exactly, git fsck passes, and the baseline uses neither Git LFS nor submodules." },
+    { "id": "S2", "gate": "G1", "condition": "GitHub retains an archive branch at the exact baseline commit and the review branch contains a self-contained SHA-256-bound snapshot, so the mutable archive ref is not the only retained copy." },
+    { "id": "S3", "gate": "G1", "condition": "The snapshot manifest contains exactly 20 non-duplicated bindings: 16 deployed runtime source files, two deployment inputs, and two verification inputs, each byte-identical to the baseline tree." },
+    { "id": "S4", "gate": "G1", "condition": "Every canonical claim names this as a deployed browser-runtime source and deployment-input byte checkpoint and explicitly avoids a whole-repository or player-save backup claim." },
+    { "id": "S5", "gate": "G5", "condition": "The remote archive ref resolves exactly to the baseline commit, and a clean GitHub checkout of that immutable SHA passes the independently retained verification kit through CATS_BASELINE_DIR; historical descendants do not depend on the mutable ref." },
+    { "id": "D1", "gate": "G2", "condition": "The historical baseline Vercel deployment is READY and reports the exact baseline commit." },
+    { "id": "D2", "gate": "G1", "condition": "The historical deployment, current fixed Production deployment, and fresh recovery deployment are separately named identities and are not conflated." },
+    { "id": "D3", "gate": "G2", "condition": "All 17 fixed-Production manifest paths have the expected HTTP status, MIME type, byte length, and SHA-256." },
+    { "id": "D4", "gate": "G5", "condition": "Authenticated connected-project Vercel metadata reports the fresh READY deployment at the witnessed single-parent no-content commit whose tree is exactly the baseline tree; sealed response captures prove all 15 non-HTML responses match directly and each HTML response equals exact baseline bytes followed by exactly one captured deployment-bound Preview Toolbar suffix. The connector response is not cryptographically signed, so independent critics must re-query that deployment before C2." },
+    { "id": "D5", "gate": "G4", "condition": "The fresh Preview evidence preserves safe response headers and the raw base64 response for each normalized HTML path so its observed and normalized SHA-256 can be recalculated without a share credential." },
+    { "id": "R1", "gate": "G5", "condition": "The recovered runtime completes the deterministic 1F-through-10F loop in Chromium and WebKit at 390x844 and 375x667." },
+    { "id": "R2", "gate": "G5", "condition": "Without qa=1 and with normal motion, a player can start, enter battle, and reload successfully in Chromium and WebKit at both mobile viewports." },
+    { "id": "R3", "gate": "G5", "condition": "With service workers enabled in Chromium at both viewports, the test verifies controller acquisition, the exact 15 cache keys and response-body hashes, obsolete and synthetic future cache removal, and offline shell restart." },
+    { "id": "R4", "gate": "G5", "condition": "Normal reload preserves all 19 durable fields and four screen fields checked by CI, while the known live-roster non-persistence remains reproduced and disclosed rather than hidden." },
+    { "id": "V1", "gate": "G5", "condition": "Schema-2 durable state reloads and the raw future-schema localStorage string remains byte-for-byte unmodified." },
+    { "id": "V2", "gate": "G3", "condition": "Final-size visual and written evidence makes the checkpoint purpose and the roster, deleted-save, physical-device, and product-quality boundaries understandable without implying those limitations are solved." },
+    { "id": "E1", "gate": "G4", "condition": "Every persisted local raw report and all six 390x844 final-size visual records have verifier-checked SHA-256 and expected dimensions or report fields." },
+    { "id": "E2", "gate": "G4", "condition": "Exact-head C1 CI produces the acceptance CI record added only at C2; exact-head C2 CI produces the candidate CI record added only at C3. The C3 workflow binds the original raw-source, C1, and C2 records to repository, workflow, run, PR head, checkout tree, API job timestamps, successful required job steps, artifact metadata, downloaded ZIP digest, and entry count. For the original synthetic merge checkout, the Git commit API must also match its SHA, tree, ordered parents, job log, and all ten exact ZIP members. C3 PR-head CI and the resulting main push CI are external completion conditions because they occur after their tested commits exist." },
+    { "id": "E3", "gate": "G4", "condition": "Each expiring CI artifact records its ID, digest, size, file count, and expiry and is present and unexpired when the C3 workflow verifies the seal. Later descendants rely on the sealed Git history, ten committed raw reports, self-contained snapshot, and browser re-execution from the immutable C3 kit rather than artifact retention." },
+    { "id": "Q1", "gate": "G4", "condition": "After C1 CI, three procedurally independent critics review exact C1 and their records are added in C2; the runtime critic must also re-query and bind the fresh Vercel deployment. After exact-head C2 CI, a separate final judge reviews C2, its three critic records, and C2 CI. Every review records its assigned task path, assignment, target-specific verbatim JSON response, method, findings, target, and zero unresolved material blockers; both outer records and embedded verbatim JSON reject duplicate object keys." },
+    { "id": "Q2", "gate": "G1", "condition": "No original game runtime, asset, PWA, or deployment-input byte changes during the Step 1A redo." },
+    { "id": "Q3", "gate": "G1", "condition": "README, AGENTS, MASTER_SPEC, FLOORS_1_10_DESIGN, PROJECT_HANDOVER, PROJECT_STATUS, and BASELINE_V082 agree exactly on Step 1A and later-step states and contain no retired ambiguous checkpoint name." },
+    { "id": "Q4", "gate": "G4", "condition": "C1 freezes Acceptance revision 3, the validator, workflow, snapshot contract, capture script, and durable evidence before its CI and before C2 review. Every JSON document consumed by the validator, including embedded reviewer responses, must use an unambiguous duplicate-key-free representation." },
+    { "id": "Q5", "gate": "G4", "condition": "C2 is the single-parent direct child of C1 and changes exactly the C1 CI evidence, clean-recovery evidence, and three critic records. C3 is the single-parent direct child of C2 and changes exactly the C2 CI evidence, final-judge and round records, plus the defined mechanical status transforms. Protected blobs keep their C1 hashes at C2 and C3, and an all-reachable-commit/all-parent-edge scan finds C3 as the only introduction of round-003.json." },
+    { "id": "Q6", "gate": "G4", "condition": "Round 2 remains recorded as FAIL with its material blockers and is never rewritten into a success." }
+  ],
+  "protectedFiles": [
+    { "path": ".github/baselines/v0.8.2/MANIFEST.json", "sha256": "0b9dee0700e061621d1d309e1856d2a2e8ed93246dceb9bae60a09df75f427e4" },
+    { "path": ".github/baselines/v0.8.2/RESTORE.md", "sha256": "3e452e9d7c77f0eac4c84390b49fae64c8381bc6522fe4f0018fdf7aef36c04b" },
+    { "path": ".github/workflows/verify-main.yml", "sha256": "2cc43a801c68a5e38f9dc87ee11f3d0e3c89199f4e169c7a80c1d271e2ed00af" },
+    { "path": "QUALITY_GATE.md", "sha256": "51e3d84748d0d022f33cccc820895a8307139dffe3ae5890b252d3b9a24784c9" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-commit-object.b64", "sha256": "985ac31582f9f57b37c82d57a43fd4a9a755a6dd6726d3cebc7e8c446d5246ca" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/fresh-recovery-preview-capture.json", "sha256": "f32e4f54e46e5f9812e1b4a2be6c9790effaf06247f5000866e990033f3555cf" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/runtime-manifest.json", "sha256": "f9e57d54fa9a65a43b0fc778e11e0a8a077caaaac092a19c4e25e1861e0040dd" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/vercel-deployment-metadata.json", "sha256": "09a449ffa947b31262a0e67995e9a4d980fbf97ef2e6db81d8fb3d501afaa047" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-loop.json", "sha256": "44f28fc39fac5a04ae296101789a3bb1105482d5ffd61193970fc7924bcb6a46" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-normal-flow.json", "sha256": "9ab74634775245de8dad7ce5f0e3a211b4083fb41c8d4438e21521fdece34228" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-service-worker.json", "sha256": "ac2fb299bfdd4ace7b09a2c92dc0c8afa6ab6494fc9cd5a7d73e2b2fb58a3883" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-loop.json", "sha256": "0a366d6b1151d6e6a2048ee247b65b573ad10e9ce61f8b83707a9579cbe89583" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-normal-flow.json", "sha256": "29b2f4f977da05e250b288c7034f6728359c31ec2834d61c0984140bd98962fa" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-service-worker.json", "sha256": "f06e271602c583539cd54c5e730f8f386f4cd3a9ecc507cf575343a3ab54e2ef" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-375x667-loop.json", "sha256": "6c5e804c0c5a889ca412e6d954d1f4b94706d6928e6bc3eb59ec304921f91103" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-375x667-normal-flow.json", "sha256": "f1a3ec55c75c1dbb99971bd7bce55c1a97f2ffcaf05f66f82fcdaf616b8271f2" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-loop.json", "sha256": "dd3f64a682a9a3e0e8832b5860b425a17a75d99adc2b3b9f2c6185ff5ed7e0dd" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-normal-flow.json", "sha256": "49f12b36127068baa875aee775000d8d26eb2a7569d27b391db53ce348db3eb0" },
+    { "path": "tests/capture-v082-preview.mjs", "sha256": "05171cdb95c204516dc8f0568825777a2522ac64e0053f19135e2136946e06a0" },
+    { "path": "tests/verify-step-1-baseline.mjs", "sha256": "b22be02f1946c1ec006df7321b1d635b041c69314c90ca34e66e5dd378fbd374" }
+  ],
+  "candidateAllowedPaths": [
+    "quality-reviews/step-1-legacy-baseline/audits/round-003-adversarial-critic.json",
+    "quality-reviews/step-1-legacy-baseline/audits/round-003-repository-critic.json",
+    "quality-reviews/step-1-legacy-baseline/audits/round-003-runtime-critic.json",
+    "quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json",
+    "quality-reviews/step-1-legacy-baseline/evidence/clean-recovery.json"
+  ],
+  "sealAllowedPaths": [
+    "AGENTS.md",
+    "BASELINE_V082.md",
+    "FLOORS_1_10_DESIGN.md",
+    "MASTER_SPEC.md",
+    "PROJECT_HANDOVER.md",
+    "PROJECT_STATUS.json",
+    "README.md",
+    "quality-reviews/step-1-legacy-baseline/audits/round-003-final-judge.json",
+    "quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json",
+    "quality-reviews/step-1-legacy-baseline/round-003.json"
+  ],
+  "commitProtocol": {
+    "c1": "Acceptance checkpoint: status remains IN_PROGRESS; evaluator, workflow, snapshot, capture, and durable evidence are frozen before clean-checkout CI.",
+    "c2": "Review candidate: single-parent direct child of C1; only acceptance-ci-run.json, clean-recovery.json, and three C1 critic records change; status remains IN_PROGRESS. Exact-head C2 CI must pass before the final judge runs.",
+    "c3": "Audit seal: single-parent direct child of C2; only candidate-ci-run.json, the final-judge record, round-003.json, and acceptance-defined mechanical status transforms change.",
+    "sealDiscovery": "C3 is the unique single-parent commit in the complete reachable DAG whose tree contains quality-reviews/step-1-legacy-baseline/round-003.json while none of its parent trees contains that path. Discovery enumerates every commit and parent edge and does not use history-simplified path log output.",
+    "futureMode": "When the current repository workflow invokes it on a descendant of C3, the immutable Acceptance kernel remains the sole machine authority. Verification requires both sealed evidence trees, all exact universal quality-loop mirror claims, the duplicate-key-free authoritative Step 1A JSON entry with its canonical order, name, and PASS status, and one structured PASS marker and checklist row in each canonical document, then re-runs the historical C3 verifier against the immutable baseline. Arbitrary natural-language semantic completeness is not claimed, and preventing deletion or short-circuiting of the workflow itself requires an external GitHub ruleset that is not configured at audit time.",
+    "mergePolicy": "C1, C2, and C3 commit identities must be preserved; squash and rebase merge are forbidden for this PR."
+  },
+  "futureImmutablePaths": [
+    ".github/baselines/v0.8.2",
+    "quality-reviews/step-1-legacy-baseline"
+  ],
+  "futureRequiredQualityGateClaims": [
+    "この規則は、仕様書、調査、画像、画面、コード、QA、配信など、ユーザーへ成果として渡す全作業へ適用する。",
+    "3. **実物を自己検収する**",
+    "4. **反証する**",
+    "一つでも不合格なら`IN_PROGRESS`へ戻し、失敗原因を次のAcceptanceへ加えて手順1から再構成する。",
+    "`PASS`時だけ完成報告する。未完成時は完成したように表現しない。",
+    "それ以外は内部で①〜④を繰り返し、合格後にまとめて報告する。",
+    "ユーザーが品質を否認した場合は旧判定を守らず、直ちに`IN_PROGRESS`へ戻して次roundの失敗条件へ反映する。"
+  ],
+  "futureNormativeKernel": {
+    "authorityPath": "quality-reviews/step-1-legacy-baseline/acceptance-round-003.json",
+    "authorityRetention": "The full quality-reviews/step-1-legacy-baseline Git tree is immutable at descendants of C3 when the verifier runs, so this kernel cannot be overridden by a current Markdown edit.",
+    "qualityLoopAuthority": "futureRequiredQualityGateClaims is the non-overridable machine-readable minimum; current QUALITY_GATE.md is an evolvable mirror that must retain every exact claim.",
+    "step1StatusAuthority": "The sealed PROJECT_STATUS legacyBaseline and legacyV082Verification objects plus the exact preparation[0] object {order:1,name:legacy-v082-source-runtime-byte-checkpoint,status:PASS} are authoritative; that entry must be unique by name and order, and current canonical Markdown files must retain one structured PASS marker and checklist row.",
+    "jsonAuthorityEncoding": "Every JSON document consumed by the verifier, including PROJECT_STATUS, Acceptance, CI, round, evidence, critic, judge, and embedded verbatimResponse JSON, must reject duplicate object keys before semantic validation.",
+    "arbitraryNaturalLanguageSemanticCompletenessClaimed": false,
+    "boundary": "The verifier does not claim to understand every possible contradictory natural-language sentence. Such prose cannot override this frozen kernel or structured JSON status, and later human review remains responsible for editorial clarity."
+  },
+  "sealStatusTransforms": {
+    "markdownRule": "For each canonical Markdown file, every listed from value must occur exactly once in C2. Applying the ordered replacements must reproduce the C3 blob byte-for-byte; no unlisted edit is allowed and status-vocabulary definitions remain unchanged.",
+    "markdownReplacements": {
+      "README.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "| 工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint | `IN_PROGRESS` — 配信runtime sourceとdeployment inputsを再検証中 |", "to": "| 工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint | `PASS` — 配信runtime sourceとdeployment inputsのbyte checkpointを検証済み |" },
+        { "from": "## 工程1AのV0.8.2配信runtime検証対象", "to": "## 工程1AのV0.8.2配信runtime検証済みcheckpoint" },
+        { "from": "コード修正前の候補復旧基準は、V0.8.2のcommit `727b8d0`です。", "to": "コード修正前の検証済み復旧基準は、V0.8.2のcommit `727b8d0`です。" },
+        { "from": "| V0.8.2 baseline候補 | [`727b8d00c281e7539117da5ded7309ea01c7e516`](https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516) | 比較・復旧用checkpointとして検証中 |", "to": "| V0.8.2 baseline checkpoint | [`727b8d00c281e7539117da5ded7309ea01c7e516`](https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516) | 比較・復旧用checkpointとして検証済み |" },
+        { "from": "現在の固定Productionに配信されるゲームruntimeはbaseline候補とbyte単位で一致し、工程1Aのやり直しによるゲームruntime変更は0件です。このbyte一致だけでは工程1Aの完成判定にならず、V0.8.2の製品品質合格も意味しません。", "to": "現在の固定Productionに配信されるゲームruntimeはbaseline checkpointとbyte単位で一致し、工程1Aのやり直しによるゲームruntime変更は0件です。byte一致に復旧・CI・独立監査を加えた工程1Aの完成判定は`PASS`ですが、V0.8.2の製品品質合格を意味しません。" },
+        { "from": "- baselineと同一treeのfresh recovery Vercel Preview `dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV`は`READY`です。非HTML 15経路は直接一致し、各HTMLはbaseline bytesの直後にdeployment-bound Vercel Preview Toolbar suffixが1回だけ追加されたことを確認しました。工程1Aの`PASS`には、この一致に加えてC1/C2 exact-head CI、C3 PR-head CI、merge後main push CI、手続上独立した再審査を要求します。", "to": "- baselineと同一treeのfresh recovery Vercel Preview `dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV`は`READY`です。非HTML 15経路は直接一致し、各HTMLはbaseline bytesの直後にdeployment-bound Vercel Preview Toolbar suffixが1回だけ追加されたことを確認しました。C1/C2のexact-head CIと手続上独立した再審査を終え、C3 PR-head CIとmerge後main push CIを外部完了条件に残すsealとして工程1Aのbyte checkpointを`PASS`としました。" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" }
+      ],
+      "AGENTS.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "- 準備工程: 新しい完成判定で工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointから再開。工程1Aは`IN_PROGRESS`", "to": "- 準備工程: 工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointは`PASS`。次は工程2の再検証" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" }
+      ],
+      "MASTER_SPEC.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" }
+      ],
+      "FLOORS_1_10_DESIGN.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" },
+        { "from": "次判定: 工程1A、工程2の品質Gate合格後、本書を工程3成果として再検証する", "to": "次判定: 工程1Aは合格済み。工程2の品質Gate合格後、本書を工程3成果として再検証する" },
+        { "from": "以下のチェックは旧判定時の達成記録であり、現在の`PASS`を意味しない。工程1A合格後、現行の完成判定Gateで実物・反証・判定を再実行する。", "to": "以下のチェックは旧判定時の達成記録であり、現在の`PASS`を意味しない。工程1Aは合格済みであり、工程2合格後に現行の完成判定Gateで実物・反証・判定を再実行する。" }
+      ],
+      "PROJECT_HANDOVER.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "新しい完成判定は、工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointから適用する。工程1Aによるゲームruntimeの変更は0件である。工程2と工程3の旧成果物は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降は工程2・3の合格前に開始しない。", "to": "工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointは新しい完成判定で`PASS`し、その間のゲームruntime変更は0件である。次は工程2を再検証する。工程2と工程3の旧成果物は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降は工程2・3の合格前に開始しない。" },
+        { "from": "V0.8.2はコード修正前の比較・復旧checkpointである。", "to": "V0.8.2はコード修正前の検証済み比較・復旧checkpointである。" },
+        { "from": "| 工程1A状態 | `IN_PROGRESS` — 配信runtime sourceとdeployment inputsを再検証中 |", "to": "| 工程1A状態 | `PASS` — 配信runtime sourceとdeployment inputsのbyte checkpointを検証済み |" },
+        { "from": "remote archive branch `archive/v0.8.2-legacy-baseline`はbaseline候補commitを指す。ローカルannotated tag `v0.8.2-legacy-baseline`はあるがremote tagは未反映である。fresh recovery Previewでは非HTML 15経路が直接一致し、各HTMLはbaseline bytesの直後にdeployment-bound Vercel Preview Toolbar suffixが1回だけ追加されたことを確認した。旧成果物は削除せず候補として残し、全CIと独立再審査が合格するまでは工程1Aを`PASS`としない。", "to": "remote archive branch `archive/v0.8.2-legacy-baseline`はbaseline候補commitを指す。ローカルannotated tag `v0.8.2-legacy-baseline`はあるがremote tagは未反映である。fresh recovery Previewでは非HTML 15経路が直接一致し、各HTMLはbaseline bytesの直後にdeployment-bound Vercel Preview Toolbar suffixが1回だけ追加されたことを確認した。C1/C2のexact-head CIと手続上独立した再審査に合格し、C3 PR-head CIとmerge後main push CIを外部完了条件に残すsealとして工程1Aを`PASS`とした。" },
+        { "from": "工程1A Round 3の候補証拠では、", "to": "工程1A Round 3の封印証拠では、" },
+        { "from": "工程1Aでは、作成済みのfresh recovery Vercel Previewを含め、GitHub archive ref、runtime manifest、通常導線、保存、Service Worker、offline復旧、既知の制限、固定Productionとのbyte一致をCIと独立監査で再確認する。物理iPhoneは未検証として分離し、確認済みと書かない。", "to": "工程1Aのdeployed browser-runtime source + deployment-input byte checkpointは`PASS`した。次に工程2の`MASTER_SPEC.md`を現行Gateで再検証する。物理iPhoneは後続の製品QAまで未検証として分離し、工程1Aで確認済みと書かない。" },
+        { "from": "工程1Aが新しい完成判定で`PASS`になるまで工程2へ進まない。工程2の`MASTER_SPEC.md`と工程3の`FLOORS_1_10_DESIGN.md`は削除せず候補として保持するが、現在の判定は`PENDING_REVALIDATION`である。工程4以降とゲーム本体コード修正は`NOT_STARTED`のままとする。", "to": "工程1Aは新しい完成判定で`PASS`した。工程2の`MASTER_SPEC.md`と工程3の`FLOORS_1_10_DESIGN.md`は削除せず候補として保持するが、現在の判定は`PENDING_REVALIDATION`である。工程4以降とゲーム本体コード修正は`NOT_STARTED`のままとする。" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" }
+      ],
+      "BASELINE_V082.md": [
+        { "from": "工程状態: 工程1A=IN_PROGRESS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED", "to": "工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED" },
+        { "from": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `IN_PROGRESS`", "to": "1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`" }
+      ]
+    },
+    "projectStatusJsonPointers": [
+      "preparation[0].status",
+      "legacyBaseline.sourceRuntimeCheckpoint",
+      "legacyV082Verification.githubActionsRun",
+      "legacyV082Verification.githubActionsHead",
+      "legacyV082Verification.githubActionsConclusion",
+      "nextAction"
+    ],
+    "projectStatusTransforms": [
+      { "pointer": "preparation[0].status", "from": "IN_PROGRESS", "to": "PASS" },
+      { "pointer": "legacyBaseline.sourceRuntimeCheckpoint", "from": "IN_PROGRESS", "to": "PASS" },
+      { "pointer": "legacyV082Verification.githubActionsRun", "from": 32578260669, "toSource": "candidateCi.runId" },
+      { "pointer": "legacyV082Verification.githubActionsHead", "from": "5792be4a0cee37e540747233fd2921ab5f0db392", "toSource": "candidateCi.pullRequest.headSha" },
+      { "pointer": "legacyV082Verification.githubActionsConclusion", "from": "success-but-round-2-quality-judgment-failed", "to": "success-and-round-3-quality-judgment-passed" },
+      { "pointer": "nextAction", "from": "freeze-round-3-acceptance-run-clean-checkout-ci-and-independent-rejudgment", "to": "revalidate-100f-master-specification" }
+    ]
+  },
+  "externalCompletionStopConditions": [
+    "the remote pull-request head equals C3",
+    "the exact C3 head completes this workflow successfully",
+    "the C3 Vercel Preview reaches READY and serves the expected documentation-only tree",
+    "the PR is merged without squashing or rebasing so C1, C2, and C3 remain ancestors of main",
+    "the resulting main head has the same Git tree as C3, so the merge adds no unreviewed content and every canonical Step 1 blob equals its sealed C3 blob",
+    "the exact resulting main head completes the main push workflow successfully in historical-seal mode",
+    "the remote archive ref still resolves to the exact baseline commit at completion-report time",
+    "the fixed Production URL is rechecked after merge; no Production alias switch is performed"
+  ],
+  "automaticFailureConditions": [
+    "Step 1 is described without the Step 1A deployed-runtime source and deployment-input scope qualifier",
+    "the retired phrase for an unspecified current-version save point appears in a canonical document",
+    "the 20-entry snapshot is described as every repository source file or an off-provider backup",
+    "a mutable remote ref is the only retained runtime copy",
+    "the snapshot manifest omits, adds, duplicates, or changes a required binding",
+    "the recovery test depends on an unexplained file absent from the selected checkout",
+    "Vercel READY is used as the only deployment evidence",
+    "the fixed Production target is falsely described as the historical baseline deployment",
+    "a fresh recovery build has a different Git tree from the baseline",
+    "the fresh recovery commit SHA, tree, and parent cannot be recalculated from the sealed raw commit-object witness without a mutable recovery branch",
+    "a normalized Preview mismatch lacks raw response bytes, safe headers, or recalculable hashes",
+    "normal UI, WebKit, or service-worker-enabled paths are absent",
+    "cache names are checked without checking exact keys and hashing cached response bodies",
+    "future-schema preservation is tested only as parsed JSON rather than the raw stored string",
+    "the original raw-source, C1, or C2 CI evidence cannot match its recorded run, PR head, actual checkout tree, API job timestamps, successful required steps, artifact metadata, downloaded ZIP digest and entry count while the artifact is present and unexpired; the raw-source synthetic merge commit cannot match its API SHA, tree, and ordered parents; or the original run cannot bind all ten raw reports",
+    "an expired or deleted CI artifact is treated as the sole durable WebKit or normal-flow proof instead of the committed raw reports and hashes",
+    "the Acceptance, validator, workflow, snapshot contract, capture script, or frozen evidence differs from its C1 blob at C2 or C3",
+    "C2 or C3 is a merge, is not the required direct child, omits a required changed path, touches a path outside its exact edge-specific set, or another commit anywhere in the reachable DAG independently introduces round-003.json",
+    "a C3 canonical document differs from its defined mechanical status transform of C2",
+    "a descendant of C3 changes or removes either sealed Step 1 evidence tree or its normative kernel, removes any exact universal quality-loop mirror claim, changes or duplicates the authoritative Step 1A preparation name, order, or PASS status, changes its sealed baseline or verification record, or removes/duplicates a structured canonical Step 1A PASS, scope, exclusion, or checklist marker",
+    "an original runtime or deployment-input byte changes",
+    "canonical status documents disagree or a later step is promoted early",
+    "Round 2 failure evidence is removed or rewritten",
+    "any verifier-consumed JSON document or embedded verbatimResponse contains a duplicate object key",
+    "a critic has an unresolved material blocker or reviews a commit other than C1; the final judge has a blocker or reviews a commit other than C2; any review lacks its verbatim JSON response hash; the verbatim role, exact target commit and tree, CI run and job, verdict, blocker list, method, or findings contradict the outer record; or the final-judge verbatim response fails to bind all three exact critic-record hashes",
+    "player-save recovery, physical-iPhone approval, a Production alias switch, cryptographic reviewer authentication, tamper-proof GitHub workflow bootstrap, or full off-provider recovery is claimed without evidence"
+  ],
+  "reviewAuthenticity": {
+    "proceduralIndependenceRequired": true,
+    "cryptographicReviewerAuthenticationClaimed": false,
+    "requiredRecordedFields": ["taskPath", "assignment", "verbatimResponse", "verbatimResponseSha256"],
+    "verbatimResponseContract": "Each reviewer must return one JSON object that binds its role, exact target commit and tree, CI run and job, verdict, material blockers, method, and findings to the outer record. The runtime critic must additionally bind its post-C1 Vercel deployment re-query; the final judge must bind the three critic-record hashes.",
+    "machineVerificationBoundary": "The validator proves internal record, hash, target, ordering, and cross-reference consistency only. It cannot prove reviewer identity or independence.",
+    "reason": "The collaboration reviewers are separate agent executions with distinct assigned roles, but their responses are transcribed and committed by the primary agent and are not cryptographically signed. The final report must describe this as procedural independence only."
+  },
+  "externalMetadataAuthenticity": {
+    "vercelSource": "authenticated connected-project Vercel deployment metadata",
+    "cryptographicResponseSignatureStored": false,
+    "mitigation": "Freeze the exact C1 metadata record, independently re-query the fresh deployment after C1, bind that check in the runtime critic's target-specific verbatim response, and separately verify the sealed raw deployment responses.",
+    "claimBoundary": "This is procedurally cross-checked provider metadata plus recalculable response evidence, not a cryptographically signed Vercel attestation."
+  },
+  "comparisonAxes": [
+    "claim-to-object precision",
+    "source recoverability",
+    "runtime byte identity",
+    "clean-checkout usability",
+    "fresh deployment reproducibility",
+    "normal-player reproducibility",
+    "save compatibility boundaries",
+    "offline cache integrity",
+    "evidence recalculability",
+    "judge tamper resistance",
+    "human understanding of limitations"
+  ]
+}

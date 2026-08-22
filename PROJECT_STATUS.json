@@ -1,11 +1,12 @@
 {
   "statusDocumentSchemaVersion": 3,
-  "updatedDate": "2026-08-22",
+  "updatedDate": "2026-08-23",
   "project": "Cat's Tower",
   "canonicalRepository": "2hg7trp7rv-design/cats_tower",
   "canonicalBranch": "main",
-  "documentationBranch": "codex/floors-1-10-design",
+  "documentationBranch": "codex/restart-step-1-round6",
   "productSourceOfTruth": "MASTER_SPEC.md",
+  "completionQualityGate": "QUALITY_GATE.md",
   "projectStage": "preproduction",
   "codeChangesStarted": false,
   "firstTenPreviewReady": false,
@@ -14,18 +15,18 @@
   "preparation": [
     {
       "order": 1,
-      "name": "legacy-baseline-save-point",
+      "name": "legacy-v082-source-runtime-byte-checkpoint",
       "status": "PASS"
     },
     {
       "order": 2,
       "name": "100f-master-specification",
-      "status": "PASS"
+      "status": "PENDING_REVALIDATION"
     },
     {
       "order": 3,
       "name": "floors-1-through-10-complete-design",
-      "status": "PASS"
+      "status": "PENDING_REVALIDATION"
     },
     {
       "order": 4,
@@ -69,13 +70,50 @@
     "commit": "727b8d00c281e7539117da5ded7309ea01c7e516",
     "commitUrl": "https://github.com/2hg7trp7rv-design/cats_tower/commit/727b8d00c281e7539117da5ded7309ea01c7e516",
     "localAnnotatedTag": "v0.8.2-legacy-baseline",
+    "remoteArchiveBranch": "archive/v0.8.2-legacy-baseline",
+    "remoteArchiveBranchCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "remoteArchiveBranchProtected": false,
+    "selfContainedRuntimeSnapshot": ".github/baselines/v0.8.2",
+    "strengthenedAcceptance": "quality-reviews/step-1-legacy-baseline/acceptance-round-006.json",
+    "scopeName": "V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint",
+    "retainedObject": {
+      "servedPaths": 17,
+      "uniqueRuntimeSourceFiles": 16,
+      "deploymentInputFiles": 2,
+      "verificationInputFiles": 2,
+      "snapshotEntries": 20,
+      "wholeRepositoryBackup": false,
+      "offProviderBackup": false
+    },
     "remoteTagPublished": false,
-    "remoteTagBlocker": "git-https-credentials-unavailable-and-connected-github-api-has-no-tag-ref-write",
-    "vercelDeploymentId": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
-    "vercelDeploymentState": "READY",
-    "vercelRuntimeCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+    "remoteTagBlocker": "connected-github-capability-has-no-tag-ref-or-release-write",
+    "historicalDeployment": {
+      "id": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
+      "state": "READY",
+      "githubCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+      "isCurrentFixedAliasTarget": false
+    },
+    "currentProductionAtAudit": {
+      "id": "dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az",
+      "state": "READY",
+      "githubCommit": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+      "runtimeBytesEqualBaseline": true
+    },
+    "freshRecoveryPreview": {
+      "id": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
+      "url": "https://catstower-r2xy45s33-shinyaaas-projects.vercel.app/",
+      "commit": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
+      "treeEqualsBaseline": true,
+      "state": "READY",
+      "runtimeEntriesExact": 15,
+      "htmlEntriesPreviewToolbarNormalized": 2,
+      "runtimeEntriesFailed": 0
+    },
     "fixedUrlHttpStatus": 200,
-    "role": "comparison-and-recovery-baseline-not-the-100f-target",
+    "role": "step-1a-source-runtime-byte-checkpoint-not-player-save-backup-and-not-the-100f-target",
+    "sourceRuntimeCheckpoint": "PASS",
+    "playerSaveBackup": "UNAVAILABLE_IN_V082",
+    "physicalIPhoneStandalonePwaApproval": "NOT_VERIFIED",
     "productionReady": false
   },
   "approvedRequirements": {
@@ -108,52 +146,82 @@
   "districts": [
     {
       "id": "district.01",
-      "floors": [1, 10],
+      "floors": [
+        1,
+        10
+      ],
       "name": "灰かぶり入口市場"
     },
     {
       "id": "district.02",
-      "floors": [11, 20],
+      "floors": [
+        11,
+        20
+      ],
       "name": "焔の大厨房"
     },
     {
       "id": "district.03",
-      "floors": [21, 30],
+      "floors": [
+        21,
+        30
+      ],
       "name": "水没貯水区"
     },
     {
       "id": "district.04",
-      "floors": [31, 40],
+      "floors": [
+        31,
+        40
+      ],
       "name": "歯車工房"
     },
     {
       "id": "district.05",
-      "floors": [41, 50],
+      "floors": [
+        41,
+        50
+      ],
       "name": "苔庭温室"
     },
     {
       "id": "district.06",
-      "floors": [51, 60],
+      "floors": [
+        51,
+        60
+      ],
       "name": "亡霊書庫"
     },
     {
       "id": "district.07",
-      "floors": [61, 70],
+      "floors": [
+        61,
+        70
+      ],
       "name": "雷鳴鳥舎"
     },
     {
       "id": "district.08",
-      "floors": [71, 80],
+      "floors": [
+        71,
+        80
+      ],
       "name": "氷結宝物庫"
     },
     {
       "id": "district.09",
-      "floors": [81, 90],
+      "floors": [
+        81,
+        90
+      ],
       "name": "月鏡宮"
     },
     {
       "id": "district.10",
-      "floors": [91, 100],
+      "floors": [
+        91,
+        100
+      ],
       "name": "黒羽王座"
     }
   ],
@@ -202,7 +270,10 @@
   "finalContentTargets": {
     "namedCatsMaximum": 12,
     "activeNamedCatMaximum": 6,
-    "visibleTemporaryHelpersRange": [12, 16],
+    "visibleTemporaryHelpersRange": [
+      12,
+      16
+    ],
     "normalEnemies": 30,
     "eliteEnemies": 10,
     "districtBosses": 9,
@@ -255,11 +326,23 @@
   ],
   "interactionAcceptance": {
     "primaryFeedbackTargetMs": 100,
-    "catTravelBattleWidthPercentRange": [30, 45],
-    "catTravelDurationMsRange": [650, 1000],
+    "catTravelBattleWidthPercentRange": [
+      30,
+      45
+    ],
+    "catTravelDurationMsRange": [
+      650,
+      1000
+    ],
     "impactSynchronizationToleranceMs": 50,
-    "hitStopMsRange": [50, 80],
-    "floorTransitionMsRange": [1600, 2200],
+    "hitStopMsRange": [
+      50,
+      80
+    ],
+    "floorTransitionMsRange": [
+      1600,
+      2200
+    ],
     "mainTouchTargetPtMinimum": 44,
     "groundAnchorToleranceCssPx": 2,
     "stateAnchorToleranceCssPx": 2,
@@ -390,7 +473,10 @@
     "unableToUnderstandGoalDropoutMaximum": 2,
     "saveLossProgressBlockAndRewardDuplicationAllowed": 0,
     "p0AndP1Allowed": 0,
-    "authorizesFloors": [11, 20]
+    "authorizesFloors": [
+      11,
+      20
+    ]
   },
   "audioRequirements": {
     "productionSoundRequiredForGateC": true,
@@ -406,11 +492,18 @@
     "unknownProvenanceAssetsAllowedInProduction": false
   },
   "legacyV082Verification": {
-    "chromium390x844": "passed-at-baseline-only",
-    "chromium375x667": "passed-at-baseline-only",
-    "webkit390x844": "not-run",
-    "webkit375x667": "not-run",
-    "normalMotionVideo": "not-run",
+    "githubActionsRun": 32589125939,
+    "githubActionsHead": "ee0d4cf1e7df3f40dbd2ba960aca5662f38abbc7",
+    "githubActionsConclusion": "success-and-round-6-quality-judgment-passed",
+    "chromium390x844": "passed-in-clean-checkout-ci",
+    "chromium375x667": "passed-in-clean-checkout-ci",
+    "webkit390x844": "passed-in-clean-checkout-ci",
+    "webkit375x667": "passed-in-clean-checkout-ci",
+    "normalMotionUiFlow": "passed-in-chromium-and-webkit-clean-checkout-ci",
+    "serviceWorkerOnlineOffline": "passed-in-chromium-clean-checkout-ci",
+    "cachedResponseSha256": "15-of-15-core-cache-entries-passed",
+    "futureSchemaRawNonOverwrite": "passed",
+    "midCombatRosterNonPersistence": "reproduced-and-documented",
     "physicalIPhone": "not-verified",
     "chatGptInAppBrowser": "not-verified",
     "pwaStandaloneAndUpdate": "not-verified",
@@ -436,10 +529,11 @@
     "final-floor-clear-times",
     "three-build-balance"
   ],
-  "nextAction": "create-nine-screen-final-mockups-without-changing-gameplay-code",
+  "nextAction": "revalidate-100f-master-specification",
   "researchCheckedDate": "2026-08-22",
   "statusVocabulary": [
     "NOT_STARTED",
+    "PENDING_REVALIDATION",
     "IN_PROGRESS",
     "BLOCKED",
     "PASS"

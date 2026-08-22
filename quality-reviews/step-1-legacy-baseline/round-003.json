@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 3,
+  "reviewTargetCommit": "830b32d4b0d26abebe7354b8db9d8dd3b21c203f",
+  "reviewTargetTree": "e45815ef4f17496019a2442ef5dbe958ecdb2768",
+  "overallStatus": "FAIL",
+  "failedAt": "2026-08-22T15:48:41Z",
+  "failedCi": {
+    "runId": 32582804569,
+    "runNumber": 22,
+    "runAttempt": 1,
+    "workflowId": 335561992,
+    "jobId": 97054600919,
+    "jobName": "vertical-tower-qa",
+    "event": "pull_request",
+    "headBranch": "codex/restart-step-1-baseline",
+    "headSha": "830b32d4b0d26abebe7354b8db9d8dd3b21c203f",
+    "status": "completed",
+    "conclusion": "failure",
+    "artifactCount": 0,
+    "artifactCountAuthority": "historical observation at failed attempt completion only; later rerun artifacts do not alter attempt 1 failure and are not a live completion dependency",
+    "startedAt": "2026-08-22T15:48:26Z",
+    "completedAt": "2026-08-22T15:48:41Z",
+    "failedStep": "Bind unexpired CI records and downloaded artifacts before seal"
+  },
+  "failedAcceptance": {
+    "path": "quality-reviews/step-1-legacy-baseline/acceptance-round-003.json",
+    "commit": "830b32d4b0d26abebe7354b8db9d8dd3b21c203f",
+    "blobSha1": "347ddd8cae160364835a043a45376b6ac6b97888",
+    "sha256": "1c7bcb9f2e71f27e3a03de2e85ef3ea16e89be0f736a4e6aa52842c66f0d4100"
+  },
+  "materialBlockers": [
+    "The frozen Round 3 workflow required the historical raw run's embedded pull_requests[].head.sha to equal that run's head_sha, but GitHub rewrote the embedded PR head SHA to the current PR head after C1 was pushed, so exact-head C1 CI could never pass.",
+    "The Round 3 design had no event-time provenance member inside new CI artifacts, so removing the mutable embedded PR SHA check without adding a durable replacement would weaken the base/head provenance chain."
+  ],
+  "observedApiBehavior": {
+    "historicalRunId": 32578260669,
+    "historicalRunHeadSha": "5792be4a0cee37e540747233fd2921ab5f0db392",
+    "embeddedPullRequestHeadShaAfterC1": "830b32d4b0d26abebe7354b8db9d8dd3b21c203f",
+    "observation": "The Actions run-level head SHA remained historical while the related pull-request object reflected the PR's newer head. Therefore the related pull-request SHA fields are live relationship metadata, not immutable run provenance."
+  },
+  "rebuildDecision": {
+    "reuse": [
+      "the narrowed Step 1A claim and explicit exclusions",
+      "the runtime snapshot, raw browser evidence, recovery commit witness, strict JSON parser, full-DAG seal discovery, and exact C1-C2-C3 edge protocol"
+    ],
+    "rebuild": [
+      "the Actions API binding for mutable pull-request relationship fields",
+      "the new-run artifact contract so event-time PR and checkout provenance is captured before review"
+    ],
+    "nextAcceptance": "acceptance-round-004.json"
+  }
+}

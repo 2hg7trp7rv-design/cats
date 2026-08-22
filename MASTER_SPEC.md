@@ -1,8 +1,14 @@
 # Cat's Tower 100F 正本仕様書
 
-文書状態: **PASS — 100F正本仕様確定**
+文書状態: **PENDING_REVALIDATION — 旧工程2成果を保持した再検証候補**
 
 更新日: 2026-08-22
+
+工程状態: 工程1A=PASS / 工程2=PENDING_REVALIDATION / 工程3=PENDING_REVALIDATION / 工程4以降=NOT_STARTED
+
+工程1A正式名称: V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint
+
+工程1A対象外: whole-repository backup / player-save backup / physical-iPhone approval / Production alias switch
 
 対象: スマートフォン縦持ち Web / PWA
 
@@ -10,20 +16,23 @@
 
 最初の制作範囲: 1F〜10Fのみ
 
+本書の製品内容は削除・改変せず候補仕様として保持する。ただし、新しい完成判定による再検証前のため、工程1A・V0.8.2 deployed browser-runtime source + deployment-input byte checkpointが品質Gateを`PASS`するまで、本書と後続工程を完成扱いしない。
+
 ## 0. この文書の役割
 
-この文書は、デザイン、機能、ゲーム性、操作感、保存、性能、QAを一つにまとめた Cat's Tower の最上位仕様である。以後の設計、素材制作、コード修正、レビューはこの文書を基準にする。
+この文書は、デザイン、機能、ゲーム性、操作感、保存、性能、QAを一つにまとめた Cat's Tower の最上位候補仕様である。製品内容の正本候補として参照するが、品質Gateの再検証が終わるまで完成成果として後続制作の開始根拠にしない。
 
 1〜10Fの階別・敵別・施設別の確定詳細は、下位正本[`FLOORS_1_10_DESIGN.md`](./FLOORS_1_10_DESIGN.md)を参照する。
 
 仕様が競合した場合の優先順位は次のとおり。
 
 1. `MASTER_SPEC.md`
-2. `AGENTS.md`
-3. `PROJECT_STATUS.json`
-4. `PROJECT_HANDOVER.md`
-5. `README.md`
-6. 実装コード、テスト、コード内コメント
+2. `QUALITY_GATE.md`
+3. `AGENTS.md`
+4. `PROJECT_STATUS.json`
+5. `PROJECT_HANDOVER.md`
+6. `README.md`
+7. 実装コード、テスト、コード内コメント
 
 現在公開中の V0.8.2 は、新仕様の完成版ではなく、修正前の比較・復旧基準である。
 
@@ -861,7 +870,13 @@ Gate D1が許可するのは11〜20Fだけであり、21F以降を許可しな�
 
 ### 20.2 状態と停止規定
 
-工程状態は`NOT_STARTED`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使用する。「ほぼ完成」「実質完成」は使用しない。
+工程状態は`NOT_STARTED`、`PENDING_REVALIDATION`、`IN_PROGRESS`、`BLOCKED`、`PASS`だけを使用する。「ほぼ完成」「実質完成」は使用しない。
+
+- **NOT_STARTED**: 必要な成果物の制作または検証を開始していない。
+- **PENDING_REVALIDATION**: 旧成果物は保持しているが、現行の品質Gateでは未合格である。完成報告や次工程の開始根拠に使わない。
+- **IN_PROGRESS**: 制作、再構成または検証の途中である。
+- **BLOCKED**: 必須条件が制作側だけでは解消できず、続行できない。
+- **PASS**: 適用するすべての品質Gateに合格し、完成報告と次工程への移行が可能である。
 
 - **P0**: 保存消失・破損、起動不能、進行全消失、報酬・通貨の無限複製、future save上書き、セキュリティ事故、全ユーザーが主要導線を完了できない状態。
 - **P1**: 主要ループ進行不能、誤階移動、誤解放、誤夜明け、主要入力の誤作動、性能予算超過、足裏・命中の基準超過、`main`とProduction runtime不一致、対応端末で再現する重大UI欠損。
@@ -882,16 +897,18 @@ P0・P1を根拠なくP2へ降格しない。降格には再現結果、影響�
 
 コード修正は、ユーザーが決めた準備工程の完了後に開始する。
 
-1. 現行版の保存点
-2. この100F正本仕様書
-3. 1〜10F完全設計
-4. 9画面の完成見本
-5. 動きの絵コンテ
-6. アートバイブル
-7. 少数の試験素材
-8. 保存・100Fデータ設計
-9. QA合格表
-10. コード修正
+工程1Aが品質Gateを`PASS`するまで、工程2・3の旧成果は削除せず`PENDING_REVALIDATION`の候補として保持し、工程4以降を完成扱いまたは新規着手しない。工程1A合格後は工程2、工程3の順で現行Gateを再実行し、それぞれが`PASS`になった後だけ次へ進む。
+
+1. V0.8.2 deployed browser-runtime source + deployment-input byte checkpoint — `PASS`
+2. この100F正本仕様書 — `PENDING_REVALIDATION`
+3. 1〜10F完全設計 — `PENDING_REVALIDATION`
+4. 9画面の完成見本 — `NOT_STARTED`
+5. 動きの絵コンテ — `NOT_STARTED`
+6. アートバイブル — `NOT_STARTED`
+7. 少数の試験素材 — `NOT_STARTED`
+8. 保存・100Fデータ設計 — `NOT_STARTED`
+9. QA合格表 — `NOT_STARTED`
+10. コード修正 — `NOT_STARTED`
 
 コード修正へ入った後も、最初の実装順は次のとおりとする。
 

@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-08-22",
+  "recoveredCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "cleanCheckoutCi": {
+    "runId": 32578260669,
+    "headSha": "5792be4a0cee37e540747233fd2921ab5f0db392",
+    "conclusion": "success",
+    "artifactId": 9477168517,
+    "artifactDigest": "sha256:f91ed1fbff5397ff61332272619901f77d9628f9086484401e7c93c193496766",
+    "artifactExpiresAt": "2026-09-21T14:22:17Z",
+    "durableRawReportsCommitted": 10,
+    "durableEvidenceDoesNotDependOnArtifactRetention": true,
+    "deterministicLoop": "PASS — Chromium and WebKit at 390x844 and 375x667",
+    "normalUiFlow": "PASS — qa=1 absent and normal motion in Chromium and WebKit at both viewports",
+    "durableReload": "PASS — 19 durable fields and four screen fields preserved",
+    "serviceWorkerRecovery": "PASS — Chromium at both viewports with 15 exact cache keys and response-body hashes",
+    "qualityJudgment": "ROUND_2_FAIL — technical CI success did not resolve semantic and provenance blockers"
+  },
+  "sourceArtifact": {
+    "runId": 32578260669,
+    "artifactId": 9477168517,
+    "name": "cats-v082-step-1-recovery-evidence",
+    "sizeBytes": 71617830,
+    "digest": "sha256:f91ed1fbff5397ff61332272619901f77d9628f9086484401e7c93c193496766",
+    "downloadedZipSha256": "f91ed1fbff5397ff61332272619901f77d9628f9086484401e7c93c193496766",
+    "entryCount": 94,
+    "downloadedAndIndependentlyInspected": true,
+    "retentionBoundary": "The ZIP expires on 2026-09-21; the ten committed raw JSON reports and their direct semantic verification are the durable evidence."
+  },
+  "deterministicLoop": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "0a366d6b1151d6e6a2048ee247b65b573ad10e9ce61f8b83707a9579cbe89583"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "44f28fc39fac5a04ae296101789a3bb1105482d5ffd61193970fc7924bcb6a46"
+    },
+    {
+      "browser": "webkit",
+      "viewportCss": "390x844",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "dd3f64a682a9a3e0e8832b5860b425a17a75d99adc2b3b9f2c6185ff5ed7e0dd"
+    },
+    {
+      "browser": "webkit",
+      "viewportCss": "375x667",
+      "deviceScaleFactor": 3,
+      "reducedMotion": "reduce",
+      "serviceWorkers": "blocked-in-this-test-only",
+      "result": "PASS",
+      "rawReportSha256": "6c5e804c0c5a889ca412e6d954d1f4b94706d6928e6bc3eb59ec304921f91103"
+    }
+  ],
+  "serviceWorkerRecovery": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "serviceWorkers": "enabled",
+      "onlineInstall": "PASS",
+      "controller": "PASS",
+      "precache": "PASS",
+      "obsoleteCacheRemoval": "PASS",
+      "offlineShellRestart": "PASS",
+      "schema2Reload": "PASS",
+      "midCombatDurableState": "PASS",
+      "midCombatRosterNonPersistenceReproduced": "PASS",
+      "cachedResponseSha256Count": 15,
+      "syntheticFutureCacheRemoval": "PASS",
+      "futureSchemaNonOverwrite": "PASS",
+      "futureSchemaRawBytesUnchanged": "PASS",
+      "rawReportSha256": "f06e271602c583539cd54c5e730f8f386f4cd3a9ecc507cf575343a3ab54e2ef"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "serviceWorkers": "enabled",
+      "onlineInstall": "PASS",
+      "controller": "PASS",
+      "precache": "PASS",
+      "obsoleteCacheRemoval": "PASS",
+      "offlineShellRestart": "PASS",
+      "schema2Reload": "PASS",
+      "midCombatDurableState": "PASS",
+      "midCombatRosterNonPersistenceReproduced": "PASS",
+      "cachedResponseSha256Count": 15,
+      "syntheticFutureCacheRemoval": "PASS",
+      "futureSchemaNonOverwrite": "PASS",
+      "futureSchemaRawBytesUnchanged": "PASS",
+      "rawReportSha256": "ac2fb299bfdd4ace7b09a2c92dc0c8afa6ab6494fc9cd5a7d73e2b2fb58a3883"
+    }
+  ],
+  "normalUiFlow": [
+    {
+      "browser": "chromium",
+      "viewportCss": "390x844",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "29b2f4f977da05e250b288c7034f6728359c31ec2834d61c0984140bd98962fa"
+    },
+    {
+      "browser": "chromium",
+      "viewportCss": "375x667",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "9ab74634775245de8dad7ce5f0e3a211b4083fb41c8d4438e21521fdece34228"
+    },
+    {
+      "browser": "webkit",
+      "viewportCss": "390x844",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "49f12b36127068baa875aee775000d8d26eb2a7569d27b391db53ce348db3eb0"
+    },
+    {
+      "browser": "webkit",
+      "viewportCss": "375x667",
+      "qaMode": false,
+      "reducedMotion": false,
+      "serviceWorkers": "enabled",
+      "startBattleReload": "PASS",
+      "rawReportSha256": "f1a3ec55c75c1dbb99971bd7bce55c1a97f2ffcaf05f66f82fcdaf616b8271f2"
+    }
+  ],
+  "existingSaveCases": [
+    "schema2-completed-reload",
+    "living-v080-migration",
+    "legacy-v01-migration",
+    "corrupt-v080-safe-fresh-state",
+    "v081-post-dawn-clamp",
+    "v081-boss-clear-clamp",
+    "future-schema-non-overwrite"
+  ],
+  "knownLegacyDefects": [
+    "A mid-combat reload preserves durable progression and enemy state but does not persist the live six-cat runtime roster; it restores below six and may be observed as zero or one before automatic dispatch.",
+    "Deleted or irrecoverably corrupted real-user localStorage cannot be reconstructed because V0.8.2 has no export or server backup.",
+    "This evidence is not a physical-iPhone standalone-PWA approval and must not be reused as one.",
+    "The legacy UI is a comparison baseline, not the approved visual quality target for the 100-floor product."
+  ],
+  "visualEvidence": [
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/01-title-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "eec16e3dfaa99f77fd21ba030af8659c69ca0653d400b38d871fd9c9ce008ed1" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/02-rally-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "0b7111568d1002603193354723e653a1ab77d3a175961680aa10b3b1eb44134d" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/03-clear-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "2b2d55b240edcecfd2b3ffe94bc1d0ba9119623d08aade5e34d152c39e47307f" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/04-normal-title-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "8c0c252e15b18422e8967da6ebf092cd4cb769996f2e08c7abc1fa27b1bbcde6" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/05-normal-battle-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "7738fb9ab3a385d7f996e18776824b03465fb4547244a1810f7713b33da8de17" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/visual/06-normal-reload-390x844.webp", "cssViewport": "390x844", "pixelSize": "390x844", "sha256": "72e919361ea89753ca02e0069af7f824e46c792731b5b814d6984c5909f15ce0" }
+  ],
+  "rawReports": [
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-loop.json", "sha256": "0a366d6b1151d6e6a2048ee247b65b573ad10e9ce61f8b83707a9579cbe89583", "artifactMember": "v082-chromium-390x844/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-loop.json", "sha256": "44f28fc39fac5a04ae296101789a3bb1105482d5ffd61193970fc7924bcb6a46", "artifactMember": "v082-chromium-375x667/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-service-worker.json", "sha256": "f06e271602c583539cd54c5e730f8f386f4cd3a9ecc507cf575343a3ab54e2ef", "artifactMember": "step-1-sw-chromium-390x844/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-service-worker.json", "sha256": "ac2fb299bfdd4ace7b09a2c92dc0c8afa6ab6494fc9cd5a7d73e2b2fb58a3883", "artifactMember": "step-1-sw-chromium-375x667/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-390x844-normal-flow.json", "sha256": "29b2f4f977da05e250b288c7034f6728359c31ec2834d61c0984140bd98962fa", "artifactMember": "step-1-normal-chromium-390x844/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/chromium-375x667-normal-flow.json", "sha256": "9ab74634775245de8dad7ce5f0e3a211b4083fb41c8d4438e21521fdece34228", "artifactMember": "step-1-normal-chromium-375x667/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-loop.json", "sha256": "dd3f64a682a9a3e0e8832b5860b425a17a75d99adc2b3b9f2c6185ff5ed7e0dd", "artifactMember": "v082-webkit-390x844/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-375x667-loop.json", "sha256": "6c5e804c0c5a889ca412e6d954d1f4b94706d6928e6bc3eb59ec304921f91103", "artifactMember": "v082-webkit-375x667/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-390x844-normal-flow.json", "sha256": "49f12b36127068baa875aee775000d8d26eb2a7569d27b391db53ce348db3eb0", "artifactMember": "step-1-normal-webkit-390x844/report.json" },
+    { "path": "quality-reviews/step-1-legacy-baseline/evidence/raw/webkit-375x667-normal-flow.json", "sha256": "f1a3ec55c75c1dbb99971bd7bce55c1a97f2ffcaf05f66f82fcdaf616b8271f2", "artifactMember": "step-1-normal-webkit-375x667/report.json" }
+  ]
+}

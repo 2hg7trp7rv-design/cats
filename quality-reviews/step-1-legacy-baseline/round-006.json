@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 6,
+  "reviewedDate": "2026-08-23",
+  "reviewTargetCommit": "ee0d4cf1e7df3f40dbd2ba960aca5662f38abbc7",
+  "reviewTargetTree": "42d1a6e7407b873cc4facfad79a5a71cc0bc8b4a",
+  "overallStatus": "PASS",
+  "gates": {
+    "G1": "PASS",
+    "G2": "PASS",
+    "G3": "PASS",
+    "G4": "PASS",
+    "G5": "PASS"
+  },
+  "acceptance": {
+    "file": "quality-reviews/step-1-legacy-baseline/acceptance-round-006.json",
+    "commit": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+    "tree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+    "sha256": "5c00ce88c970b2194dd3f05f310dbe93c8f373fa24add346c6f9769afa0a4409"
+  },
+  "candidateCiEvidence": {
+    "file": "quality-reviews/step-1-legacy-baseline/evidence/candidate-ci-run.json",
+    "sha256": "8ed9b749914730f3a9bc291db5a03b759506eec867af1f0cc1f5786d238e5383",
+    "runId": 32589125939,
+    "jobId": 97070032943,
+    "headSha": "ee0d4cf1e7df3f40dbd2ba960aca5662f38abbc7",
+    "checkoutTree": "42d1a6e7407b873cc4facfad79a5a71cc0bc8b4a",
+    "artifactDigest": "sha256:c6b25dbd11a28710d74e6ae45bf3e333414b32bca5be738688348d87363bd6d5"
+  },
+  "requirementResults": {
+    "S1": "PASS",
+    "S2": "PASS",
+    "S3": "PASS",
+    "S4": "PASS",
+    "S5": "PASS",
+    "D1": "PASS",
+    "D2": "PASS",
+    "D3": "PASS",
+    "D4": "PASS",
+    "D5": "PASS",
+    "R1": "PASS",
+    "R2": "PASS",
+    "R3": "PASS",
+    "R4": "PASS",
+    "V1": "PASS",
+    "V2": "PASS",
+    "E1": "PASS",
+    "E2": "PASS",
+    "E3": "PASS",
+    "Q1": "PASS",
+    "Q2": "PASS",
+    "Q3": "PASS",
+    "Q4": "PASS",
+    "Q5": "PASS",
+    "Q6": "PASS"
+  },
+  "independentAudits": [
+    {
+      "role": "adversarial-critic",
+      "reviewerId": "round6-adversarial-popper",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-006-adversarial-critic.json",
+      "sha256": "d02d6d0c5aa609b23febaeaffa1a6dfcd369fc5c36b68815d2e5643aed567f2e",
+      "verbatimResponseSha256": "908b23bc54c3b8f8991ca36a4ca6d973ae1879bef05fefad6d05efac572e94c4"
+    },
+    {
+      "role": "repository-critic",
+      "reviewerId": "round6-repository-tesla",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-006-repository-critic.json",
+      "sha256": "b558faaf49985dcc3fda64a416ef1be96146830b01e46954c0d97702c753a60e",
+      "verbatimResponseSha256": "fed263e87ac9e593d4a79b3ce6230e0167832eb686d9ef267a2dc164dca5bc6c"
+    },
+    {
+      "role": "runtime-critic",
+      "reviewerId": "round6-runtime-lorentz",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-006-runtime-critic.json",
+      "sha256": "8349832356f62d8a82b19f112bf7a493d5548730f01a52c60ada239b035d3a0f",
+      "verbatimResponseSha256": "1449a21a7587f2a29561ad996cf4c1ff4985dd49bfd77159b4494c5a8d53cfd7"
+    },
+    {
+      "role": "final-judge",
+      "reviewerId": "round6-final-judge-hopper",
+      "path": "quality-reviews/step-1-legacy-baseline/audits/round-006-final-judge.json",
+      "sha256": "41263b80359539ff044dc34f8a4a3097aba04f29dbfa0c9f5ba9c7284cdda272",
+      "verbatimResponseSha256": "afaeee81a253e6e4f054eddf05a330f13194d01c8d7f82414a524314b0962026"
+    }
+  ],
+  "materialBlockers": [],
+  "externalSealCi": {
+    "requiredBeforeCompletionReport": true,
+    "recordedInsideSeal": false,
+    "exactC3PullRequestHeadCiRequired": true,
+    "exactC3ArtifactProvenanceInspectionRequired": true,
+    "mergedMainPushCiRequired": true,
+    "mergedMainArtifactProvenanceInspectionRequired": true,
+    "postMainExternalArtifactAuditWorkflowRequired": true,
+    "mergedMainMustContainC1C2C3": true,
+    "mergedMainExactTwoParentBindingRequired": true,
+    "mergedMainTreeMustEqualC3Tree": true
+  },
+  "judgmentBoundary": "Round 6 PASS seals the reviewed Step 1A evidence and exact C1/C2/C3 protocol. It does not claim that C3 PR CI, merge, main-push CI, post-main external artifact audit, Production alias change, physical-iPhone QA, player-save backup, or whole-repository backup has already completed."
+}

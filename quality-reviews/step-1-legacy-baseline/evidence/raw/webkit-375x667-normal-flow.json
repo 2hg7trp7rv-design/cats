@@ -1,0 +1,132 @@
+{
+  "passed": true,
+  "browserName": "webkit",
+  "targetUrl": "http://127.0.0.1:4173/",
+  "viewport": {
+    "width": 375,
+    "height": 667
+  },
+  "deviceScaleFactor": 1,
+  "qaMode": false,
+  "reducedMotion": false,
+  "serviceWorkers": "enabled",
+  "initial": {
+    "floor": "1F",
+    "enemy": "夜ガラス",
+    "enemyHp": "HP 21 / 21"
+  },
+  "active": {
+    "floor": "2F",
+    "enemy": "夜フクロウ",
+    "enemyHp": "HP 0 / 42",
+    "coins": "111",
+    "visibleCats": 5,
+    "gameVisible": true,
+    "titleHidden": true,
+    "serviceWorkerSupported": true,
+    "serviceWorkerControlled": true,
+    "serviceWorkerControllerUrl": "http://127.0.0.1:4173/sw.js?v=082r3"
+  },
+  "durableReload": {
+    "before": {
+      "rawPresent": true,
+      "durable": {
+        "gameplaySchema": 2,
+        "currentFloor": 2,
+        "bestFloor": 2,
+        "checkpointFloor": 1,
+        "runFloorPeak": 2,
+        "enemyFloor": 2,
+        "enemyHp": 0,
+        "coins": 111,
+        "fish": 4,
+        "mugiLevel": 1,
+        "weaponLevel": 1,
+        "dispatchLevel": 1,
+        "restaurantLevel": 0,
+        "roomLevel": 0,
+        "dawnShards": 0,
+        "lifetimeShards": 0,
+        "ascensions": 0,
+        "firstNightCleared": false,
+        "completed": false
+      },
+      "screen": {
+        "floor": "2F",
+        "enemy": "夜フクロウ",
+        "enemyHp": "HP 0 / 42",
+        "coins": "111"
+      },
+      "serviceWorker": {
+        "supported": true,
+        "controlled": true,
+        "controllerUrl": "http://127.0.0.1:4173/sw.js?v=082r3"
+      }
+    },
+    "after": {
+      "rawPresent": true,
+      "durable": {
+        "gameplaySchema": 2,
+        "currentFloor": 2,
+        "bestFloor": 2,
+        "checkpointFloor": 1,
+        "runFloorPeak": 2,
+        "enemyFloor": 2,
+        "enemyHp": 0,
+        "coins": 111,
+        "fish": 4,
+        "mugiLevel": 1,
+        "weaponLevel": 1,
+        "dispatchLevel": 1,
+        "restaurantLevel": 0,
+        "roomLevel": 0,
+        "dawnShards": 0,
+        "lifetimeShards": 0,
+        "ascensions": 0,
+        "firstNightCleared": false,
+        "completed": false
+      },
+      "screen": {
+        "floor": "2F",
+        "enemy": "夜フクロウ",
+        "enemyHp": "HP 0 / 42",
+        "coins": "111"
+      },
+      "serviceWorker": {
+        "supported": true,
+        "controlled": true,
+        "controllerUrl": "http://127.0.0.1:4173/sw.js?v=082r3"
+      }
+    },
+    "preserved": true
+  },
+  "reloaded": {
+    "floor": "2F",
+    "enemy": "夜フクロウ",
+    "enemyHp": "HP 0 / 42",
+    "coins": "111",
+    "gameVisible": true,
+    "serviceWorkerSupported": true,
+    "serviceWorkerControlled": true,
+    "serviceWorkerControllerUrl": "http://127.0.0.1:4173/sw.js?v=082r3"
+  },
+  "screenshots": [
+    {
+      "name": "01-title.png",
+      "bytes": 390755,
+      "sha256": "f899abad8c735e795cae977fa1cda8278ac3c357e74adda83b04338de483a261"
+    },
+    {
+      "name": "02-active-battle.png",
+      "bytes": 255577,
+      "sha256": "5c239962c3a6fff5f0c5ff1bf2e3d7f9908f077ec5e38b63615b6b9d833750fc"
+    },
+    {
+      "name": "03-reloaded.png",
+      "bytes": 237357,
+      "sha256": "5049d2fa68433367be98507c8567db7fe3eaf9c874124717865dca8445072c16"
+    }
+  ],
+  "errors": [],
+  "failedRequests": []
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "retrievedDate": "2026-08-22",
+  "recheckedAt": "2026-08-22T15:28:51Z",
+  "source": "Vercel deployment API through the connected project",
+  "connectorAuthentication": "authenticated connected-project access",
+  "cryptographicResponseSignatureStored": false,
+  "proceduralIndependentRecheckRequired": true,
+  "project": {
+    "id": "prj_3Ip3e0eYMy9SchP1vS36ibjJP9LB",
+    "name": "cats_tower",
+    "framework": null,
+    "teamId": "team_6odZCZQ1QxjzhPdC9sgEtoCM"
+  },
+  "deployments": [
+    {
+      "role": "historical-baseline",
+      "id": "dpl_4YVfqsWrzkSUmzQLZMzcTHLVzTe1",
+      "url": "catstower-987c02xo0-shinyaaas-projects.vercel.app",
+      "state": "READY",
+      "readyState": "READY",
+      "target": "production",
+      "source": "git",
+      "githubCommitRef": "main",
+      "githubCommitSha": "727b8d00c281e7539117da5ded7309ea01c7e516",
+      "createdAt": 1787223192815,
+      "readyAt": 1787223196377
+    },
+    {
+      "role": "fixed-production-at-audit",
+      "id": "dpl_FDbsfp8QxBJ7pysSfjTuSGw4g7Az",
+      "url": "catstower-3qxr1063n-shinyaaas-projects.vercel.app",
+      "state": "READY",
+      "readyState": "READY",
+      "target": "production",
+      "source": "git",
+      "githubCommitRef": "main",
+      "githubCommitSha": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+      "createdAt": 1787371340241,
+      "readyAt": 1787371343709
+    },
+    {
+      "role": "fresh-baseline-tree-recovery-preview",
+      "id": "dpl_3qe2uhLnFQ4e9M4UmedQxRGUY3xV",
+      "url": "catstower-r2xy45s33-shinyaaas-projects.vercel.app",
+      "state": "READY",
+      "readyState": "READY",
+      "target": null,
+      "source": "git",
+      "githubCommitRef": "codex/v082-recovery-drill",
+      "githubCommitSha": "2b58ab705e569cc4f5c1ee2e88ea550ab162e4b3",
+      "createdAt": 1787406351638,
+      "readyAt": 1787406354481
+    }
+  ],
+  "identityConclusion": "The historical deployment, fixed Production deployment at audit, and fresh recovery Preview are distinct deployments. Their roles must not be collapsed into one claim."
+}

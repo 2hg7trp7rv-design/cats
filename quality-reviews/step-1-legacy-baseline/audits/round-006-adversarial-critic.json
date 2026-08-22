@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "role": "adversarial-critic",
+  "source": "Codex collaboration sub-agent response recorded by the primary agent",
+  "cryptographicReviewerAuthentication": false,
+  "reviewerId": "round6-adversarial-popper",
+  "taskPath": "/root/step1_round6_adversarial",
+  "assignment": "Round 6 C1のexact commit/tree、Acceptance、CI attempt、artifact provenance、Round 5欠陥の修正、C1/C2/C3系譜、seal merge、future-main探索を隔離環境で攻撃的に反証し、material blockerの有無を独立判定する。",
+  "reviewedAt": "2026-08-22T17:49:09Z",
+  "reviewTargetCommit": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+  "reviewTargetTree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+  "reviewedAcceptanceSha256": "5c00ce88c970b2194dd3f05f310dbe93c8f373fa24add346c6f9769afa0a4409",
+  "reviewedCiRunId": 32587953451,
+  "reviewedCiJobId": 97067091701,
+  "reviewedCiCheckoutSha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+  "reviewedCiCheckoutTree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+  "reviewedCiArtifactDigest": "sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15",
+  "reviewedCiRecordPath": "quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json",
+  "reviewedCiRecordSha256": "38bd7f746364ed951d4d6afd93f67b1c5a0dddb7abd6cfe0a6b1bec610c0a10c",
+  "status": "PASS",
+  "unresolvedMaterialBlockers": [],
+  "method": [
+    "Isolated cloneで対象commitのtree、単一parent、Round 5 C1からのexact 9-path edge、Acceptance SHA-256、28 protected-file hashを再計算した。",
+    "GitHubからrun、job、全required step、artifact metadataを再取得し、download済みZIPのsize、digest、95個の一意で安全なmember、10個のduplicate-key-free PASS report、ci-provenance raw bytesを独立照合した。",
+    "Round 5の凍結済み弱実装とRound 6を行単位で比較し、status=success検索、latest-attempt限定、job attempt未拘束が除去されたことを確認した。",
+    "unfiltered workflow-specific pagination、二重snapshot照合、全retained attemptのexact-attempt API走査、run_id・run_attempt・head_sha・interval・stepsのjob拘束を反証視点で追跡した。",
+    "隔離cloneでRound 5 Acceptance改変、外部verifier改変、primary workflow改変、余分なchild commit、偽C3 seal導入を試し、いずれもvalidatorが拒否することを確認した。",
+    "C2/C3のexact changed-path、single-parent、全reachable-DAG seal introduction、二親mergeとtree一致、future-mainの過去成功attempt探索を静的に追跡し、既知のbootstrap限界が明示的除外として残ることを確認した。"
+  ],
+  "findings": [
+    "対象commitはparent cfebec0c546478f8dc7a6af9476d795205e52002の直接の子で、treeとAcceptance SHA-256は指定値に一致し、runtimeおよびdeployment-input byte変更はない。",
+    "Round 5の成功CIはFAIL履歴として不変保持され、旧Acceptance、旧workflow、旧verifierのblobとSHA-256、および後発失敗rerunで先行成功が隠れる反例が再計算可能である。",
+    "Round 6は検索filterを使わずworkflow単位の全pageを二度取得し、total_count、重複ID、安定したid/run_attemptを検査後、候補のattempt 1からprovider最新attemptまでexact APIで走査するため、Round 5のlatest-attempt欠陥を解消している。",
+    "future-mainの成功候補はexact runとexact-attempt jobsへ再照会され、jobのrun_id、run_attempt、head_sha、完了状態、時間順序、五つの必須stepを同時に満たす必要があり、後発のfailed/cancelled rerunは以前の成功attemptを消せない。",
+    "C1/C2/C3の親子関係と変更path、protected bytes、唯一のseal導入、C3 treeと同一の二親merge、C3 event baseとmain push beforeの一致が別々に拘束され、検査対象内で有効な迂回経路は見つからなかった。",
+    "CI run 32587953451 attempt 1、job 97067091701、artifact 9479611371、ZIP digest sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15、およびprovenanceのcommit/tree/workflow blobは相互一致した。",
+    "GitHub ruleset未設定のためworkflow自体を権限者が削除・短絡する攻撃は防げないが、Acceptanceがtamper-proof bootstrapを明示的に対象外としており、今回の限定された工程1A判定を偽装していないためmaterial blockerとは判定しない。"
+  ],
+  "verbatimResponse": "{\"role\":\"adversarial-critic\",\"reviewTargetCommit\":\"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\",\"reviewTargetTree\":\"b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1\",\"reviewedCiRunId\":32587953451,\"reviewedCiJobId\":97067091701,\"verdict\":\"PASS\",\"materialBlockers\":[],\"method\":[\"Isolated cloneで対象commitのtree、単一parent、Round 5 C1からのexact 9-path edge、Acceptance SHA-256、28 protected-file hashを再計算した。\",\"GitHubからrun、job、全required step、artifact metadataを再取得し、download済みZIPのsize、digest、95個の一意で安全なmember、10個のduplicate-key-free PASS report、ci-provenance raw bytesを独立照合した。\",\"Round 5の凍結済み弱実装とRound 6を行単位で比較し、status=success検索、latest-attempt限定、job attempt未拘束が除去されたことを確認した。\",\"unfiltered workflow-specific pagination、二重snapshot照合、全retained attemptのexact-attempt API走査、run_id・run_attempt・head_sha・interval・stepsのjob拘束を反証視点で追跡した。\",\"隔離cloneでRound 5 Acceptance改変、外部verifier改変、primary workflow改変、余分なchild commit、偽C3 seal導入を試し、いずれもvalidatorが拒否することを確認した。\",\"C2/C3のexact changed-path、single-parent、全reachable-DAG seal introduction、二親mergeとtree一致、future-mainの過去成功attempt探索を静的に追跡し、既知のbootstrap限界が明示的除外として残ることを確認した。\"],\"findings\":[\"対象commitはparent cfebec0c546478f8dc7a6af9476d795205e52002の直接の子で、treeとAcceptance SHA-256は指定値に一致し、runtimeおよびdeployment-input byte変更はない。\",\"Round 5の成功CIはFAIL履歴として不変保持され、旧Acceptance、旧workflow、旧verifierのblobとSHA-256、および後発失敗rerunで先行成功が隠れる反例が再計算可能である。\",\"Round 6は検索filterを使わずworkflow単位の全pageを二度取得し、total_count、重複ID、安定したid/run_attemptを検査後、候補のattempt 1からprovider最新attemptまでexact APIで走査するため、Round 5のlatest-attempt欠陥を解消している。\",\"future-mainの成功候補はexact runとexact-attempt jobsへ再照会され、jobのrun_id、run_attempt、head_sha、完了状態、時間順序、五つの必須stepを同時に満たす必要があり、後発のfailed/cancelled rerunは以前の成功attemptを消せない。\",\"C1/C2/C3の親子関係と変更path、protected bytes、唯一のseal導入、C3 treeと同一の二親merge、C3 event baseとmain push beforeの一致が別々に拘束され、検査対象内で有効な迂回経路は見つからなかった。\",\"CI run 32587953451 attempt 1、job 97067091701、artifact 9479611371、ZIP digest sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15、およびprovenanceのcommit/tree/workflow blobは相互一致した。\",\"GitHub ruleset未設定のためworkflow自体を権限者が削除・短絡する攻撃は防げないが、Acceptanceがtamper-proof bootstrapを明示的に対象外としており、今回の限定された工程1A判定を偽装していないためmaterial blockerとは判定しない。\"]}",
+  "verbatimResponseSha256": "908b23bc54c3b8f8991ca36a4ca6d973ae1879bef05fefad6d05efac572e94c4"
+}

@@ -1,0 +1,12 @@
+.github/
+tests/
+scripts/
+test-results/
+AGENTS.md
+PROJECT_HANDOVER.md
+PROJECT_STATUS.json
+README.md
+assets/living/
+assets/illustrations/
+assets/v080/r1/
+assets/v080/*.webp

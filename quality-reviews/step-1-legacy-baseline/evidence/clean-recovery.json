@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedDate": "2026-08-23",
+  "sourceRef": "refs/heads/archive/v0.8.2-legacy-baseline",
+  "sourceRefFetchedFromGitHub": true,
+  "sourceRefCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "checkoutMethod": "isolated git clone --no-local after fetching the exact GitHub archive ref; the current pull-request CI checks out the immutable baseline SHA after separately verifying that remote ref",
+  "ciBaselineCheckoutRef": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "historicalDescendantsDependOnMutableArchiveRef": false,
+  "checkoutHead": "727b8d00c281e7539117da5ded7309ea01c7e516",
+  "checkoutTree": "c508c58b0bb1b3fa591eefe143aab2dd6eac9271",
+  "checkoutStatusPorcelain": "",
+  "validationKitLocation": "review branch, separate from the historical checkout",
+  "commandContract": "CATS_BASELINE_DIR=<clean-checkout> node tests/verify-step-1-baseline.mjs --remote",
+  "verifierResult": "PASS",
+  "remoteArchiveRefResult": "PASS",
+  "directGitHubCheckoutCiResult": "PASS",
+  "browserFromCleanCheckoutCiResult": "PASS",
+  "githubActionsRunId": 32587953451,
+  "githubActionsHeadSha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+  "githubActionsConclusion": "success",
+  "note": "The historical checkout intentionally does not contain the new validation kit. Round 6 C1 CI run 32587953451 checked out the immutable baseline SHA into a second path and ran the frozen kit plus Chromium/WebKit suites against it; this clean recovery result is bound to exact head 79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b."
+}

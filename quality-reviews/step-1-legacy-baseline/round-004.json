@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 4,
+  "reviewTargetCommit": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+  "reviewTargetTree": "0e7022e0ea1ae4f5c47560ae2177344049dc8e0b",
+  "overallStatus": "FAIL",
+  "failedAcceptance": {
+    "path": "quality-reviews/step-1-legacy-baseline/acceptance-round-004.json",
+    "commit": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+    "blobSha1": "0f0f0427aac16ce615ed33317504b9912e8d7f81",
+    "sha256": "9336daac146f2d03dc590137c5c0504e8ca188ffbfa7d5edf54bcac5d36fe055"
+  },
+  "successfulCiBeforeRejection": {
+    "runId": 32584243470,
+    "runNumber": 23,
+    "runAttempt": 1,
+    "workflowId": 335561992,
+    "workflowPath": ".github/workflows/verify-main.yml",
+    "jobId": 97058103217,
+    "jobName": "vertical-tower-qa",
+    "event": "pull_request",
+    "headBranch": "codex/restart-step-1-baseline",
+    "headSha": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+    "status": "completed",
+    "conclusion": "success",
+    "runStartedAt": "2026-08-22T16:17:11Z",
+    "runCompletedAt": "2026-08-22T16:22:28Z",
+    "artifact": {
+      "id": 9478670595,
+      "name": "cats-v082-step-1-recovery-evidence",
+      "sizeBytes": 71612841,
+      "digest": "sha256:7994f52234170803515c7b851bea988e438b750c40ef32b9f69a501b2e9bf304",
+      "createdAt": "2026-08-22T16:22:24Z",
+      "expiresAt": "2026-09-21T16:22:20Z",
+      "expiredAtAudit": false
+    },
+    "authorityBoundary": "Run-level fields, exact attempt, job, and artifact metadata were observed through GitHub APIs. Mutable pull_requests[] relationship fields are not historical authority. CI success is recorded as an observation, not as completion approval."
+  },
+  "frozenWeakImplementation": {
+    "workflow": {
+      "path": ".github/workflows/verify-main.yml",
+      "blobSha1": "12c86210d5187604de062b11ee94f400c9d5e492",
+      "sha256": "0958f09ebe6074d7b314697d10ca10d5ef311b89bc1cc441873db69108c61f04"
+    },
+    "externalArtifactVerifier": {
+      "path": "tests/verify-ci-artifact.mjs",
+      "blobSha1": "609b843840867b4450dd6456b36165f57aae5f08",
+      "sha256": "7e4ce2fdf4a0eff91f1191e5ffee9c50f0206f9cb62ab63595f78ea0f844a5db"
+    },
+    "baselineValidator": {
+      "path": "tests/verify-step-1-baseline.mjs",
+      "blobSha1": "c780db174019a851e881d8ae5b38c84430d18599",
+      "sha256": "c98e6d04f448b58e000aa3ecc047e63f40e6f8a1e57c0d379ac2de415835d7d8"
+    },
+    "defaultBranchExternalAuditWorkflowPresent": false
+  },
+  "postCiAudit": {
+    "reviewerId": "step1_adversarial_audit",
+    "taskPath": "/root/step1_adversarial_audit",
+    "source": "Codex collaboration sub-agent response recorded by the primary agent",
+    "performedAfterExactHeadCi": true,
+    "judgment": "FAIL",
+    "materialBlockers": [
+      "The external artifact verifier trusted caller-authored provider inspection JSON, so the supposedly independent C3/main artifact judgment could be self-reported.",
+      "No workflow on the default branch independently downloaded and verified both the exact C3 pull-request artifact and the merged-main push artifact before completion reporting.",
+      "The Round 4 Acceptance did not freeze and enforce the exact C1 changed-path and addition/modification set, so unrelated files could be mixed into C1.",
+      "The merged main result was not bound as an exact two-parent [pre-merge main,C3] commit whose event-time PR base and push.before both equal the first parent.",
+      "Because the weak C1 and its successful CI were already published, amending or force-replacing it would erase a failed review round and violate the required learn-and-rebuild loop."
+    ]
+  },
+  "rebuildDecision": {
+    "preservePublishedC1": true,
+    "forceRewriteForbidden": true,
+    "nextRound": 5,
+    "nextAcceptance": "acceptance-round-005.json",
+    "nextC1MustBeDirectChildOf": "44696c97be9d6206775cbf317a5b3d28fdeff37b",
+    "requiredChanges": [
+      "replace caller-authored inspection input with direct attempt-scoped GitHub API access inside the verifier",
+      "add and freeze a default-branch workflow_run audit for exact C3 and main artifacts",
+      "freeze and verify the exact Round 5 C1 changed-path and A/M set",
+      "bind merged main to the exact two-parent [pre-merge main,C3] topology, matching the C3 base and push.before values"
+    ]
+  }
+}

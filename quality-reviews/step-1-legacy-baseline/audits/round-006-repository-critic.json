@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "role": "repository-critic",
+  "source": "Codex collaboration sub-agent response recorded by the primary agent",
+  "cryptographicReviewerAuthentication": false,
+  "reviewerId": "round6-repository-tesla",
+  "taskPath": "/root/step1_round6_repository",
+  "assignment": "Round 6 C1のremote Git object、exact 9-path A/M、28 protected hashes、Round 3〜5の失敗履歴、C2/C3 commit protocol、CI artifact、JSON/YAML、clean baselineとlive runtimeを独立再監査する。",
+  "reviewedAt": "2026-08-22T17:52:06Z",
+  "reviewTargetCommit": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+  "reviewTargetTree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+  "reviewedAcceptanceSha256": "5c00ce88c970b2194dd3f05f310dbe93c8f373fa24add346c6f9769afa0a4409",
+  "reviewedCiRunId": 32587953451,
+  "reviewedCiJobId": 97067091701,
+  "reviewedCiCheckoutSha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+  "reviewedCiCheckoutTree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+  "reviewedCiArtifactDigest": "sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15",
+  "reviewedCiRecordPath": "quality-reviews/step-1-legacy-baseline/evidence/acceptance-ci-run.json",
+  "reviewedCiRecordSha256": "38bd7f746364ed951d4d6afd93f67b1c5a0dddb7abd6cfe0a6b1bec610c0a10c",
+  "status": "PASS",
+  "unresolvedMaterialBlockers": [],
+  "method": [
+    "隔離した非shallow cloneでremote PR headを再取得し、commit、tree、単一parent、C1 exact 9-path A/M差分をGit object単位で照合した。",
+    "Acceptance revision 6のSHA-256、28 protected files、Round 3〜5のFAIL履歴と旧Acceptance blob、C2 exact 5-pathおよびC3 exact 10-path契約を独立照合した。",
+    "GitHub APIからrun、exact attempt、job、全required steps、artifact metadataを再取得し、ZIP digest、size、95 unique safe members、raw provenance、10 PASS reportsを検査した。",
+    "両workflowと両validatorを読解・反証し、禁止されたstatus等の検索filterがなく、全page・全retained attempt・exact job binding・fail-closed条件が実装されていることを確認した。",
+    "全JSONをduplicate-key拒否で解析し、workflow YAML、shell run blocks、actionlint、git diff check、baseline validator、remote archive ref、固定Production 17-path live byte照合を再実行した。"
+  ],
+  "findings": [
+    "remote branchとPR #5 headはいずれも対象commitを指し、treeとparentは指定値に一致し、C1変更はAcceptanceで固定された9件だけだった。",
+    "28 protected filesは全件SHA-256一致し、Round 3、Round 4、Round 5は改変されずFAILのまま保持され、Round 6はfailed Round 5 C1の直接子だった。",
+    "CI run 32587953451 attempt 1とjob 97067091701は対象headでcompleted/successであり、記録されたrequired stepsはGitHub API結果と一致した。",
+    "artifact 9479611371は71,603,241 bytes、95件、digest sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15で、ZIP実体・API metadata・記録が一致した。",
+    "acceptance-ci-run.jsonのSHA-256は38bd7f746364ed951d4d6afd93f67b1c5a0dddb7abd6cfe0a6b1bec610c0a10cで、埋込raw provenanceはartifact memberとbyte一致した。",
+    "Round 5のlatest-success/latest-attempt欠陥は、unfiltered workflow-specific pagination、二重snapshot、全retained attempt列挙、run_id/run_attempt/head/job intervalの照合へ置換されていた。",
+    "20件のbaseline、snapshot、current-tree byte binding、remote archive ref、固定Production 17-pathは再検証に合格し、runtimeまたはdeployment-input変更は検出されなかった。"
+  ],
+  "verbatimResponse": "{\n  \"role\": \"repository-critic\",\n  \"reviewTargetCommit\": \"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\",\n  \"reviewTargetTree\": \"b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1\",\n  \"reviewedCiRunId\": 32587953451,\n  \"reviewedCiJobId\": 97067091701,\n  \"verdict\": \"PASS\",\n  \"materialBlockers\": [],\n  \"method\": [\n    \"隔離した非shallow cloneでremote PR headを再取得し、commit、tree、単一parent、C1 exact 9-path A/M差分をGit object単位で照合した。\",\n    \"Acceptance revision 6のSHA-256、28 protected files、Round 3〜5のFAIL履歴と旧Acceptance blob、C2 exact 5-pathおよびC3 exact 10-path契約を独立照合した。\",\n    \"GitHub APIからrun、exact attempt、job、全required steps、artifact metadataを再取得し、ZIP digest、size、95 unique safe members、raw provenance、10 PASS reportsを検査した。\",\n    \"両workflowと両validatorを読解・反証し、禁止されたstatus等の検索filterがなく、全page・全retained attempt・exact job binding・fail-closed条件が実装されていることを確認した。\",\n    \"全JSONをduplicate-key拒否で解析し、workflow YAML、shell run blocks、actionlint、git diff check、baseline validator、remote archive ref、固定Production 17-path live byte照合を再実行した。\"\n  ],\n  \"findings\": [\n    \"remote branchとPR #5 headはいずれも対象commitを指し、treeとparentは指定値に一致し、C1変更はAcceptanceで固定された9件だけだった。\",\n    \"28 protected filesは全件SHA-256一致し、Round 3、Round 4、Round 5は改変されずFAILのまま保持され、Round 6はfailed Round 5 C1の直接子だった。\",\n    \"CI run 32587953451 attempt 1とjob 97067091701は対象headでcompleted/successであり、記録されたrequired stepsはGitHub API結果と一致した。\",\n    \"artifact 9479611371は71,603,241 bytes、95件、digest sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15で、ZIP実体・API metadata・記録が一致した。\",\n    \"acceptance-ci-run.jsonのSHA-256は38bd7f746364ed951d4d6afd93f67b1c5a0dddb7abd6cfe0a6b1bec610c0a10cで、埋込raw provenanceはartifact memberとbyte一致した。\",\n    \"Round 5のlatest-success/latest-attempt欠陥は、unfiltered workflow-specific pagination、二重snapshot、全retained attempt列挙、run_id/run_attempt/head/job intervalの照合へ置換されていた。\",\n    \"20件のbaseline、snapshot、current-tree byte binding、remote archive ref、固定Production 17-pathは再検証に合格し、runtimeまたはdeployment-input変更は検出されなかった。\"\n  ]\n}\n",
+  "verbatimResponseSha256": "fed263e87ac9e593d4a79b3ce6230e0167832eb686d9ef267a2dc164dca5bc6c"
+}

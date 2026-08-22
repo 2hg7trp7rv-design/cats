@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "step-1-legacy-baseline",
+  "round": 1,
+  "reviewedDate": "2026-08-22",
+  "overallStatus": "FAIL",
+  "previousClaim": "Step 1 was reported as PASS because commit 727b8d0 and a READY Vercel deployment existed.",
+  "gates": {
+    "G1": "FAIL",
+    "G2": "FAIL",
+    "G3": "FAIL",
+    "G4": "FAIL",
+    "G5": "FAIL"
+  },
+  "failureRecord": {
+    "mistakenCompletion": "A reachable commit and successful deployment were treated as a proven recovery baseline.",
+    "skippedChecks": [
+      "remote recovery ref",
+      "complete runtime hash manifest",
+      "current Production versus historical deployment identity",
+      "clean recovery drill",
+      "service-worker enabled offline recovery",
+      "independent adversarial review"
+    ],
+    "expectationGap": "A human expects a save point to be reproducible and honestly bounded, not merely named in documentation.",
+    "rootCause": "Completion was judged after creation from technical existence checks, without a predeclared acceptance matrix or an attempt to disprove recoverability.",
+    "addedAcceptanceConditions": [
+      "second remote archive ref",
+      "complete source-to-live manifest",
+      "clean browser recovery at two mobile viewports",
+      "service-worker and offline recovery",
+      "save compatibility and known-loss disclosure",
+      "three independent audits"
+    ],
+    "reuse": "Keep commit 727b8d0 and its historical deployment as the candidate baseline.",
+    "discardOrRebuild": "Withdraw the former PASS record and rebuild all evidence, deployment descriptions, and quality judgment from the acceptance matrix."
+  },
+  "nextRoundHypothesis": "The existing commit can become a valid code/runtime recovery baseline without changing game bytes if its remote reachability, manifest, actual recovery, offline behavior, and limitations are independently proven."
+}
