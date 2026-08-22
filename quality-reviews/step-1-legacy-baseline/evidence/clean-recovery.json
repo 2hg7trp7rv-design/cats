@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "checkedDate": "2026-08-22",
+  "checkedDate": "2026-08-23",
   "sourceRef": "refs/heads/archive/v0.8.2-legacy-baseline",
   "sourceRefFetchedFromGitHub": true,
   "sourceRefCommit": "727b8d00c281e7539117da5ded7309ea01c7e516",
@@ -16,8 +16,8 @@
   "remoteArchiveRefResult": "PASS",
   "directGitHubCheckoutCiResult": "PASS",
   "browserFromCleanCheckoutCiResult": "PASS",
-  "githubActionsRunId": 32578260669,
-  "githubActionsHeadSha": "5792be4a0cee37e540747233fd2921ab5f0db392",
+  "githubActionsRunId": 32587953451,
+  "githubActionsHeadSha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
   "githubActionsConclusion": "success",
-  "note": "The historical checkout intentionally does not contain the new validation kit. CI run 32578260669 checked out the archive into a second path and ran the current kit and browser suites against it. This technical PASS did not override the Round 2 overall FAIL."
+  "note": "The historical checkout intentionally does not contain the new validation kit. Round 6 C1 CI run 32587953451 checked out the immutable baseline SHA into a second path and ran the frozen kit plus Chromium/WebKit suites against it; this clean recovery result is bound to exact head 79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b."
 }

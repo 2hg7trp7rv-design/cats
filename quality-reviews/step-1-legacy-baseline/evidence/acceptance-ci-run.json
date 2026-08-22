@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "role": "acceptance",
+  "checkedDate": "2026-08-23",
+  "repository": "2hg7trp7rv-design/cats_tower",
+  "workflowName": "Verify Cat's Tower baseline and quality records",
+  "workflowId": 335561992,
+  "workflowPath": ".github/workflows/verify-main.yml",
+  "runId": 32587953451,
+  "runNumber": 26,
+  "runAttempt": 1,
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "pullRequest": {
+    "number": 5,
+    "baseBranch": "main",
+    "baseSha": "76c49e9fca82a4c0f6922de8f93ea3b4e57289f6",
+    "baseTree": "833d014051ef005eb0378c1b1149942a4f3e5f74",
+    "headBranch": "codex/restart-step-1-round6",
+    "headSha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+    "headTree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1"
+  },
+  "checkout": {
+    "mode": "pull-request-head",
+    "ref": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+    "sha": "79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b",
+    "tree": "b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1",
+    "parents": [
+      "cfebec0c546478f8dc7a6af9476d795205e52002"
+    ],
+    "contentDiffFromHead": [],
+    "provenance": "GitHub Actions exact-attempt API, exact-head checkout assertion, fetched PR merge object 86eaf2054315924fb85f97e99d3389f3bb4af2df, and independently downloaded attempt-1 artifact"
+  },
+  "job": {
+    "id": 97067091701,
+    "name": "vertical-tower-qa",
+    "status": "completed",
+    "conclusion": "success",
+    "startedAt": "2026-08-22T17:30:49Z",
+    "completedAt": "2026-08-22T17:36:49Z",
+    "requiredSteps": [
+      {
+        "name": "Assert primary checkout provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Capture immutable invocation provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Resolve immutable Step 1 verification kit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Finalize event-time CI provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Clean checkout of the immutable V0.8.2 commit",
+        "conclusion": "success"
+      },
+      {
+        "name": "Repository handover and source contracts",
+        "conclusion": "success"
+      },
+      {
+        "name": "Vertical tower source and raster contracts",
+        "conclusion": "success"
+      },
+      {
+        "name": "Bind unexpired CI records and downloaded artifacts before seal",
+        "conclusion": "success"
+      },
+      {
+        "name": "GitHub recovery ref and live runtime manifest",
+        "conclusion": "success"
+      },
+      {
+        "name": "Chromium and WebKit vertical tower loop QA",
+        "conclusion": "success"
+      },
+      {
+        "name": "Attach captured CI provenance",
+        "conclusion": "success"
+      },
+      {
+        "name": "Upload V0.8.2 vertical tower evidence",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 9479611371,
+    "name": "cats-v082-step-1-recovery-evidence-attempt-1",
+    "sizeBytes": 71603241,
+    "digest": "sha256:e8fd71450d8069ee261e32d5e2cb037fa8c2060e0fa10c10c1214ee778b97d15",
+    "fileCount": 95,
+    "createdAt": "2026-08-22T17:36:45Z",
+    "expiresAt": "2026-09-21T17:36:42Z",
+    "fileCountEvidence": "independently downloaded ZIP central directory: 95 unique safe member names, ten duplicate-key-free PASS reports, and one ci-provenance.json",
+    "supplementaryOnly": true,
+    "provenanceMember": "ci-provenance.json",
+    "provenanceMemberSha256": "d775291c248860b1c47252ad0ced98c9d074d4157ec12154f44a6d8f59e91e3f",
+    "provenanceMemberRaw": "{\n  \"schemaVersion\": 1,\n  \"repository\": \"2hg7trp7rv-design/cats_tower\",\n  \"workflowName\": \"Verify Cat's Tower baseline and quality records\",\n  \"workflowPath\": \".github/workflows/verify-main.yml\",\n  \"workflowRef\": \"2hg7trp7rv-design/cats_tower/.github/workflows/verify-main.yml@refs/pull/5/merge\",\n  \"workflowCommitSha\": \"86eaf2054315924fb85f97e99d3389f3bb4af2df\",\n  \"workflowBlobSha\": \"21b323b3e406ea771dfa374d24520e204a94709a\",\n  \"generator\": \"workflow-steps:Capture immutable invocation provenance+Finalize event-time CI provenance\",\n  \"sourceBoundary\": \"frozen-workflow-generated record; not a GitHub-signed attestation\",\n  \"event\": \"pull_request\",\n  \"eventContext\": {\n    \"kind\": \"pull_request\",\n    \"pullRequest\": {\n      \"number\": 5,\n      \"baseBranch\": \"main\",\n      \"baseSha\": \"76c49e9fca82a4c0f6922de8f93ea3b4e57289f6\",\n      \"headBranch\": \"codex/restart-step-1-round6\",\n      \"headSha\": \"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\"\n    },\n    \"push\": null,\n    \"workflowDispatch\": null\n  },\n  \"runId\": 32587953451,\n  \"runNumber\": 26,\n  \"runAttempt\": 1,\n  \"jobName\": \"vertical-tower-qa\",\n  \"invocationCheckout\": {\n    \"sha\": \"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\",\n    \"tree\": \"b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1\",\n    \"ref\": \"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\"\n  },\n  \"verificationKit\": {\n    \"mode\": \"current-head\",\n    \"sha\": \"79b255f4ccdd8c75a3d67cc5f9e9b50d5682929b\",\n    \"tree\": \"b9b1fb5ca165d1ba20d01a671cec257b9b2b1ac1\"\n  },\n  \"servedRuntime\": {\n    \"mode\": \"immutable-baseline-checkout\",\n    \"sha\": \"727b8d00c281e7539117da5ded7309ea01c7e516\",\n    \"tree\": \"c508c58b0bb1b3fa591eefe143aab2dd6eac9271\"\n  }\n}\n"
+  },
+  "runtime": {
+    "node": "22",
+    "playwright": "1.60.0",
+    "browsers": [
+      "chromium",
+      "webkit"
+    ],
+    "viewports": [
+      "390x844",
+      "375x667"
+    ]
+  },
+  "runtimeProofBoundary": "Runtime assertions are supported by the exact attempt/job fields, downloaded provider-digested artifact, raw provenance bytes, and ten independently parsed PASS reports; provider metadata is not described as a cryptographic attestation.",
+  "assertedResults": {
+    "cleanArchiveCheckout": "PASS",
+    "sourceAndRasterContracts": "PASS",
+    "remoteArchiveAndLive17PathManifest": "PASS",
+    "deterministicLoopChromium390x844": "PASS",
+    "deterministicLoopChromium375x667": "PASS",
+    "deterministicLoopWebKit390x844": "PASS",
+    "deterministicLoopWebKit375x667": "PASS",
+    "normalUiChromium390x844": "PASS",
+    "normalUiChromium375x667": "PASS",
+    "normalUiWebKit390x844": "PASS",
+    "normalUiWebKit375x667": "PASS",
+    "serviceWorkerChromium390x844": "PASS",
+    "serviceWorkerChromium375x667": "PASS",
+    "durableReloadNineteenFields": "PASS",
+    "cacheKeysAndBodies15Of15": "PASS",
+    "futureSchemaRawNonOverwrite": "PASS",
+    "offlineShell": "PASS"
+  },
+  "apiVerification": {
+    "requiredAtC1C2C3": true,
+    "artifactMustExistAndBeUnexpiredBeforeSeal": true,
+    "downloadedZipAndTenRawMembersMustMatch": true,
+    "historicalDescendantsSkipTimeLimitedApi": true,
+    "afterExpiry": "Only descendants of the already verified C3 seal may skip the historical API query; committed raw reports, the snapshot, and fresh browser execution remain durable."
+  }
+}
